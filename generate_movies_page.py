@@ -13,6 +13,7 @@ import sys
 import requests
 
 SRC_URL = "https://vixsrc.to/api/list/movie/?lang=It"
+SRC_URL = "https://vixsrc.to/api/list/tv/?lang=It"
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/movie/{}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"  # modifica dimensione se vuoi
 VIX_LINK_TEMPLATE = "https://vixsrc.to/movie/{}/?"
@@ -75,6 +76,7 @@ def build_html(entries):
         "</style></head><body>",
         "<h1>Movies MiniPlayers</h1>",
         "<div class='grid'>"
+
     ]
     for movie_id, title, poster_url in entries:
         title_safe = title or f"ID {movie_id}"
