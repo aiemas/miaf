@@ -30,7 +30,7 @@
           let type = item.type === "movie" ? "movie" : "tv";
 
           // chiamata a TMDB
-          let tmdbRes = await fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=it-IT`);
+          let tmdbRes = await fetch(`https://www.themoviedb.org/movie/3/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=it-IT`);
           let tmdbData = await tmdbRes.json();
 
           let title = tmdbData.title || tmdbData.name;
