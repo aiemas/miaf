@@ -32,14 +32,25 @@ def fetch_list():
     return r.json()
 
 def extract_ids(data):
+def extract_ids(data):
     ids = []
-    items = data.get("results", data if isinstance(data, list) else [])
+    # data è una lista di dict come: [{"tmdb_id":75970}, {"tmdb_id":61575}, ...]
+    if isinstance(data, list):
+        items = data
+    else:
+        items = data.get("results", []) if isinstance(data, dict) else []
     for item in items:
+        if not isinstance(item, dict):
+            continue
+        val = None
         for key in ("tmdb_id", "tmdbId", "id"):
             if key in item and item[key]:
-                ids.append(str(item[key]))
+                val = item[key]
                 break
+        if val:
+            ids.append(str(val))
     return sorted(set(ids), key=int)
+
 
 def tmdb_get_movie(api_key, movie_id, language="it-IT"):
     url = TMDB_MOVIE_URL.format(movie_id)
