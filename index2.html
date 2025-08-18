@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Locandine da Vix + TMDB</title>
   <style>
-    body { background:#111; color:#fff; font-family:Arial; }
+    body { background:#121; color:#fff; font-family:Arial; }
     .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:15px; padding:20px; }
     .card { cursor:pointer; text-align:center; }
     .card img { width:100%; border-radius:10px; }
@@ -13,6 +13,10 @@
 <body>
   <h1>Film & Serie</h1>
   <div id="grid" class="grid"></div>
+
+  # --- URL API ---
+MOVIES_API = "https://vixsrc.to/api/list/movie/?lang=it"
+TV_API = "https://vixsrc.to/api/list/tv/?lang=it"
 
   <script>
     const TMDB_API_KEY = "3d03931f82dd1b0c07af22dd0f214076"; 
