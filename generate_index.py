@@ -11,10 +11,14 @@ def generate_block(item, type_):
         return ""
     title = item.get("title", "Titolo non trovato")
     url = f"https://vixsrc.to/{type_}/{tmdb_id}?primaryColor=B20710&autoplay=false&lang=it"
+    poster_url = item.get("poster_url", "path/to/default_poster.jpg")  # Assicurati di avere un campo per la locandina
+
     return f"""
-<div class="movie">
-  <div class="title">{title}</div>
-  <iframe src="{url}" allowfullscreen></iframe>
+<div class="{type_}">
+  <a href="{url}" target="_blank">
+    <img src="{poster_url}" alt="{title}" style="width:100%; height:auto;">
+    <div class="title">{title}</div>
+  </a>
 </div>
 """
 
@@ -37,9 +41,9 @@ with open("index.html", "w", encoding="utf-8") as f:
 <title>Film e Serie TV dal Database</title>
 <style>
 body { font-family: Arial; padding: 20px; }
-.movie { margin-bottom: 30px; }
+#movies-container { display: flex; flex-wrap: wrap; justify-content: space-between; }
+.movie, .tv { margin: 10px; width: calc(48% - 20px); }
 .title { font-weight: bold; margin-bottom: 5px; font-size: 18px; }
-iframe { width: 50%; height: 250px; border: none; }
 input { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 </style>
 </head>
@@ -50,7 +54,7 @@ input { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 
 <div id="movies-container">
 """)
-    
+
     # Blocchi film
     for movie in movies:
         f.write(generate_block(movie, "movie"))
@@ -62,21 +66,18 @@ input { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
     # Footer con script di ricerca
     f.write("""
 </div>
-
 <script>
+// Funzione di filtro per cercare film e serie TV
 function filterMovies() {
-    var input = document.getElementById('search');
-    var filter = input.value.toLowerCase();
-    var movies = document.getElementById('movies-container').getElementsByClassName('movie');
-    for (var i = 0; i < movies.length; i++) {
-        var title = movies[i].getElementsByClassName('title')[0].innerText.toLowerCase();
-        movies[i].style.display = title.includes(filter) ? '' : 'none';
-    }
+    const query = document.getElementById('search').value.toLowerCase();
+    const movies = document.querySelectorAll('.movie, .tv');
+
+    movies.forEach(movie => {
+        const title = movie.querySelector('.title').textContent.toLowerCase();
+        movie.style.display = title.includes(query) ? 'block' : 'none';
+    });
 }
 </script>
-
 </body>
 </html>
 """)
-
-print("index.html generato con successo!")
