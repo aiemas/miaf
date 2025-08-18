@@ -29,30 +29,34 @@
     async function fetchVixList() {
       const movies = await fetch("https://vixsrc.to/api/list/movie/?lang=it").then(r => r.json());
       const tv = await fetch("https://vixsrc.to/api/list/tv/?lang=it").then(r => r.json());
-      return [...movies, ...tv];
+      return [...(movies.results || []), ...(tv.results || [])];
     }
 
     async function getPoster(title, type="movie") {
       const url = `https://api.themoviedb.org/3/search/${type}?api_key=${API_KEY}&query=${encodeURIComponent(title)}&language=it-IT`;
       const res = await fetch(url).then(r => r.json());
-      if (res.results && res.results.length > 0) {
+      if (res.results && res.results.length > 0 && res.results[0].poster_path) {
         return "https://image.tmdb.org/t/p/w500" + res.results[0].poster_path;
       }
-      return null;
+      return "https://via.placeholder.com/150"; // fallback
     }
 
     async function renderContent() {
       const list = await fetchVixList();
       for (let item of list) {
-        const poster = await getPoster(item.title, item.type === "tv" ? "tv" : "movie");
+        const title = item.title || item.name; // film = title, serie = name
+        const type = item.type || (item.name ? "tv" : "movie");
+
+        const poster = await getPoster(title, type);
+
         const div = document.createElement("div");
         div.className = "card";
         div.innerHTML = `
-          <img src="${poster || "https://via.placeholder.com/150"}" alt="${item.title}">
-          <p>${item.title}</p>
+          <img src="${poster}" alt="${title}">
+          <p>${title}</p>
         `;
         div.onclick = () => {
-          window.open(item.url, "_blank"); // qui puoi far aprire il player
+          window.open(item.url, "_blank"); // apri link player
         };
         grid.appendChild(div);
       }
