@@ -70,17 +70,12 @@ def build_html(entries):
         ".grid{display:flex;flex-wrap:wrap;gap:12px}",
         ".card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:10px;width:320px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}",
         ".title{font-size:16px;margin-bottom:8px;font-weight:700}",
-        ".poster{width:100%;height:auto;border-radius:4px;margin-bottom:8px}",
+        ".poster{width:50%;height:auto;border-radius:3px;margin-bottom:5px}",
         ".playframe{width:100%;height:200px;border:1px solid #ccc;border-radius:4px}",
         ".note{font-size:12px;color:#666;margin-top:8px}",
         "</style></head><body>",
         "<h1>Movies MiniPlayers</h1>",
-        "<div class='grid'>",
-        
-        <input type="text" id="search" placeholder="Cerca per titolo..." onkeyup="filterMovies()">
-
-<div id="movies-container">
-""")
+        "<div class='grid'>"
         
         
 
