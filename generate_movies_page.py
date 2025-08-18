@@ -107,7 +107,6 @@ def build_html(entries):
         
         
 
-    ]
     for movie_id, title, poster_url in entries:
         title_safe = title or f"ID {movie_id}"
         poster_tag = f"<img class='poster' src='{poster_url}' alt='poster'>" if poster_url else ""
