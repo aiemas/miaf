@@ -32,7 +32,6 @@ def fetch_list():
     return r.json()
 
 def extract_ids(data):
-def extract_ids(data):
     ids = []
     # data è una lista di dict come: [{"tmdb_id":75970}, {"tmdb_id":61575}, ...]
     if isinstance(data, list):
