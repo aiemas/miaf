@@ -78,6 +78,10 @@ def build_html(entries):
         "<div class='grid'>",
         
         <input type="text" id="search" placeholder="Cerca per titolo..." onkeyup="filterMovies()">
+
+<div id="movies-container">
+""")
+        
         
 
     ]
