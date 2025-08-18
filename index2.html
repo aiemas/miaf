@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>MIAF - Film e Serie</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#111; color:#fff; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 20px; }
+    .card { cursor: pointer; text-align: center; }
+    .card img { width: 100%; border-radius: 10px; }
+    .search { margin: 20px; text-align:center; }
+    .search input { padding: 8px; width: 50%; border-radius: 5px; border: none; }
+  </style>
+</head>
+<body>
+  <h1 style="text-align:center">🎬 Miaf</h1>
+
+  <div class="search">
+    <input type="text" id="searchBox" placeholder="Cerca film o serie...">
+  </div>
+
+  <div class="grid" id="contentGrid"></div>
+
+  <script>
+    const API_KEY = "3d03931f82dd1b0c07af22dd0f214076";
+    const grid = document.getElementById("contentGrid");
+    const searchBox = document.getElementById("searchBox");
+
+    async function fetchVixList() {
+      const movies = await fetch("https://vixsrc.to/api/list/movie/?lang=it").then(r => r.json());
+      const tv = await fetch("https://vixsrc.to/api/list/tv/?lang=it").then(r => r.json());
+      return [...movies, ...tv];
+    }
+
+    async function getPoster(title, type="movie") {
+      const url = `https://api.themoviedb.org/3/search/${type}?api_key=${API_KEY}&query=${encodeURIComponent(title)}&language=it-IT`;
+      const res = await fetch(url).then(r => r.json());
+      if (res.results && res.results.length > 0) {
+        return "https://image.tmdb.org/t/p/w500" + res.results[0].poster_path;
+      }
+      return null;
+    }
+
+    async function renderContent() {
+      const list = await fetchVixList();
+      for (let item of list) {
+        const poster = await getPoster(item.title, item.type === "tv" ? "tv" : "movie");
+        const div = document.createElement("div");
+        div.className = "card";
+        div.innerHTML = `
+          <img src="${poster || "https://via.placeholder.com/150"}" alt="${item.title}">
+          <p>${item.title}</p>
+        `;
+        div.onclick = () => {
+          window.open(item.url, "_blank"); // qui puoi far aprire il player
+        };
+        grid.appendChild(div);
+      }
+    }
+
+    searchBox.addEventListener("input", function() {
+      const query = this.value.toLowerCase();
+      document.querySelectorAll(".card").forEach(card => {
+        const title = card.textContent.toLowerCase();
+        card.style.display = title.includes(query) ? "block" : "none";
+      });
+    });
+
+    renderContent();
+  </script>
+</body>
+</html>
