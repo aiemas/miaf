@@ -82,7 +82,7 @@ def build_html(entries):
     <h1>Movies MiniPlayers</h1>
     <div class='grid'>
 """
-    ]
+            ]
 
     # Aggiungi un contenuto per ogni voce in entries
     for entry in entries:
