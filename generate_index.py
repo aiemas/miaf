@@ -39,7 +39,7 @@ with open("index.html", "w", encoding="utf-8") as f:
 body { font-family: Arial; padding: 20px; }
 .movie { margin-bottom: 30px; }
 .title { font-weight: bold; margin-bottom: 5px; font-size: 18px; }
-iframe { width: 100%; height: 500px; border: none; }
+iframe { width: 50%; height: 250px; border: none; }
 input { width: 100%; padding: 10px; margin-bottom: 20px; font-size: 16px; }
 </style>
 </head>
