@@ -2,75 +2,50 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <title>MIAF - Film e Serie</title>
+  <title>Locandine da Vix + TMDB</title>
   <style>
-    body { font-family: Arial, sans-serif; background:#111; color:#fff; }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; padding: 20px; }
-    .card { cursor: pointer; text-align: center; }
-    .card img { width: 100%; border-radius: 10px; }
-    .search { margin: 20px; text-align:center; }
-    .search input { padding: 8px; width: 50%; border-radius: 5px; border: none; }
+    body { background:#111; color:#fff; font-family:Arial; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:15px; padding:20px; }
+    .card { cursor:pointer; text-align:center; }
+    .card img { width:100%; border-radius:10px; }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center">🎬 Miaf</h1>
-
-  <div class="search">
-    <input type="text" id="searchBox" placeholder="Cerca film o serie...">
-  </div>
-
-  <div class="grid" id="contentGrid"></div>
+  <h1>Film & Serie</h1>
+  <div id="grid" class="grid"></div>
 
   <script>
-    const API_KEY = "3d03931f82dd1b0c07af22dd0f214076";
-    const grid = document.getElementById("contentGrid");
-    const searchBox = document.getElementById("searchBox");
+    const TMDB_API_KEY = "3d03931f82dd1b0c07af22dd0f214076"; 
+    const grid = document.getElementById("grid");
 
-    async function fetchVixList() {
-      const movies = await fetch("https://vixsrc.to/api/list/movie/?lang=it").then(r => r.json());
-      const tv = await fetch("https://vixsrc.to/api/list/tv/?lang=it").then(r => r.json());
-      return [...(movies.results || []), ...(tv.results || [])];
-    }
+    // chiamata a Vix (sostituisci con il tuo URL JSON)
+    fetch("https://vixcloud.co/api/endpoint/che_usavi.json")
+      .then(res => res.json())
+      .then(async data => {
+        for (let item of data) {
+          let tmdbId = item.tmdb_id;
+          if (!tmdbId) continue;
 
-    async function getPoster(title, type="movie") {
-      const url = `https://api.themoviedb.org/3/search/${type}?api_key=${API_KEY}&query=${encodeURIComponent(title)}&language=it-IT`;
-      const res = await fetch(url).then(r => r.json());
-      if (res.results && res.results.length > 0 && res.results[0].poster_path) {
-        return "https://image.tmdb.org/t/p/w500" + res.results[0].poster_path;
-      }
-      return "https://via.placeholder.com/150"; // fallback
-    }
+          // controlliamo se è film o serie (puoi gestirlo meglio in base al JSON)
+          let type = item.type === "movie" ? "movie" : "tv";
 
-    async function renderContent() {
-      const list = await fetchVixList();
-      for (let item of list) {
-        const title = item.title || item.name; // film = title, serie = name
-        const type = item.type || (item.name ? "tv" : "movie");
+          // chiamata a TMDB
+          let tmdbRes = await fetch(`https://api.themoviedb.org/3/${type}/${tmdbId}?api_key=${TMDB_API_KEY}&language=it-IT`);
+          let tmdbData = await tmdbRes.json();
 
-        const poster = await getPoster(title, type);
+          let title = tmdbData.title || tmdbData.name;
+          let poster = tmdbData.poster_path ? "https://image.tmdb.org/t/p/w300" + tmdbData.poster_path : "";
 
-        const div = document.createElement("div");
-        div.className = "card";
-        div.innerHTML = `
-          <img src="${poster}" alt="${title}">
-          <p>${title}</p>
-        `;
-        div.onclick = () => {
-          window.open(item.url, "_blank"); // apri link player
-        };
-        grid.appendChild(div);
-      }
-    }
-
-    searchBox.addEventListener("input", function() {
-      const query = this.value.toLowerCase();
-      document.querySelectorAll(".card").forEach(card => {
-        const title = card.textContent.toLowerCase();
-        card.style.display = title.includes(query) ? "block" : "none";
+          // creiamo card
+          let card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <img src="${poster}" alt="${title}">
+            <p>${title}</p>
+          `;
+          grid.appendChild(card);
+        }
       });
-    });
-
-    renderContent();
   </script>
 </body>
 </html>
