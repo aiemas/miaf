@@ -73,7 +73,7 @@ def build_html(entries):
         "<h1>Movies MiniPlayers</h1>",
         "<div class='grid'>".
 
-    ]
+            ]
         
 
     for movie_id, title, poster_url in entries:
