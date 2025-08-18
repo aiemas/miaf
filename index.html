@@ -9,6 +9,7 @@
     h1 { margin-top: 20px; }
     .movie { margin: 20px auto; }
     iframe { max-width: 90%; height: 450px; border: none; }
+    .title { margin-bottom: 10px; font-size: 20px; }
   </style>
 </head>
 <body>
@@ -16,21 +17,34 @@
   <div id="movies"></div>
 
   <script>
-    // Lista film di prova
     const films = [
-      { tmdb_id: 1006911, title: "Film di prova" }
+      { tmdb_id: 1006911 }
     ];
 
     const container = document.getElementById('movies');
 
-    films.forEach(film => {
+    films.forEach(async (film) => {
       const div = document.createElement('div');
       div.className = 'movie';
 
-      // Titolo
-      const title = document.createElement('h3');
-      title.textContent = film.title;
-      div.appendChild(title);
+      // Trucchino per ottenere titolo dal Vixsrc
+      try {
+        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://vixsrc.to/movie/${film.tmdb_id}`)}`);
+        const text = await res.json();
+        const html = text.contents;
+        const titleMatch = html.match(/<title>(.*?)<\/title>/i);
+        const title = titleMatch ? titleMatch[1] : "Titolo non trovato";
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'title';
+        titleEl.textContent = title;
+        div.appendChild(titleEl);
+      } catch (e) {
+        const titleEl = document.createElement('div');
+        titleEl.className = 'title';
+        titleEl.textContent = "Titolo non trovato";
+        div.appendChild(titleEl);
+      }
 
       // Player
       const iframe = document.createElement('iframe');
