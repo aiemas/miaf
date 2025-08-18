@@ -77,7 +77,6 @@ def build_html(entries):
         "<h1>Movies MiniPlayers</h1>",
         "<div class='grid'>"
 
-        <input type="text" id="search" placeholder="Cerca per titolo..." onkeyup="filterMovies()">
     ]
     for movie_id, title, poster_url in entries:
         title_safe = title or f"ID {movie_id}"
