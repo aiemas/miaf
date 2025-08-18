@@ -18,7 +18,6 @@ import sys
 import requests
 
 SRC_URL = "https://vixsrc.to/api/list/movie/?lang=It"
-SRC_URL = "https://vixsrc.to/api/list/tv/?lang=It"
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/movie/{}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"  # modifica dimensione se vuoi
 VIX_LINK_TEMPLATE = "https://vixsrc.to/movie/{}/?"
@@ -74,7 +73,7 @@ parts = [
 ".grid{display:flex;flex-wrap:wrap;gap:12px}",
 ".card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:10px;width:320px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}",
 ".title{font-size:16px;margin-bottom:8px;font-weight:700}",
-".poster{width:50%;height:auto;border-radius:4px;margin-bottom:8px}",
+".poster{width:100%;height:auto;border-radius:4px;margin-bottom:8px}",
 ".playframe{width:100%;height:200px;border:1px solid #ccc;border-radius:4px}",
 ".note{font-size:12px;color:#666;margin-top:8px}",
 "</style></head><body>",
@@ -122,4 +121,3 @@ print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi")
 
 if name == "main":
 main()
-
