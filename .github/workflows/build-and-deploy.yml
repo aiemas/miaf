@@ -3,7 +3,7 @@ name: Build and deploy movies page
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 2 * * *'    # opzionale: esegue ogni giorno alle 02:00 UTC
+    - cron: '0 2 * * *'    # esegue ogni giorno alle 02:00 UTC
 
 jobs:
   build:
@@ -25,7 +25,7 @@ jobs:
 
       - name: Run generator
         env:
-          TMDB_API_KEY: ${{ secrets.GH_PAT }}
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
         run: |
           python generate_movies_page.py
 
@@ -33,6 +33,6 @@ jobs:
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./   # se il file è in root; oppure specifica la cartella contenente movies_miniplayers.html
+          publish_dir: ./   # se movies_miniplayers.html viene generato in root
           destination_dir: '' 
           publish_branch: gh-pages
