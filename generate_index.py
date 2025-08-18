@@ -22,7 +22,7 @@ def generate_block(item, type_):
 def fetch_items(url):
     resp = requests.get(url)
     data = resp.json()
-    return data.get("results", [])
+    return data  # <-- restituisce direttamente la lista
 
 movies = fetch_items(MOVIES_API)
 tv_series = fetch_items(TV_API)
