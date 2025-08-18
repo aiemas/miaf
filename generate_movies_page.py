@@ -75,7 +75,7 @@ def build_html(entries):
         ".note{font-size:12px;color:#666;margin-top:8px}",
         "</style></head><body>",
         "<h1>Movies MiniPlayers</h1>",
-        "<div class='grid'>"
+        "<div class='grid'>",
         <input type="text" id="search" placeholder="Cerca per titolo..." onkeyup="filterMovies()">
         
 
