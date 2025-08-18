@@ -62,10 +62,13 @@ def tmdb_get_movie(api_key, movie_id, language="it-IT"):
 
 def build_html(entries):
     parts = [
-        <!doctype html>
-        <html lang='it'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>
-        <title>Movies MiniPlayers</title>
-        <style>
+        """<!doctype html>
+<html lang='it'>
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width,initial-scale=1'>
+    <title>Movies MiniPlayers</title>
+    <style>
         body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:#f7f7f7}
         .grid{display:flex;flex-wrap:wrap;gap:12px}
         .card{background:#fff;border:1px solid #ddd;border-radius:6px;padding:10px;width:320px;box-shadow:0 1px 3px rgba(0,0,0,0.08)}
@@ -73,9 +76,32 @@ def build_html(entries):
         .poster{width:18%;height:auto;border-radius:3px;margin-bottom:5px} /* Modifica la larghezza qui */
         .playframe{width:100%;height:200px;border:1px solid #ccc;border-radius:4px}
         .note{font-size:12px;color:#666;margin-top:8px}
-        </style></head><body>
-        <h1>Movies MiniPlayers</h1>
-        <div class='grid'>
+    </style>
+</head>
+<body>
+    <h1>Movies MiniPlayers</h1>
+    <div class='grid'>
+"""
+    ]
+
+    # Aggiungi un contenuto per ogni voce in entries
+    for entry in entries:
+        parts.append(f"""
+        <div class='card'>
+            <img src='{entry['poster']}' class='poster' alt='{entry['title']} poster'>
+            <div class='title'>{entry['title']}</div>
+            <div class='playframe'></div>
+            <div class='note'>{entry['note']}</div>
+        </div>
+        """)
+
+    parts.append("""
+    </div>
+</body>
+</html>
+""")
+
+    return ''.join(parts)  # Restituisce il contenuto HTML unito in una stringa.
         
         
 
