@@ -1,0 +1,38 @@
+name: Build and deploy movies page
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'    # opzionale: esegue ogni giorno alle 02:00 UTC
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run generator
+        env:
+          TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
+        run: |
+          python generate_movies_page.py
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./   # se il file è in root; oppure specifica la cartella contenente movies_miniplayers.html
+          destination_dir: '' 
+          publish_branch: gh-pages
