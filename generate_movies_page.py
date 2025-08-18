@@ -81,8 +81,8 @@ def build_html(entries):
 <body>
     <h1>Movies MiniPlayers</h1>
     <div class='grid'>
-"""
-            ]
+        """  # Inizio del contenuto HTML
+    ]
 
     # Aggiungi un contenuto per ogni voce in entries
     for entry in entries:
@@ -95,6 +95,7 @@ def build_html(entries):
         </div>
         """)
 
+    # Chiusura della griglia e del documento HTML
     parts.append("""
     </div>
 </body>
@@ -102,6 +103,7 @@ def build_html(entries):
 """)
 
     return ''.join(parts)  # Restituisce il contenuto HTML unito in una stringa.
+
         
         
 
