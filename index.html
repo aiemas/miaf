@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Film Embed</title>
+  <title>Film Embed Test</title>
   <style>
     body { font-family: Arial, sans-serif; background: #111; color: #fff; text-align: center; }
     h1 { margin-top: 20px; }
@@ -12,37 +12,34 @@
   </style>
 </head>
 <body>
-  <h1>Film dal Database</h1>
+  <h1>Film dal Database - Test</h1>
   <div id="movies"></div>
 
   <script>
-    // URL API Vixsrc per lista film in italiano
-    const apiUrl = 'https://vixsrc.to/api/list/movie?lang=it';
+    // Lista film di prova
+    const films = [
+      { tmdb_id: 1006911, title: "Film di prova" }
+    ];
 
-    fetch(apiUrl)
-      .then(res => res.json())
-      .then(data => {
-        const container = document.getElementById('movies');
-        data.forEach(film => {
-          if (!film.tmdb_id) return; // salta se non c'è TMDb ID
-          const div = document.createElement('div');
-          div.className = 'movie';
+    const container = document.getElementById('movies');
 
-          // Mostra titolo se presente
-          const title = document.createElement('h3');
-          title.textContent = film.title || 'Film senza titolo';
-          div.appendChild(title);
+    films.forEach(film => {
+      const div = document.createElement('div');
+      div.className = 'movie';
 
-          // Crea iframe per il player
-          const iframe = document.createElement('iframe');
-          iframe.src = `https://vixsrc.to/movie/${film.tmdb_id}?primaryColor=B20710&autoplay=false&lang=it`;
-          iframe.allowFullscreen = true;
-          div.appendChild(iframe);
+      // Titolo
+      const title = document.createElement('h3');
+      title.textContent = film.title;
+      div.appendChild(title);
 
-          container.appendChild(div);
-        });
-      })
-      .catch(err => console.error('Errore caricando film:', err));
+      // Player
+      const iframe = document.createElement('iframe');
+      iframe.src = `https://vixsrc.to/movie/${film.tmdb_id}?primaryColor=B20710&autoplay=false&lang=it`;
+      iframe.allowFullscreen = true;
+      div.appendChild(iframe);
+
+      container.appendChild(div);
+    });
   </script>
 </body>
 </html>
