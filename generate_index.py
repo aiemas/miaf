@@ -10,7 +10,7 @@ def generate_block(item, type_):
     if not tmdb_id:
         return ""
     title = item.get("title", "Titolo non trovato")
-    url = f"https://vixsrc.to/{type_}/{tmdb_id}?primaryColor=B20710&autoplay=false&lang=it"
+    url = f"https://vixsrc.to/{type_}/{tmdb_id}/?primaryColor=B20710&autoplay=false&lang=it"
     poster_url = item.get("https://image.tmdb.org/", "/t/p/default_poster.jpg")  # Assicurati di avere un campo per la locandina
 
     return f"""
