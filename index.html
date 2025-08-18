@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Film Embed Test</title>
+  <title>Film Embed TMDb</title>
   <style>
     body { font-family: Arial, sans-serif; background: #111; color: #fff; text-align: center; }
     h1 { margin-top: 20px; }
@@ -17,8 +17,10 @@
   <div id="movies"></div>
 
   <script>
+    const TMDB_API_KEY = "3d03931f82dd1b0c07af22dd0f214076"; // la tua chiave
     const films = [
-      { tmdb_id: 527246 }
+      { tmdb_id: 1006911 }, // prova
+      // aggiungi altri TMDb ID qui
     ];
 
     const container = document.getElementById('movies');
@@ -27,13 +29,11 @@
       const div = document.createElement('div');
       div.className = 'movie';
 
-      // Trucchino per ottenere titolo dal Vixsrc
+      // Fetch dal TMDb per ottenere il titolo reale
       try {
-        const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(`https://vixsrc.to/movie/${film.tmdb_id}`)}`);
-        const text = await res.json();
-        const html = text.contents;
-        const titleMatch = html.match(/<title>(.*?)<\/title>/i);
-        const title = titleMatch ? titleMatch[1] : "Titolo non trovato";
+        const res = await fetch(`https://api.themoviedb.org/3/movie/${film.tmdb_id}?api_key=${TMDB_API_KEY}&language=it`);
+        const data = await res.json();
+        const title = data.title || "Titolo non trovato";
 
         const titleEl = document.createElement('div');
         titleEl.className = 'title';
@@ -46,7 +46,7 @@
         div.appendChild(titleEl);
       }
 
-      // Player
+      // Player Vixsrc
       const iframe = document.createElement('iframe');
       iframe.src = `https://vixsrc.to/movie/${film.tmdb_id}?primaryColor=B20710&autoplay=false&lang=it`;
       iframe.allowFullscreen = true;
