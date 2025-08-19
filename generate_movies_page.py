@@ -6,6 +6,7 @@ generate_movies_page.py
 - usa l'API TMDb per ottenere titolo e poster
 - genera un file HTML con poster cliccabili
 - poster -> apre il player in un overlay con comandi grandi
+- aggiunta barra di ricerca
 """
 
 import os
@@ -14,9 +15,9 @@ import requests
 
 SRC_MOVIES = "https://vixsrc.to/api/list/movie/?lang=It"
 SRC_SERIES = "https://vixsrc.to/api/list/tv/?lang=It"
-TMDB_MOVIE_URL = "https://api.themoviedb.org/3/{}/{}"  # tipo (movie/tv), id
+TMDB_MOVIE_URL = "https://api.themoviedb.org/3/{}/{}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
-VIX_LINK_TEMPLATE = "https://vixsrc.to/{}/{}"  # tipo (movie/tv), id
+VIX_LINK_TEMPLATE = "https://vixsrc.to/{}/{}"
 OUTPUT_HTML = "movies_miniplayers.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
@@ -61,34 +62,33 @@ def build_html(movies, series):
         "<style>",
         "body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#000;color:#fff}",
         "h1{padding:20px;text-align:center;background:#111;margin:0}",
-        ".menu{display:flex;justify-content:center;gap:20px;padding:15px;background:#111;}",
+        ".menu{display:flex;justify-content:center;gap:20px;padding:15px;background:#111;flex-wrap:wrap}",
         ".menu button{padding:10px 20px;border:none;border-radius:5px;background:#444;color:#fff;font-size:16px;cursor:pointer}",
         ".menu button:hover{background:#666}",
+        "#search{padding:10px;width:60%;max-width:400px;font-size:16px;border-radius:5px;border:1px solid #444;background:#222;color:#fff}",
         ".grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:20px}",
         ".card{cursor:pointer;text-align:center}",
         ".poster{width:100%;border-radius:6px;transition:transform 0.2s}",
         ".poster:hover{transform:scale(1.05)}",
-        "/* overlay player */",
         "#overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1000;align-items:center;justify-content:center}",
         "#overlay iframe{width:80%;height:80%;border:none;border-radius:10px}",
         "#overlay .close{position:absolute;top:20px;right:30px;font-size:40px;color:#fff;cursor:pointer}",
-        "/* comandi video grandi */",
         "video::-webkit-media-controls{transform:scale(1.5)}",
         "</style></head><body>",
         "<h1>Movies & Serie TV</h1>",
         "<div class='menu'>",
         "<button onclick=\"showSection('movies')\">🎬 Film</button>",
         "<button onclick=\"showSection('series')\">📺 Serie TV</button>",
+        "<input type='text' id='search' placeholder='🔎 Cerca...' onkeyup='filterCards()'>",
         "</div>",
         "<div id='movies' class='grid'>"
     ]
     for tmdb_id, title, poster_url in movies:
-        parts.append(f"<div class='card' onclick=\"openPlayer('movie','{tmdb_id}')\"><img class='poster' src='{poster_url}' alt='{title}'><div>{title}</div></div>")
+        parts.append(f"<div class='card' data-title='{title.lower()}' onclick=\"openPlayer('movie','{tmdb_id}')\"><img class='poster' src='{poster_url}' alt='{title}'><div>{title}</div></div>")
     parts.append("</div><div id='series' class='grid' style='display:none'>")
     for tmdb_id, title, poster_url in series:
-        parts.append(f"<div class='card' onclick=\"openPlayer('tv','{tmdb_id}')\"><img class='poster' src='{poster_url}' alt='{title}'><div>{title}</div></div>")
+        parts.append(f"<div class='card' data-title='{title.lower()}' onclick=\"openPlayer('tv','{tmdb_id}')\"><img class='poster' src='{poster_url}' alt='{title}'><div>{title}</div></div>")
     parts.append("</div>")
-    # overlay
     parts.append("""
 <div id="overlay" onclick="closePlayer(event)">
   <span class="close" onclick="closePlayer(event)">&times;</span>
@@ -109,6 +109,15 @@ function closePlayer(e){
     document.getElementById('playerFrame').src='';
   }
 }
+function filterCards(){
+  let input = document.getElementById('search').value.toLowerCase();
+  let sections = ['movies','series'];
+  sections.forEach(sec=>{
+    document.querySelectorAll('#'+sec+' .card').forEach(card=>{
+      card.style.display = card.dataset.title.includes(input) ? 'block' : 'none';
+    });
+  });
+}
 </script>""")
     parts.append("</body></html>")
     return "\n".join(parts)
@@ -118,7 +127,6 @@ def main():
     movies = []
     series = []
 
-    # film
     try:
         data = fetch_list(SRC_MOVIES)
         ids = extract_ids(data)
@@ -132,7 +140,6 @@ def main():
     except Exception as e:
         print(f"Errore film: {e}", file=sys.stderr)
 
-    # serie
     try:
         data = fetch_list(SRC_SERIES)
         ids = extract_ids(data)
