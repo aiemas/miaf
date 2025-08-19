@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+"""
+generate_movies_page.py
+
+Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
+- Film e Serie TV (due tendine: Movies / Series)
+- Ricerca per titolo
+- Filtro per genere
+- Clic su locandina apre player in modale fullscreen (iframe con allowfullscreen)
+- Lazy load: mostra 40 titoli per volta
+"""
+
 import os, sys, requests
 
 # --- Config ---
@@ -8,8 +19,6 @@ SRC_URLS = {
 }
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
-VIX_MOVIE_TEMPLATE = "https://vixsrc.to/movie/{}/?"
-VIX_TV_TEMPLATE = "https://vixsrc.to/tv/{}/"   # pagina serie, non singolo episodio
 OUTPUT_HTML = "movies_miniplayers.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
@@ -93,7 +102,7 @@ def build_html(entries):
         "const overlay=document.getElementById('playerOverlay');",
         "const iframe=overlay.querySelector('iframe');",
         "function openPlayer(url){overlay.style.display='flex';iframe.src=url;}",
-        "function closePlayer(){overlay.style.display='none';iframe.src='';iframe.removeAttribute('src');}",  # FIX audio
+        "function closePlayer(){overlay.style.display='none';iframe.src='';}",  # 🔧 fix audio
         "function render(reset=false){",
         " if(reset){grid.innerHTML='';shown=0;}",
         " let count=0;",
@@ -138,10 +147,13 @@ def main():
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
             genres = [g["name"] for g in info.get("genres", [])]
             vote = info.get("vote_average", 0)
+
+            # 🔧 Fix link: film vs serie TV
             if type_ == "movie":
-                link = VIX_MOVIE_TEMPLATE.format(tmdb_id)
-            else:
-                link = VIX_TV_TEMPLATE.format(tmdb_id)
+                link = f"https://vixsrc.to/movie/{tmdb_id}/?"
+            else:  # Serie TV → puntiamo a S01E01
+                link = f"https://vixsrc.to/tv/{tmdb_id}/1/1"
+
             entries.append({
                 "id": tmdb_id,
                 "title": title,
