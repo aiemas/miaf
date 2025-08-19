@@ -8,7 +8,7 @@ SRC_URL = "https://vixsrc.to/api/list/tv/?lang=It"
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/movie/{}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w200"  # poster più piccoli
 VIX_LINK_TEMPLATE = "https://vixsrc.to/movie/{}/?"
-OUTPUT_HTML = "movies_gallery.html"
+OUTPUT_HTML = "movies_miniplayers.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
 def get_api_key():
