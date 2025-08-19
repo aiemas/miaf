@@ -1,37 +1,42 @@
 #!/usr/bin/env python3
 """
 generate_movies_page.py
-- legge le liste da vixsrc.to (film + serie TV)
+- legge la lista da https://vixsrc.to/api/list/movie/?lang=It
 - estrae tmdb_id
-- usa l'API TMDb per ottenere titolo e poster
-- genera un file HTML con poster cliccabili
-- poster -> apre il player in un overlay con comandi grandi
-- aggiunta barra di ricerca
+- usa l'API TMDb per ottenere titolo, poster, voto, genere
+- genera un file HTML con:
+    * locandina cliccabile (apre player)
+    * badge del voto
+    * dropdown per filtrare per genere
+    * caricamento progressivo (100 alla volta)
 """
 
 import os
 import sys
 import requests
 
-SRC_MOVIES = "https://vixsrc.to/api/list/movie/?lang=It"
-SRC_SERIES = "https://vixsrc.to/api/list/tv/?lang=It"
-TMDB_MOVIE_URL = "https://api.themoviedb.org/3/{}/{}"
+SRC_URL = "https://vixsrc.to/api/list/movie/?lang=It"
+SRC_URL = "https://vixsrc.to/api/list/tv/?lang=It"
+TMDB_MOVIE_URL = "https://api.themoviedb.org/3/movie/{}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
-VIX_LINK_TEMPLATE = "https://vixsrc.to/{}/{}"
+VIX_LINK_TEMPLATE = "https://vixsrc.to/movie/{}/?"
 OUTPUT_HTML = "movies_miniplayers.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
+
 
 def get_api_key():
     key = os.getenv("TMDB_API_KEY")
     if not key:
-        print("Errore: TMDB_API_KEY mancante", file=sys.stderr)
+        print("Errore: imposta TMDB_API_KEY nelle variabili d'ambiente.", file=sys.stderr)
         sys.exit(1)
     return key
 
-def fetch_list(url):
-    r = requests.get(url, headers=HEADERS, timeout=20)
+
+def fetch_list():
+    r = requests.get(SRC_URL, headers=HEADERS, timeout=20)
     r.raise_for_status()
     return r.json()
+
 
 def extract_ids(data):
     ids = []
@@ -41,122 +46,129 @@ def extract_ids(data):
         items = data.get("results", []) if isinstance(data, dict) else []
     for item in items:
         if isinstance(item, dict):
-            val = item.get("tmdb_id") or item.get("id")
+            val = item.get("tmdb_id") or item.get("tmdbId") or item.get("id")
             if val:
                 ids.append(str(val))
     return sorted(set(ids), key=int)
 
-def tmdb_get(api_key, tmdb_type, tmdb_id, language="it-IT"):
-    url = TMDB_MOVIE_URL.format(tmdb_type, tmdb_id)
+
+def tmdb_get_movie(api_key, movie_id, language="it-IT"):
+    url = TMDB_MOVIE_URL.format(movie_id)
     r = requests.get(url, params={"api_key": api_key, "language": language}, timeout=15)
     if r.status_code == 404:
         return None
     r.raise_for_status()
     return r.json()
 
-def build_html(movies, series):
+
+def build_html(entries, genres_set):
     parts = [
         "<!doctype html>",
         "<html lang='it'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>",
-        "<title>Movies & Serie TV</title>",
+        "<title>Movies MiniPlayers</title>",
         "<style>",
-        "body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#000;color:#fff}",
-        "h1{padding:20px;text-align:center;background:#111;margin:0}",
-        ".menu{display:flex;justify-content:center;gap:20px;padding:15px;background:#111;flex-wrap:wrap}",
-        ".menu button{padding:10px 20px;border:none;border-radius:5px;background:#444;color:#fff;font-size:16px;cursor:pointer}",
-        ".menu button:hover{background:#666}",
-        "#search{padding:10px;width:60%;max-width:400px;font-size:16px;border-radius:5px;border:1px solid #444;background:#222;color:#fff}",
-        ".grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;padding:20px}",
-        ".card{cursor:pointer;text-align:center}",
-        ".poster{width:100%;border-radius:6px;transition:transform 0.2s}",
-        ".poster:hover{transform:scale(1.05)}",
-        "#overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:1000;align-items:center;justify-content:center}",
-        "#overlay iframe{width:80%;height:80%;border:none;border-radius:10px}",
-        "#overlay .close{position:absolute;top:20px;right:30px;font-size:40px;color:#fff;cursor:pointer}",
-        "video::-webkit-media-controls{transform:scale(1.5)}",
+        "body{font-family:Arial,Helvetica,sans-serif;margin:20px;background:#000;color:#fff}",
+        ".grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}",
+        ".card{position:relative;cursor:pointer;}",
+        ".poster{width:180px;height:auto;border-radius:4px;display:block}",
+        ".badge{position:absolute;top:6px;right:6px;background:rgba(0,0,0,0.7);color:#fff;padding:2px 6px;border-radius:4px;font-size:12px;font-weight:bold}",
+        ".controls{margin-bottom:20px;text-align:center}",
+        "select,input,button{padding:6px 10px;margin:5px;font-size:14px;border-radius:4px;border:1px solid #444;background:#111;color:#fff}",
+        "button{cursor:pointer;}",
         "</style></head><body>",
-        "<h1>Movies & Serie TV</h1>",
-        "<div class='menu'>",
-        "<button onclick=\"showSection('movies')\">🎬 Film</button>",
-        "<button onclick=\"showSection('series')\">📺 Serie TV</button>",
-        "<input type='text' id='search' placeholder='🔎 Cerca...' onkeyup='filterCards()'>",
-        "</div>",
-        "<div id='movies' class='grid'>"
+        "<h1 style='text-align:center'>Movies MiniPlayers</h1>",
+        "<div class='controls'>",
+        "<label for='genreSelect'>Genere:</label>",
+        "<select id='genreSelect'><option value='all'>Tutti</option>"
     ]
-    for tmdb_id, title, poster_url in movies:
-        parts.append(f"<div class='card' data-title='{title.lower()}' onclick=\"openPlayer('movie','{tmdb_id}')\"><img class='poster' src='{poster_url}' alt='{title}'><div>{title}</div></div>")
-    parts.append("</div><div id='series' class='grid' style='display:none'>")
-    for tmdb_id, title, poster_url in series:
-        parts.append(f"<div class='card' data-title='{title.lower()}' onclick=\"openPlayer('tv','{tmdb_id}')\"><img class='poster' src='{poster_url}' alt='{title}'><div>{title}</div></div>")
-    parts.append("</div>")
+
+    # Dropdown generi
+    for g in sorted(genres_set):
+        parts.append(f"<option value='{g}'>{g}</option>")
+    parts.append("</select>")
+
+    # Ricerca
+    parts.append("<input type='text' id='searchBox' placeholder='Cerca film...'>")
+
+    parts.append("</div><div class='grid' id='moviesGrid'></div>")
+    parts.append("<div style='text-align:center'><button id='loadMoreBtn'>Carica altri</button></div>")
+
+    # JS per filtro + ricerca + caricamento progressivo
     parts.append("""
-<div id="overlay" onclick="closePlayer(event)">
-  <span class="close" onclick="closePlayer(event)">&times;</span>
-  <iframe id="playerFrame" src=""></iframe>
-</div>
 <script>
-function showSection(id){
-  document.getElementById('movies').style.display = (id==='movies'?'grid':'none');
-  document.getElementById('series').style.display = (id==='series'?'grid':'none');
-}
-function openPlayer(type,id){
-  document.getElementById('overlay').style.display='flex';
-  document.getElementById('playerFrame').src=`https://vixsrc.to/${type}/${id}/?`;
-}
-function closePlayer(e){
-  if(e.target.id==='overlay' || e.target.className==='close'){
-    document.getElementById('overlay').style.display='none';
-    document.getElementById('playerFrame').src='';
+const allMovies = %s;
+let shown = 0;
+const step = 100;
+
+function renderMovies(reset=false){
+  const grid = document.getElementById('moviesGrid');
+  if(reset){ grid.innerHTML = ''; shown = 0; }
+  let count = 0;
+  const searchVal = document.getElementById('searchBox').value.toLowerCase();
+  const genreVal = document.getElementById('genreSelect').value;
+  while(shown < allMovies.length && count < step){
+    const m = allMovies[shown];
+    shown++;
+    if((genreVal==='all' || m.genres.includes(genreVal)) &&
+       (m.title.toLowerCase().includes(searchVal))){
+      const card = document.createElement('div');
+      card.className='card';
+      card.innerHTML = `<img class='poster' src='${m.poster}' alt='${m.title}'>
+                        <div class='badge'>${m.vote}</div>`;
+      card.onclick = ()=> window.open(m.link,'_blank');
+      grid.appendChild(card);
+      count++;
+    }
   }
 }
-function filterCards(){
-  let input = document.getElementById('search').value.toLowerCase();
-  let sections = ['movies','series'];
-  sections.forEach(sec=>{
-    document.querySelectorAll('#'+sec+' .card').forEach(card=>{
-      card.style.display = card.dataset.title.includes(input) ? 'block' : 'none';
-    });
-  });
-}
-</script>""")
+
+document.getElementById('loadMoreBtn').onclick = ()=>renderMovies();
+document.getElementById('searchBox').oninput = ()=>renderMovies(true);
+document.getElementById('genreSelect').onchange = ()=>renderMovies(true);
+
+renderMovies();
+</script>
+""" % (str([
+        {"id": mid, "title": title or f"ID {mid}", "poster": poster, "vote": vote, "genres": genres, "link": link}
+        for mid, title, poster, vote, genres, link in entries
+    ])))
+
     parts.append("</body></html>")
     return "\n".join(parts)
 
+
 def main():
     api_key = get_api_key()
-    movies = []
-    series = []
+    data = fetch_list()
+    ids = extract_ids(data)
+    if not ids:
+        print("Nessun id trovato.")
+        return
 
-    try:
-        data = fetch_list(SRC_MOVIES)
-        ids = extract_ids(data)
-        for movie_id in ids:
-            info = tmdb_get(api_key, "movie", movie_id)
-            if info:
-                title = info.get("title") or f"Film {movie_id}"
-                poster_path = info.get("poster_path")
-                poster_url = TMDB_IMAGE_BASE + poster_path if poster_path else ""
-                movies.append((movie_id, title, poster_url))
-    except Exception as e:
-        print(f"Errore film: {e}", file=sys.stderr)
+    entries = []
+    genres_set = set()
+    for movie_id in ids:
+        try:
+            info = tmdb_get_movie(api_key, movie_id)
+        except Exception as e:
+            print(f"Errore TMDb per {movie_id}: {e}", file=sys.stderr)
+            continue
+        if not info:
+            continue
+        title = info.get("title")
+        poster_path = info.get("poster_path")
+        poster_url = TMDB_IMAGE_BASE + poster_path if poster_path else None
+        vote = info.get("vote_average", 0)
+        genres = [g["name"] for g in info.get("genres", [])]
+        for g in genres:
+            genres_set.add(g)
+        vix_link = VIX_LINK_TEMPLATE.format(movie_id)
+        entries.append((movie_id, title, poster_url, vote, genres, vix_link))
 
-    try:
-        data = fetch_list(SRC_SERIES)
-        ids = extract_ids(data)
-        for tv_id in ids:
-            info = tmdb_get(api_key, "tv", tv_id)
-            if info:
-                title = info.get("name") or f"Serie {tv_id}"
-                poster_path = info.get("poster_path")
-                poster_url = TMDB_IMAGE_BASE + poster_path if poster_path else ""
-                series.append((tv_id, title, poster_url))
-    except Exception as e:
-        print(f"Errore serie: {e}", file=sys.stderr)
-
-    html = build_html(movies, series)
+    html = build_html(entries, genres_set)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(movies)} film e {len(series)} serie")
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} film")
 
 if __name__ == "__main__":
     main()
