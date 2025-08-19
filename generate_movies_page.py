@@ -15,7 +15,7 @@ import os, sys, requests
 # --- Config ---
 SRC_URLS = {
     "movie": "https://vixsrc.to/api/list/movie/?lang=It",
-    "tv": "https://vixsrc.to/api/list/series/?lang=It"
+    "tv": "https://vixsrc.to/api/list/tv/?lang=It"
 }
 TMDB_MOVIE_URL = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
