@@ -24,7 +24,9 @@ jobs:
         pip install requests
 
     - name: Genera index.html
-      run: python generate_index.py
+  run: python generate_index.py
+  env:
+    TMDB_API_KEY: ${{ secrets.TMDB_API_KEY }}
 
     - name: Commit files
       run: |
