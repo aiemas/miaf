@@ -107,97 +107,108 @@ Episodio: <select id='episodeSelect'></select>
 </div>
 <script>
 const allData = {entries};
-let currentType='movie',currentList=[],shown=0,step=40,currentShow=null;
-const grid=document.getElementById('moviesGrid');
-const overlay=document.getElementById('playerOverlay');
-const iframe=overlay.querySelector('iframe');
-const seasonSelect=document.getElementById('seasonSelect');
-const episodeSelect=document.getElementById('episodeSelect');
-const epControls=document.getElementById('episodeControls');
 
-function openPlayer(item){{
+function sanitizeUrl(url) {
+    // Blocca tutti i link che puntano alla radice della pubblicità
+    if (url.startsWith("https://jepsauveel.net/")) {
+        console.log("Bloccata pubblicità:", url);
+        return "";
+    }
+    return url;
+}
+
+let currentType='movie', currentList=[], shown=0, step=40, currentShow=null;
+const grid = document.getElementById('moviesGrid');
+const overlay = document.getElementById('playerOverlay');
+const iframe = overlay.querySelector('iframe');
+const seasonSelect = document.getElementById('seasonSelect');
+const episodeSelect = document.getElementById('episodeSelect');
+const epControls = document.getElementById('episodeControls');
+
+function openPlayer(item){
     overlay.style.display='flex';
     currentShow=item;
-    if(item.type==='movie'){{
+    if(item.type==='movie'){
         epControls.style.display='none';
-        iframe.src=item.link;
-        if(iframe.requestFullscreen){{iframe.requestFullscreen();}}
-        else if(iframe.webkitRequestFullscreen){{iframe.webkitRequestFullscreen();}}
-        else if(iframe.msRequestFullscreen){{iframe.msRequestFullscreen();}}
-    }} else {{
+        iframe.src = sanitizeUrl(item.link);
+        if(iframe.requestFullscreen){iframe.requestFullscreen();}
+        else if(iframe.webkitRequestFullscreen){iframe.webkitRequestFullscreen();}
+        else if(iframe.msRequestFullscreen){iframe.msRequestFullscreen();}
+    } else {
         epControls.style.display='block';
         seasonSelect.innerHTML='';
-        for(let s=1;s<=item.seasons;s++){{
-            let o=document.createElement('option');o.value=s;o.text='S'+s;seasonSelect.appendChild(o);
-        }}
-        seasonSelect.onchange=()=>populateEpisodes(item);
-        episodeSelect.onchange=()=>loadEpisode(item);
-        seasonSelect.value=1;populateEpisodes(item);
-        if(iframe.requestFullscreen){{iframe.requestFullscreen();}}
-        else if(iframe.webkitRequestFullscreen){{iframe.webkitRequestFullscreen();}}
-        else if(iframe.msRequestFullscreen){{iframe.msRequestFullscreen();}}
-    }}
-}}
+        for(let s=1; s<=item.seasons; s++){
+            let o = document.createElement('option'); o.value=s; o.text='S'+s; seasonSelect.appendChild(o);
+        }
+        seasonSelect.onchange = () => populateEpisodes(item);
+        episodeSelect.onchange = () => loadEpisode(item);
+        seasonSelect.value = 1; populateEpisodes(item);
+        if(iframe.requestFullscreen){iframe.requestFullscreen();}
+        else if(iframe.webkitRequestFullscreen){iframe.webkitRequestFullscreen();}
+        else if(iframe.msRequestFullscreen){iframe.msRequestFullscreen();}
+    }
+}
 
-function populateEpisodes(item){{
+function populateEpisodes(item){
     episodeSelect.innerHTML='';
-    let s=seasonSelect.value;
-    let eps=item.episodes[s]||1;
-    for(let e=1;e<=eps;e++){{
-        let o=document.createElement('option');o.value=e;o.text='E'+e;episodeSelect.appendChild(o);
-    }}
-    episodeSelect.value=1;
+    let s = seasonSelect.value;
+    let eps = item.episodes[s] || 1;
+    for(let e=1; e<=eps; e++){
+        let o = document.createElement('option'); o.value=e; o.text='E'+e; episodeSelect.appendChild(o);
+    }
+    episodeSelect.value = 1;
     loadEpisode(item);
-}}
+}
 
-function loadEpisode(item){{
-    let s=seasonSelect.value,e=episodeSelect.value;
-    iframe.src=`https://vixsrc.to/tv/${{item.id}}/${{s}}/${{e}}`;
-}}
+function loadEpisode(item){
+    let s = seasonSelect.value, e = episodeSelect.value;
+    iframe.src = sanitizeUrl(`https://vixsrc.to/tv/${item.id}/${s}/${e}`);
+}
 
-function closePlayer(){{
+function closePlayer(){
     overlay.style.display='none';
     iframe.src='';
     currentShow=null;
-}}
+}
 
-function render(reset=false){{
-    if(reset){{grid.innerHTML='';shown=0;}}
+function render(reset=false){
+    if(reset){ grid.innerHTML=''; shown=0; }
     let count=0;
     const s=document.getElementById('searchBox').value.toLowerCase();
     const g=document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<step){{
-        const m=currentList[shown++];
-        if((g==='all'||m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
-            const card=document.createElement('div');card.className='card';
-            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>★ ${{m.vote}}</div>`;
-            card.onclick=()=>openPlayer(m);
+    while(shown < currentList.length && count < step){
+        const m = currentList[shown++];
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
+            const card = document.createElement('div'); card.className='card';
+            card.innerHTML = `<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>★ ${m.vote}</div>`;
+            card.onclick = () => openPlayer(m);
             grid.appendChild(card);
             count++;
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function populateGenres(){{
-    const set=new Set();
-    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
-    const sel=document.getElementById('genreSelect');sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{{const o=document.createElement('option');o.value=o.textContent=g;sel.appendChild(o);}});
-}}
+function populateGenres(){
+    const set = new Set();
+    currentList.forEach(m => m.genres.forEach(g => set.add(g)));
+    const sel = document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g => { const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
+}
 
-function updateType(t){{
-    currentType=t;
-    currentList=allData.filter(x=>x.type===t);
+function updateType(t){
+    currentType = t;
+    currentList = allData.filter(x => x.type===t);
     populateGenres();
     render(true);
-}}
+}
 
-document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
-document.getElementById('genreSelect').onchange=()=>render(true);
-document.getElementById('searchBox').oninput=()=>render(true);
-document.getElementById('loadMore').onclick=()=>render(false);
+document.getElementById('typeSelect').onchange = e => updateType(e.target.value);
+document.getElementById('genreSelect').onchange = () => render(true);
+document.getElementById('searchBox').oninput = () => render(true);
+document.getElementById('loadMore').onclick = () => render(false);
 
 updateType('movie');
+</script>
 </script>
 </body>
 </html>
