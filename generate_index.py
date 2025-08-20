@@ -63,101 +63,154 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
 
 
 def build_html(entries):
-    parts = [
-        "<!doctype html>",
-        "<html lang='it'><head><meta charset='utf-8'>",
-        "<meta name='viewport' content='width=device-width,initial-scale=1'>",
-        "<title>Movies & Series</title>",
-        "<style>",
-        "body{font-family:Arial,sans-serif;background:#000;color:#fff;margin:0;padding:20px;}",
-        "h1{color:#fff;text-align:center;margin-bottom:20px;}",
-        ".controls{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}",
-        "input,select{padding:8px;font-size:14px;border-radius:4px;border:none;}",
-        ".grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}",
-        ".card{position:relative;cursor:pointer;}",
-        ".poster{width:100%;border-radius:6px;display:block;}",
-        ".badge{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;",
-        "padding:2px 6px;font-size:12px;border-radius:4px;}",
-        "#loadMore{display:block;margin:20px auto;padding:10px 20px;font-size:16px;",
-        "background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}",
-        "#playerOverlay{position:fixed;top:0;left:0;width:100%;height:100%;",
-        "background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;",
-        "z-index:1000;flex-direction:column;}","#playerOverlay iframe{width:80%;height:80%;border:none;}",
-        "#playerOverlay button.closeBtn{position:absolute;top:20px;right:40px;font-size:30px;",
-        "background:transparent;border:none;color:#fff;cursor:pointer;}",
-        "#episodeControls{margin-bottom:10px;color:#fff;}","#episodeControls select{margin:0 5px;}",
-        "</style></head><body>",
-        "<h1>Movies & Series</h1>",
-        "<div class='controls'>",
-        "<select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>",
-        "<select id='genreSelect'><option value='all'>Tutti i generi</option></select>",
-        "<input type='text' id='searchBox' placeholder='Cerca...'>",
-        "</div>",
-        "<div id='moviesGrid' class='grid'></div>",
-        "<button id='loadMore'>Carica altri</button>",
-        "<div id='playerOverlay' style='display:none;'>",
-        "<div id='episodeControls' style='display:none;'>",
-        "Stagione: <select id='seasonSelect'></select>",
-        " Episodio: <select id='episodeSelect'></select>",
-        "</div>",
-        "<button class='closeBtn' onclick='closePlayer()'>×</button>",
-        "<iframe allowfullscreen></iframe></div>",
-        "<script>",
-        f"const allData = {entries};",
-        "let currentType='movie',currentList=[],shown=0,step=40,currentShow=null;",
-        "const grid=document.getElementById('moviesGrid');",
-        "const overlay=document.getElementById('playerOverlay');",
-        "const iframe=overlay.querySelector('iframe');",
-        "const seasonSelect=document.getElementById('seasonSelect');",
-        "const episodeSelect=document.getElementById('episodeSelect');",
-        "const epControls=document.getElementById('episodeControls');",
+    html = f"""<!doctype html>
+<html lang="it">
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Movies & Series</title>
+<style>
+body{{font-family:Arial,sans-serif;background:#000;color:#fff;margin:0;padding:20px;}}
+h1{{color:#fff;text-align:center;margin-bottom:20px;}}
+.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
+input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
+.card{{position:relative;cursor:pointer;}}
+.poster{{width:100%;border-radius:6px;display:block;}}
+.badge{{position:absolute;bottom:8px;right:8px;background:rgba(0,0,0,0.7);color:#fff;padding:2px 6px;font-size:12px;border-radius:4px;}}
+#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
+#playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
+#playerOverlay iframe{{width:80%;height:80%;border:none;}}
+#playerOverlay button.closeBtn{{position:absolute;top:20px;right:40px;font-size:30px;background:transparent;border:none;color:#fff;cursor:pointer;}}
+#episodeControls{{margin-bottom:10px;color:#fff;}}
+#episodeControls select{{margin:0 5px;}}
+</style>
+</head>
+<body>
+<h1>Movies & Series</h1>
+<div class='controls'>
+<select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
+<select id='genreSelect'><option value='all'>Tutti i generi</option></select>
+<input type='text' id='searchBox' placeholder='Cerca...'>
+</div>
+<div id='moviesGrid' class='grid'></div>
+<button id='loadMore'>Carica altri</button>
+<div id='playerOverlay' style='display:none;'>
+<div id='episodeControls' style='display:none;'>
+Stagione: <select id='seasonSelect'></select>
+Episodio: <select id='episodeSelect'></select>
+</div>
+<button class='closeBtn' onclick='closePlayer()'>×</button>
+<iframe allowfullscreen></iframe>
+</div>
+<script>
+const allData = {entries};
+let currentType='movie',currentList=[],shown=0,step=40,currentShow=null;
+const grid=document.getElementById('moviesGrid');
+const overlay=document.getElementById('playerOverlay');
+const iframe=overlay.querySelector('iframe');
+const seasonSelect=document.getElementById('seasonSelect');
+const episodeSelect=document.getElementById('episodeSelect');
+const epControls=document.getElementById('episodeControls');
 
-        # --- openPlayer modificata per fullscreen immediato ---
-        "function openPlayer(item){",
-        " overlay.style.display='flex';currentShow=item;",
-        " if(item.type==='movie'){",
-        "  epControls.style.display='none';iframe.src=item.link;",
-        "  if(iframe.requestFullscreen){iframe.requestFullscreen();}",
-        "  else if(iframe.webkitRequestFullscreen){iframe.webkitRequestFullscreen();}",
-        "  else if(iframe.msRequestFullscreen){iframe.msRequestFullscreen();}",
-        " }",
-        " else {",
-        "  epControls.style.display='block';",
-        "  seasonSelect.innerHTML='';",
-        "  for(let s=1;s<=item.seasons;s++){let o=document.createElement('option');o.value=s;o.text='S'+s;seasonSelect.appendChild(o);}",
-        "  seasonSelect.onchange=()=>populateEpisodes(item);",
-        "  episodeSelect.onchange=()=>loadEpisode(item);",
-        "  seasonSelect.value=1;populateEpisodes(item);",
-        "  if(iframe.requestFullscreen){iframe.requestFullscreen();}",
-        "  else if(iframe.webkitRequestFullscreen){iframe.webkitRequestFullscreen();}",
-        "  else if(iframe.msRequestFullscreen){iframe.msRequestFullscreen();}",
-        " }",
-        "}",
+function openPlayer(item){{
+    overlay.style.display='flex';
+    currentShow=item;
+    if(item.type==='movie'){{
+        epControls.style.display='none';
+        iframe.src=item.link;
+        if(iframe.requestFullscreen){{iframe.requestFullscreen();}}
+        else if(iframe.webkitRequestFullscreen){{iframe.webkitRequestFullscreen();}}
+        else if(iframe.msRequestFullscreen){{iframe.msRequestFullscreen();}}
+    }} else {{
+        epControls.style.display='block';
+        seasonSelect.innerHTML='';
+        for(let s=1;s<=item.seasons;s++){{
+            let o=document.createElement('option');o.value=s;o.text='S'+s;seasonSelect.appendChild(o);
+        }}
+        seasonSelect.onchange=()=>populateEpisodes(item);
+        episodeSelect.onchange=()=>loadEpisode(item);
+        seasonSelect.value=1;populateEpisodes(item);
+        if(iframe.requestFullscreen){{iframe.requestFullscreen();}}
+        else if(iframe.webkitRequestFullscreen){{iframe.webkitRequestFullscreen();}}
+        else if(iframe.msRequestFullscreen){{iframe.msRequestFullscreen();}}
+    }}
+}}
 
-        "function populateEpisodes(item){",
-        " episodeSelect.innerHTML='';let s=seasonSelect.value;",
-        " let eps=item.episodes[s]||1;",
-        " for(let e=1;e<=eps;e++){let o=document.createElement('option');o.value=e;o.text='E'+e;episodeSelect.appendChild(o);}",
-        " episodeSelect.value=1;loadEpisode(item);",
-        "}",
+function populateEpisodes(item){{
+    episodeSelect.innerHTML='';
+    let s=seasonSelect.value;
+    let eps=item.episodes[s]||1;
+    for(let e=1;e<=eps;e++){{
+        let o=document.createElement('option');o.value=e;o.text='E'+e;episodeSelect.appendChild(o);
+    }}
+    episodeSelect.value=1;
+    loadEpisode(item);
+}}
 
-        "function loadEpisode(item){",
-        " let s=seasonSelect.value,e=episodeSelect.value;",
-        " iframe.src=`https://vixsrc.to/tv/${item.id}/${s}/${e}`;",
-        "}",
+function loadEpisode(item){{
+    let s=seasonSelect.value,e=episodeSelect.value;
+    iframe.src=`https://vixsrc.to/tv/${{item.id}}/${{s}}/${{e}}`;
+}}
 
-        "function closePlayer(){overlay.style.display='none';iframe.src='';currentShow=null;}",
+function closePlayer(){{
+    overlay.style.display='none';
+    iframe.src='';
+    currentShow=null;
+}}
 
-        "function render(reset=false){",
-        " if(reset){grid.innerHTML='';shown=0;}let count=0;",
-        " const s=document.getElementById('searchBox').value.toLowerCase();",
-        " const g=document.getElementById('genreSelect').value;",
-        " while(shown<currentList.length && count<step){",
-        "  const m=currentList[shown++];",
-        "  if((g==='all'||m.genres.includes(g))&&m.title.toLowerCase().includes(s)){",
-        "   const card=document.createElement('div');card.className='card';",
-        "   card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>★ ${m.vote}</div>`;",
-        "   card.onclick=()=>openPlayer(m);grid.appendChild(card);count++;}}}",
+function render(reset=false){{
+    if(reset){{grid.innerHTML='';shown=0;}}
+    let count=0;
+    const s=document.getElementById('searchBox').value.toLowerCase();
+    const g=document.getElementById('genreSelect').value;
+    while(shown<currentList.length && count<step){{
+        const m=currentList[shown++];
+        if((g==='all'||m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
+            const card=document.createElement('div');card.className='card';
+            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>★ ${{m.vote}}</div>`;
+            card.onclick=()=>openPlayer(m);
+            grid.appendChild(card);
+            count++;
+        }}
+    }}
+}}
 
-        "function populateGenres(){const set=new Set();currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));",
-        " const
+function populateGenres(){{
+    const set=new Set();
+    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    const sel=document.getElementById('genreSelect');sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g=>{{const o=document.createElement('option');o.value=o.textContent=g;sel.appendChild(o);}});
+}}
+
+function updateType(t){{
+    currentType=t;
+    currentList=allData.filter(x=>x.type===t);
+    populateGenres();
+    render(true);
+}}
+
+document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
+document.getElementById('genreSelect').onchange=()=>render(true);
+document.getElementById('searchBox').oninput=()=>render(true);
+document.getElementById('loadMore').onclick=()=>render(false);
+
+updateType('movie');
+</script>
+</body>
+</html>
+"""
+    return html
+
+
+def main():
+    api_key = get_api_key()
+    entries = []
+    for type_, url in SRC_URLS.items():
+        data = fetch_list(url)
+        ids = extract_ids(data)
+        for tmdb_id in ids:
+            try:
+                info = tmdb_get(api_key, type_, tmdb_id)
+            except Exception as e:
+                print(f"Errore TMDb {tmdb_id}: {e}",
