@@ -212,7 +212,7 @@ def main():
         for tmdb_id in ids:
                         try:
                 info = tmdb_get(api_key, type_, tmdb_id)
-            except Exception as e:
+                        except Exception as e:
                 print(f"Errore TMDb {tmdb_id}: {e}", file=sys.stderr)
                 info = None
             if not info:
