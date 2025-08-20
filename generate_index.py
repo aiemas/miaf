@@ -249,10 +249,10 @@ def main():
             else:
                 link = ""  # si costruisce dopo
                 seasons = info.get("number_of_seasons", 1)
-                episodes = {{
+                episodes = {
                     str(s["season_number"]): s.get("episode_count", 1)
                     for s in info.get("seasons", []) if s.get("season_number")
-                }}
+                }
 
             entries.append({
                 "id": tmdb_id,
