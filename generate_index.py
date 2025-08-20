@@ -254,7 +254,7 @@ def main():
                     for s in info.get("seasons", []) if s.get("season_number")
                 }}
 
-            entries.append({{
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -264,7 +264,7 @@ def main():
                 "type": type_,
                 "seasons": seasons,
                 "episodes": episodes
-            }})
+            })
 
     html = build_html(entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
