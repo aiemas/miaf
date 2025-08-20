@@ -11,7 +11,9 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Per le Serie: tendine per stagione ed episodio
 """
 
-import os, sys, requests
+import os
+import sys
+import requests
 
 # --- Config ---
 SRC_URLS = {
@@ -210,24 +212,31 @@ def main():
         data = fetch_list(url)
         ids = extract_ids(data)
         for tmdb_id in ids:
-                        try:
+            try:
                 info = tmdb_get(api_key, type_, tmdb_id)
-                        except Exception as e:
+            except Exception as e:
                 print(f"Errore TMDb {tmdb_id}: {e}", file=sys.stderr)
                 info = None
+
             if not info:
                 continue
+
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
             genres = [g["name"] for g in info.get("genres", [])]
             vote = info.get("vote_average", 0)
+
             if type_ == "movie":
                 link = VIX_LINK_MOVIE.format(tmdb_id)
                 seasons, episodes = 0, {}
             else:
                 link = ""  # si costruisce dopo
                 seasons = info.get("number_of_seasons", 1)
-                episodes = {str(s["season_number"]): s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")}
+                episodes = {
+                    str(s["season_number"]): s.get("episode_count", 1)
+                    for s in info.get("seasons", []) if s.get("season_number")
+                }
+
             entries.append({
                 "id": tmdb_id,
                 "title": title,
