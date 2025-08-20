@@ -108,14 +108,21 @@ Episodio: <select id='episodeSelect'></select>
 <script>
 const allData = {entries};
 
-function sanitizeUrl(url) {
-    // Blocca tutti i link che puntano alla radice della pubblicità
-    if (url.startsWith("https://jepsauveel.net/")) {
-        console.log("Bloccata pubblicità:", url);
-        return "";
-    }
+const blockedRoots = [
+    "https://jepsauveel.net/",
+    "https://altrodominio.net/",
+    "https://ancorapubblicita.com/"
+];
+
+function sanitizeUrl(url) {{
+    for (const root of blockedRoots) {{
+        if (url.startsWith(root)) {{
+            console.log("Bloccata pubblicità:", url);
+            return "";
+        }}
+    }}
     return url;
-}
+}}
 
 let currentType='movie', currentList=[], shown=0, step=40, currentShow=null;
 const grid = document.getElementById('moviesGrid');
@@ -125,82 +132,82 @@ const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 const epControls = document.getElementById('episodeControls');
 
-function openPlayer(item){
+function openPlayer(item){{
     overlay.style.display='flex';
     currentShow=item;
-    if(item.type==='movie'){
+    if(item.type==='movie'){{
         epControls.style.display='none';
         iframe.src = sanitizeUrl(item.link);
-        if(iframe.requestFullscreen){iframe.requestFullscreen();}
-        else if(iframe.webkitRequestFullscreen){iframe.webkitRequestFullscreen();}
-        else if(iframe.msRequestFullscreen){iframe.msRequestFullscreen();}
-    } else {
+        if(iframe.requestFullscreen){{iframe.requestFullscreen();}}
+        else if(iframe.webkitRequestFullscreen){{iframe.webkitRequestFullscreen();}}
+        else if(iframe.msRequestFullscreen){{iframe.msRequestFullscreen();}}
+    }} else {{
         epControls.style.display='block';
         seasonSelect.innerHTML='';
-        for(let s=1; s<=item.seasons; s++){
+        for(let s=1; s<=item.seasons; s++){{
             let o = document.createElement('option'); o.value=s; o.text='S'+s; seasonSelect.appendChild(o);
-        }
+        }}
         seasonSelect.onchange = () => populateEpisodes(item);
         episodeSelect.onchange = () => loadEpisode(item);
         seasonSelect.value = 1; populateEpisodes(item);
-        if(iframe.requestFullscreen){iframe.requestFullscreen();}
-        else if(iframe.webkitRequestFullscreen){iframe.webkitRequestFullscreen();}
-        else if(iframe.msRequestFullscreen){iframe.msRequestFullscreen();}
-    }
-}
+        if(iframe.requestFullscreen){{iframe.requestFullscreen();}}
+        else if(iframe.webkitRequestFullscreen){{iframe.webkitRequestFullscreen();}}
+        else if(iframe.msRequestFullscreen){{iframe.msRequestFullscreen();}}
+    }}
+}}
 
-function populateEpisodes(item){
+function populateEpisodes(item){{
     episodeSelect.innerHTML='';
     let s = seasonSelect.value;
     let eps = item.episodes[s] || 1;
-    for(let e=1; e<=eps; e++){
+    for(let e=1; e<=eps; e++){{
         let o = document.createElement('option'); o.value=e; o.text='E'+e; episodeSelect.appendChild(o);
-    }
+    }}
     episodeSelect.value = 1;
     loadEpisode(item);
-}
+}}
 
-function loadEpisode(item){
+function loadEpisode(item){{
     let s = seasonSelect.value, e = episodeSelect.value;
-    iframe.src = sanitizeUrl(`https://vixsrc.to/tv/${item.id}/${s}/${e}`);
-}
+    iframe.src = sanitizeUrl(`https://vixsrc.to/tv/${{item.id}}/${{s}}/${{e}}`);
+}}
 
-function closePlayer(){
+function closePlayer(){{
     overlay.style.display='none';
     iframe.src='';
     currentShow=null;
-}
+}}
 
-function render(reset=false){
-    if(reset){ grid.innerHTML=''; shown=0; }
+function render(reset=false){{
+    if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     const s=document.getElementById('searchBox').value.toLowerCase();
     const g=document.getElementById('genreSelect').value;
-    while(shown < currentList.length && count < step){
+    while(shown < currentList.length && count < step){{
         const m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
             const card = document.createElement('div'); card.className='card';
-            card.innerHTML = `<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>★ ${m.vote}</div>`;
+            card.innerHTML = `<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>★ ${{m.vote}}</div>`;
             card.onclick = () => openPlayer(m);
             grid.appendChild(card);
             count++;
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function populateGenres(){
+function populateGenres(){{
     const set = new Set();
     currentList.forEach(m => m.genres.forEach(g => set.add(g)));
     const sel = document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g => { const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
-}
+    [...set].sort().forEach(g => {{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
+}}
 
-function updateType(t){
+function updateType(t){{
     currentType = t;
     currentList = allData.filter(x => x.type===t);
     populateGenres();
     render(true);
-}
+}}
 
 document.getElementById('typeSelect').onchange = e => updateType(e.target.value);
 document.getElementById('genreSelect').onchange = () => render(true);
@@ -208,7 +215,6 @@ document.getElementById('searchBox').oninput = () => render(true);
 document.getElementById('loadMore').onclick = () => render(false);
 
 updateType('movie');
-</script>
 </script>
 </body>
 </html>
@@ -243,12 +249,12 @@ def main():
             else:
                 link = ""  # si costruisce dopo
                 seasons = info.get("number_of_seasons", 1)
-                episodes = {
+                episodes = {{
                     str(s["season_number"]): s.get("episode_count", 1)
                     for s in info.get("seasons", []) if s.get("season_number")
-                }
+                }}
 
-            entries.append({
+            entries.append({{
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -258,7 +264,7 @@ def main():
                 "type": type_,
                 "seasons": seasons,
                 "episodes": episodes
-            })
+            }})
 
     html = build_html(entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
