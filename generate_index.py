@@ -292,14 +292,14 @@ def main():
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
             seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
-            episodes = {{
+            episodes = {
                 str(s["season_number"]): s.get("episode_count", 1)
                 for s in info.get("seasons", []) if s.get("season_number") is not None
-            }} if type_ == "tv" else {{}}
+            } if type_ == "tv" else {{}}
             duration = info.get("runtime") if type_=="movie" else None
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
-            entries.append({{
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -312,7 +312,7 @@ def main():
                 "episodes": episodes,
                 "duration": duration,
                 "year": year
-            }})
+            })
 
             if idx < 10:
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
