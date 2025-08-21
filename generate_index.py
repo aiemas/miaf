@@ -309,34 +309,17 @@ def main():
     "type": type_,
     "seasons": seasons,
     "episodes": episodes,
-    "duration": duration or 0,
-    "year": year or ""
+    "duration": duration or 0,  # <-- forza 0 se None
+    "year": year or ""           # <-- forza stringa vuota se None
 })
 
-if idx < 10:  # ultime novità
-    html = f"""
-    <div class='latest-card' onclick="openInfo({{
-        id: '{tmdb_id}',
-        title: `{title.replace("'", "\\'")}`,
-        poster: '{poster}',
-        genres: {genres},
-        vote: {vote},
-        overview: `{overview.replace("'", "\\'")}`,
-        link: '{link}',
-        type: '{type_}',
-        seasons: {seasons},
-        episodes: {episodes},
-        duration: {duration or 0},
-        year: '{year or ""}'
-    }})">
-        <img class='poster' src='{poster}' alt='{title}' title='{title}'>
-    </div>
-    """
+            if idx < 10:  # ultime novità
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
-html = build_html(entries, latest_entries)
-with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
-    f.write(html)
-print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
+    html = build_html(entries, latest_entries)
+    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
 
 if __name__ == "__main__":
     main()
