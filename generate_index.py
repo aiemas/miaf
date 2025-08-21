@@ -168,10 +168,10 @@ function openInfo(item){
     infoDuration.textContent = item.duration ? "Durata: "+item.duration+" min" : "";
     infoYear.textContent = item.year ? "Anno: "+item.year : "";
     infoOverview.textContent = item.overview || "";
-    
+
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
-    
+
     if(item.type==='tv'){
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
@@ -185,9 +185,9 @@ function openInfo(item){
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
     }
-    
+
     playBtn.onclick = ()=>openPlayer(item);
-    
+
     function updateEpisodes(){
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
@@ -245,7 +245,7 @@ function populateGenres(){
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g){ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
+    [...set].sort().forEach(g => { const o=document.createElement('option'); o.value = o.textContent = g; sel.appendChild(o); });
 }
 
 function updateType(t){
