@@ -144,76 +144,157 @@ function showLatest(){
     latestDiv.innerHTML="";
     latestData.forEach(item=>{
         const img=document.createElement('img');
+def build_html(entries, latest):
+    html = f"""<!doctype html>
+<html lang="it">
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Movies & Series</title>
+<style>
+body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
+h1{{color:#fff;text-align:center;margin-bottom:20px;}}
+.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
+input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
+.card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
+.card:hover{{transform:scale(1.05);}}
+.poster{{width:100%;border-radius:8px;display:block;}}
+.badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
+#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
+#playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
+#playerOverlay iframe{{width:80%;height:60%;border:none;}}
+#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;}}
+#infoCard h2{{margin-top:0;color:#e50914;}}
+#infoCard p{{margin:5px 0;}}
+#infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard button.closeBtn{{position:absolute;top:10px;right:10px;font-size:18px;background:transparent;border:none;color:#fff;}}
+#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;}}
+#latest .poster{{width:100px;flex-shrink:0;}}
+</style>
+</head>
+<body>
+<h1>Ultime Novità</h1>
+<div id="latest">
+</div>
+
+<h1>Movies & Series</h1>
+<div class='controls'>
+<select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
+<select id='genreSelect'><option value='all'>Tutti i generi</option></select>
+<input type='text' id='searchBox' placeholder='Cerca...'>
+</div>
+<div id='moviesGrid' class='grid'></div>
+<button id='loadMore'>Carica altri</button>
+
+<div id='playerOverlay'>
+<iframe allowfullscreen></iframe>
+</div>
+
+<div id='infoCard'>
+<button class="closeBtn" onclick="closeInfo()">×</button>
+<h2 id="infoTitle"></h2>
+<p id="infoGenres"></p>
+<p id="infoVote"></p>
+<p id="infoOverview"></p>
+<button id="playBtn">Play</button>
+</div>
+
+<script>
+const allData = {entries};
+const latestData = {latest};
+
+const grid=document.getElementById('moviesGrid');
+const overlay=document.getElementById('playerOverlay');
+const iframe=overlay.querySelector('iframe');
+const infoCard = document.getElementById('infoCard');
+const infoTitle = document.getElementById('infoTitle');
+const infoGenres = document.getElementById('infoGenres');
+const infoVote = document.getElementById('infoVote');
+const infoOverview = document.getElementById('infoOverview');
+const playBtn = document.getElementById('playBtn');
+const latestDiv = document.getElementById('latest');
+
+function sanitizeUrl(url) {{
+    if(!url) return "";
+    if(url.startsWith("https://jepsauveel.net/")) return "";
+    return url;
+}}
+
+function showLatest() {{
+    latestDiv.innerHTML="";
+    latestData.forEach(item=>{{
+        const img=document.createElement('img');
         img.src=item.poster;
         img.alt=item.title;
         img.className='poster';
         img.onclick=()=>openInfo(item);
         latestDiv.appendChild(img);
-    });
-}
+    }});
+}}
 
-function openInfo(item){
+function openInfo(item) {{
     infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
     playBtn.onclick = ()=>openPlayer(item);
-}
+}}
 
-function closeInfo(){
+function closeInfo() {{
     infoCard.style.display='none';
-}
+}}
 
-function openPlayer(item){
+function openPlayer(item) {{
     infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){
+    if(item.type==='tv') {{
         let season=1, episode=1;
-        if(item.episodes){
-            for(let s in item.episodes){season=s; break;}
+        if(item.episodes) {{
+            for(let s in item.episodes){{season=s; break;}}
             episode=1;
-        }
-        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}`;
-    }
+        }}
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}`;
+    }}
     iframe.src = link;
-}
+}}
 
-function closePlayer(){
+function closePlayer() {{
     overlay.style.display='none';
     iframe.src='';
-}
+}}
 
-function render(reset=false){
-    if(reset){grid.innerHTML='';shown=0;}
+function render(reset=false) {{
+    if(reset){{grid.innerHTML='';shown=0;}}
     let count=0, s=document.getElementById('searchBox').value.toLowerCase(), g=document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){
+    while(shown<currentList.length && count<40) {{
         let m=currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)) {{
             const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>${m.vote}</div>`;
+            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>${{m.vote}}</div>`;
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
             count++;
-        }
-    }
-}
+        }}
+    }}
+}}
 
 let currentType='movie', currentList=[], shown=0;
-function populateGenres(){
+function populateGenres() {{
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
-}
+    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
+}}
 
-function updateType(t){
+function updateType(t) {{
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}
+}}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
