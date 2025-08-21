@@ -294,21 +294,22 @@ def main():
             duration = info.get("runtime",0) if type_=="movie" else 0
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
-            entries.append({{
-                "id": tmdb_id,
-                "title": title,
-                "poster": poster,
-                "genres": genres,
-                "vote": vote,
-                "overview": overview,
-                "link": link,
-                "type": type_,
-                "seasons": seasons,
-                "episodes": episodes,
-                "duration": duration or 0,
-                "year": year or "",
-                "trailer": ""  # placeholder, potremmo prendere trailer TMDb
-            }})
+            entries.append({
+    "id": tmdb_id,
+    "title": title,
+    "poster": poster,
+    "genres": genres,
+    "vote": vote,
+    "overview": overview,
+    "link": link,
+    "type": type_,
+    "seasons": seasons,
+    "episodes": episodes,
+    "duration": duration or 0,
+    "year": year or "",
+    "trailer": ""  # placeholder, potremmo prendere trailer TMDb
+})
+
 
             if idx < 10:  # ultime novità
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
