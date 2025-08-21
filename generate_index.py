@@ -231,39 +231,33 @@ showLatest();
 def main():
     api_key = get_api_key()
     entries = []
-    latest = []
+    latest_html = ""
 
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
         ids = extract_ids(data)
-        latest_ids = ids[:10]  # primi 10 come ultime novità
-
+        # prendere i primi 10 ID della lista Vix per ultime uscite
         for idx, tmdb_id in enumerate(ids):
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
-            except Exception as e:
-                print(f"Errore TMDb {tmdb_id}: {e}", file=sys.stderr)
+            except:
+                info = None
+            if not info:
                 continue
-            if not info: continue
 
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
-            genres = [g["name"] for g in info.get("genres",[])]
-            vote = info.get("vote_average",0)
-            overview = info.get("overview","")
+            genres = [g["name"] for g in info.get("genres", [])]
+            vote = info.get("vote_average", 0)
+            overview = info.get("overview", "")
+            link = VIX_LINK_MOVIE.format(tmdb_id) if type_ == "movie" else ""
+            seasons = info.get("number_of_seasons", 1) if type_ == "tv" else 0
+            episodes = {
+                str(s["season_number"]): s.get("episode_count", 1)
+                for s in info.get("seasons", []) if s.get("season_number")
+            } if type_ == "tv" else {}
 
-            if type_=="movie":
-                link = VIX_LINK_MOVIE.format(tmdb_id)
-                seasons, episodes = 0, {}
-            else:
-                link = ""  # costruisco player dopo
-                seasons = info.get("number_of_seasons",1)
-                episodes ={
-                    str(s["season_number"]): s.get("episode_count",1)
-                    for s in info.get("seasons",[]) if s.get("season_number")
-                }
-
-            entry = {
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -274,16 +268,13 @@ def main():
                 "type": type_,
                 "seasons": seasons,
                 "episodes": episodes
-            }
+            })
 
-            entries.append(entry)
+            # PRIME 10 LOCANDINE DELLA LISTA VIX per ultime novità (sia film che serie)
             if idx < 10:
-                latest.append(entry)
+                latest_html += f"<img class='poster' src='{poster}' title='{title}'>\n"
 
-    html = build_html(entries, latest)
+    html = build_html(entries, latest_html)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi, ultime novità: {len(latest)}")
-
-if __name__ == "__main__":
-    main()
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi")
