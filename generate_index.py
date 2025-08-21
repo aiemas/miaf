@@ -1,288 +1,228 @@
-#!/usr/bin/env python3
-"""
-generate_index.py
-
-Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
-- Film e Serie TV (due tendine: Movies / Series)
-- Ultime novità in alto (primi 10 della lista Vix)
-- Ricerca per titolo
-- Filtro per genere
-- Clic su locandina apre scheda info con play
-- Lazy load: mostra 40 titoli per volta
-- Per le Serie: tendine per stagione ed episodio
-"""
-
-import os
-import sys
 import requests
+import os
+import json
 
-# --- Config ---
-SRC_URLS = {
-    "movie": "https://vixsrc.to/api/list/movie?lang=it",
-    "tv": "https://vixsrc.to/api/list/tv?lang=it"
-}
-TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
-TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
-VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
-VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
-OUTPUT_HTML = "index.html"
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
+TMDB_API_KEY = os.getenv("TMDB_API_KEY")
 
-def get_api_key():
-    key = os.getenv("TMDB_API_KEY")
-    if not key:
-        print("Errore: manca TMDB_API_KEY", file=sys.stderr)
-        sys.exit(1)
-    return key
-
-def fetch_list(url):
-    r = requests.get(url, headers=HEADERS, timeout=20)
-    r.raise_for_status()
-    return r.json()
-
-def extract_ids(data):
-    ids = []
-    items = data if isinstance(data, list) else data.get("results", [])
-    for item in items:
-        if not isinstance(item, dict):
-            continue
-        for key in ("tmdb_id", "tmdbId", "id"):
-            if key in item and item[key]:
-                ids.append(str(item[key]))
-                break
-    return ids  # **non sorted**, per mantenere ordine Vix
-
-def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
-    url = TMDB_BASE.format(type=type_, id=tmdb_id)
-    r = requests.get(url, params={"api_key": api_key, "language": language}, timeout=15)
-    if r.status_code == 404:
+def fetch_info(tmdb_id, media_type="movie"):
+    url = f"https://api.themoviedb.org/3/{media_type}/{tmdb_id}?api_key={TMDB_API_KEY}&language=it-IT"
+    r = requests.get(url)
+    if r.status_code != 200:
         return None
-    r.raise_for_status()
     return r.json()
 
 def build_html(entries, latest):
-    html = f"""<!doctype html>
-<html lang='it'>
+    html = """<!doctype html>
+<html lang="it">
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Movies & Series</title>
 <style>
-body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
-h1{{color:#fff;text-align:center;margin-bottom:20px;}}
-.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
-input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
-.card:hover{{transform:scale(1.05);}}
-.poster{{width:100%;border-radius:8px;display:block;}}
-.badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
-#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
-#playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
-#playerOverlay iframe{{width:80%;height:60%;border:none;}}
-#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;max-height:80vh;overflow-y:auto;}}
-#infoCard h2{{margin-top:0;color:#e50914;}}
-#infoCard p{{margin:5px 0;}}
-#infoCard button{{padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
-#infoCard button.closeBtn{{position:absolute;top:10px;right:10px;font-size:18px;background:transparent;border:none;color:#fff;}}
-#infoCard button#playBtn{{position:absolute;top:10px;left:10px;}}
-#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
-#latest .poster{{width:100px;flex-shrink:0;}}
+body{margin:0;font-family:Arial;background:#141414;color:#fff;}
+header{padding:20px;font-size:24px;font-weight:bold;color:#e50914;}
+section{padding:10px;}
+#latestRow{display:flex;overflow-x:auto;gap:10px;scroll-behavior:smooth;}
+#latestRow::-webkit-scrollbar{display:none;}
+.latestCard{flex:0 0 auto;width:120px;}
+.latestCard img{width:100%;border-radius:6px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:15px;padding:10px;}
+.card{cursor:pointer;position:relative;}
+.card img{width:100%;border-radius:6px;}
+.vote{position:absolute;top:8px;left:8px;background:rgba(0,0,0,0.7);padding:3px 6px;border-radius:50%;font-size:12px;}
+#infoCard{display:none;position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);
+background:#222;padding:20px;width:90%;max-width:500px;z-index:1000;border-radius:10px;overflow-y:auto;max-height:80%;}
+#infoCard h2{margin-top:0;display:flex;align-items:center;justify-content:space-between;}
+#infoCard button{margin-left:10px;}
+.closeBtn{position:absolute;top:10px;right:10px;background:red;border:none;color:white;font-size:20px;cursor:pointer;border-radius:50%;}
+#playerOverlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:2000;}
+#playerOverlay iframe{width:80%;height:80%;position:absolute;top:10%;left:10%;border:none;}
 </style>
 </head>
 <body>
-<h1>Ultime Novità</h1>
-<div id='latest'>
-{latest}
-</div>
+<header>Movies & Series</header>
 
-<h1>Movies & Series</h1>
-<div class='controls'>
-<select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
-<select id='genreSelect'><option value='all'>Tutti i generi</option></select>
-<input type='text' id='searchBox' placeholder='Cerca...'>
-</div>
-<div id='moviesGrid' class='grid'></div>
-<button id='loadMore'>Carica altri</button>
+<section>
+  <h2>Ultime uscite</h2>
+  <div id="latestRow"></div>
+</section>
 
-<div id='playerOverlay'>
-<iframe allowfullscreen></iframe>
-<button class='closeBtn' onclick='closePlayer()'>×</button>
-</div>
+<section>
+  <h2>Tutti i contenuti</h2>
+  <div id="moviesGrid" class="grid"></div>
+</section>
 
 <div id='infoCard'>
-<button id='playBtn'>Play</button>
-<button class='closeBtn' onclick='closeInfo()'>×</button>
-<h2 id='infoTitle'></h2>
-<p id='infoGenres'></p>
-<p id='infoVote'></p>
-<p id='infoOverview'></p>
+  <button class='closeBtn' onclick='closeInfo()'>×</button>
+  <h2>
+    <span id='infoTitle'></span>
+    <button id='playBtn'>Play</button>
+  </h2>
+  <p id='infoGenres'></p>
+  <p id='infoVote'></p>
+  <p id='infoOverview'></p>
+  <div id='seasonsContainer' style='margin-top:10px;'></div>
+</div>
+
+<div id='playerOverlay'>
+  <button class='closeBtn' onclick='closePlayer()'>×</button>
+  <iframe allowfullscreen></iframe>
 </div>
 
 <script>
 const allData = {entries};
+const latestData = {latest};
 
 const grid=document.getElementById('moviesGrid');
-const overlay=document.getElementById('playerOverlay');
-const iframe=overlay.querySelector('iframe');
-const infoCard = document.getElementById('infoCard');
-const infoTitle = document.getElementById('infoTitle');
-const infoGenres = document.getElementById('infoGenres');
-const infoVote = document.getElementById('infoVote');
-const infoOverview = document.getElementById('infoOverview');
-const playBtn = document.getElementById('playBtn');
-const latestDiv = document.getElementById('latest');
+const latestRow=document.getElementById('latestRow');
+const infoCard=document.getElementById('infoCard');
+const infoTitle=document.getElementById('infoTitle');
+const infoGenres=document.getElementById('infoGenres');
+const infoVote=document.getElementById('infoVote');
+const infoOverview=document.getElementById('infoOverview');
+const playBtn=document.getElementById('playBtn');
+const playerOverlay=document.getElementById('playerOverlay');
+const playerIframe=playerOverlay.querySelector('iframe');
 
-function sanitizeUrl(url){{
-    if(!url) return "";
-    if(url.startsWith("https://jepsauveel.net/")) return "";
-    return url;
-}}
+function renderAll(){
+  grid.innerHTML='';
+  allData.forEach(item=>{
+    const card=document.createElement('div');card.className='card';
+    card.innerHTML=`<img src="${item.poster}" alt=""><div class='vote'>★ ${item.vote}</div>`;
+    card.onclick=()=>openInfo(item);
+    grid.appendChild(card);
+  });
+}
 
-function showLatest(){{
-    latestDiv.scrollLeft = 0;
-    latestDiv.innerHTML="";
-    latestDiv.append(...allData.slice(0,10).map(item => {{
-        const img = document.createElement('img');
-        img.src = item.poster;
-        img.alt = item.title;
-        img.className = 'poster';
-        img.onclick = () => openInfo(item);
-        return img;
-    }}));
-}}
+function renderLatest(){
+  latestRow.innerHTML='';
+  latestData.forEach(item=>{
+    const card=document.createElement('div');card.className='latestCard';
+    card.innerHTML=`<img src="${item.poster}" alt="">`;
+    card.onclick=()=>openInfo(item);
+    latestRow.appendChild(card);
+  });
+  autoScroll();
+}
 
-function openInfo(item){{
-    infoCard.style.display='block';
-    infoTitle.textContent = item.title;
-    infoGenres.textContent = "Generi: " + item.genres.join(", ");
-    infoVote.textContent = "★ " + item.vote;
-    infoOverview.textContent = item.overview || "";
-    playBtn.onclick = () => openPlayer(item);
-}}
+function autoScroll(){
+  setInterval(()=>{
+    latestRow.scrollBy({left:150,behavior:'smooth'});
+    if(latestRow.scrollLeft+latestRow.clientWidth>=latestRow.scrollWidth){
+      latestRow.scrollTo({left:0,behavior:'smooth'});
+    }
+  },3000);
+}
 
-function closeInfo(){{
-    infoCard.style.display='none';
-}}
+function openInfo(item){
+  infoCard.style.display='block';
+  infoTitle.textContent=item.title;
+  infoGenres.textContent="Generi: "+item.genres.join(", ");
+  infoVote.textContent="★ "+item.vote;
+  infoOverview.textContent=item.overview||"";
 
-function openPlayer(item){{
-    infoCard.style.display='none';
-    overlay.style.display='flex';
-    let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{
-        let season=1, episode=1;
-        if(item.episodes){{
-            for(let s in item.episodes){{ season=s; break; }}
-            episode=1;
-        }}
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}`;
-    }}
-    iframe.src = link;
-}}
+  if(item.type==='movie'){
+    playBtn.style.display='inline-block';
+    document.getElementById('seasonsContainer').innerHTML='';
+    playBtn.onclick=()=>openPlayer(item);
+  }else if(item.type==='tv'){
+    playBtn.style.display='none';
+    let container=document.getElementById('seasonsContainer');
+    container.innerHTML='';
+    if(item.episodes){
+      let seasonSelect=document.createElement('select');
+      let episodeSelect=document.createElement('select');
+      seasonSelect.onchange=()=>{
+        let season=seasonSelect.value;
+        fillEpisodes(season,episodeSelect,item);
+      };
+      episodeSelect.onchange=()=>{
+        let season=seasonSelect.value;
+        let episode=episodeSelect.value;
+        openPlayer(item,season,episode);
+      };
+      for(let s in item.episodes){
+        let opt=document.createElement('option');
+        opt.value=s;opt.textContent="Stagione "+s;
+        seasonSelect.appendChild(opt);
+      }
+      container.appendChild(seasonSelect);
+      container.appendChild(episodeSelect);
+      seasonSelect.value=Object.keys(item.episodes)[0];
+      fillEpisodes(seasonSelect.value,episodeSelect,item);
+    }
+  }
+}
 
-function closePlayer(){{
-    overlay.style.display='none';
-    iframe.src='';
-}}
+function fillEpisodes(season,episodeSelect,item){
+  episodeSelect.innerHTML='';
+  let count=item.episodes[season]||1;
+  for(let e=1;e<=count;e++){
+    let opt=document.createElement('option');
+    opt.value=e;opt.textContent="Episodio "+e;
+    episodeSelect.appendChild(opt);
+  }
+}
 
-let currentType='movie', currentList=[], shown=0;
+function closeInfo(){infoCard.style.display='none';}
+function openPlayer(item,season=null,episode=null){
+  let url=item.link;
+  if(item.type==='tv'&&season&&episode){
+    url=url+`?season=${season}&episode=${episode}`;
+  }
+  playerIframe.src=url;
+  playerOverlay.style.display='block';
+}
+function closePlayer(){playerOverlay.style.display='none';playerIframe.src='';}
 
-function populateGenres(){{
-    const set = new Set();
-    currentList.forEach(m => m.genres.forEach(g => set.add(g)));
-    const sel = document.getElementById('genreSelect');
-    sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g => {{
-        const o=document.createElement('option');
-        o.value=o.textContent=g;
-        sel.appendChild(o);
-    }});
-}}
-
-function render(reset=false){{
-    if(reset){{ grid.innerHTML=''; shown=0; }}
-    let count=0, s=document.getElementById('searchBox').value.toLowerCase(), g=document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){{
-        let m=currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
-            const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>${{m.vote}}</div>`;
-            card.onclick=()=>openInfo(m);
-            grid.appendChild(card);
-            count++;
-        }}
-    }}
-}}
-
-function updateType(t){{
-    currentType=t;
-    currentList=allData.filter(x => x.type===t);
-    populateGenres();
-    render(true);
-}}
-
-document.getElementById('typeSelect').onchange = e => updateType(e.target.value);
-document.getElementById('genreSelect').onchange = () => render(true);
-document.getElementById('searchBox').oninput = () => render(true);
-document.getElementById('loadMore').onclick = () => render(false);
-
-updateType('movie');
-showLatest();
+renderAll();
+renderLatest();
 </script>
 </body>
 </html>
 """
-    return html
+    return html.replace("{entries}", json.dumps(entries)).replace("{latest}", json.dumps(latest))
 
 def main():
-    api_key = get_api_key()
-    entries = []
-    latest_html = ""
+    with open("list.json","r",encoding="utf-8") as f:
+        data=json.load(f)
 
-    for type_, url in SRC_URLS.items():
-        data = fetch_list(url)
-        ids = extract_ids(data)
-        for idx, tmdb_id in enumerate(ids):
-            try:
-                info = tmdb_get(api_key, type_, tmdb_id)
-            except:
-                info = None
-            if not info:
-                continue
+    entries=[]
+    latest=[]
 
-            title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
-            poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
-            genres = [g["name"] for g in info.get("genres", [])]
-            vote = info.get("vote_average", 0)
-            overview = info.get("overview", "")
-            link = VIX_LINK_MOVIE.format(tmdb_id) if type_ == "movie" else ""
-            seasons = info.get("number_of_seasons", 1) if type_ == "tv" else 0
-            episodes = {
-                str(s["season_number"]): s.get("episode_count", 1)
-                for s in info.get("seasons", []) if s.get("season_number")
-            } if type_ == "tv" else {}
+    for i,item in enumerate(data):
+        info=fetch_info(item["id"],item["type"])
+        if not info: continue
+        title=info.get("title") or info.get("name")
+        poster=f"https://image.tmdb.org/t/p/w200{info.get('poster_path')}" if info.get("poster_path") else ""
+        vote=info.get("vote_average",0)
+        genres=[g["name"] for g in info.get("genres",[])]
+        overview=info.get("overview","")
+        link=item.get("link","")
 
-            entry = {
-                "id": tmdb_id,
-                "title": title,
-                "poster": poster,
-                "genres": genres,
-                "vote": vote,
-                "overview": overview,
-                "link": link,
-                "type": type_,
-                "seasons": seasons,
-                "episodes": episodes
-            }
-            entries.append(entry)
+        if item["type"]=="tv":
+            episodes={str(s["season_number"]):s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")}
+        else:
+            episodes=None
 
-            if idx < 10:
-                latest_html += f"<img class='poster' src='{poster}' title='{title}'>\n"
+        entry={
+            "id":item["id"],
+            "type":item["type"],
+            "title":title,
+            "poster":poster,
+            "vote":vote,
+            "genres":genres,
+            "overview":overview,
+            "link":link,
+            "episodes":episodes
+        }
+        entries.append(entry)
+        if i<10:
+            latest.append(entry)
 
-    html = build_html(entries, latest_html)
-    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
+    html=build_html(entries,latest)
+    with open("index.html","w",encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi")
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
