@@ -140,11 +140,9 @@ const playBtn = document.getElementById('playBtn');
 const latestDiv = document.getElementById('latest');
 
 function sanitizeUrl(url){
-    if not url:
-        return ""
-    if url.startswith("https://jepsauveel.net/"):
-        return ""
-    return url
+    if(!url) return "";
+    if(url.startsWith("https://jepsauveel.net/")) return "";
+    return url;
 }
 
 function showLatest(){
