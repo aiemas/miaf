@@ -73,17 +73,17 @@ h1{{color:#fff;text-align:center;margin-bottom:20px;}}
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
+.card{{position:relative;cursor:pointer;transition: transform 0.2s;display:flex;flex-direction:column;}}
 .card:hover{{transform:scale(1.05);}}
 .poster{{width:100%;border-radius:8px;display:block;}}
 .badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:80%;height:60%;border:none;}}
-#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;overflow-y:auto;max-height:80%;}}
+#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;max-height:80vh;overflow-y:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
 #infoCard p{{margin:5px 0;}}
-#infoCard button{{padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #infoCard button.closeBtn{{position:absolute;top:10px;right:10px;font-size:18px;background:transparent;border:none;color:#fff;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior:smooth;}}
 #latest .poster{{width:100px;flex-shrink:0;}}
@@ -106,13 +106,13 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <div id='playerOverlay'>
 <iframe allowfullscreen></iframe>
-<button class="closeBtn" onclick="closePlayer()">×</button>
+<button style="position:absolute;top:10px;right:10px;padding:10px 15px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:5px;cursor:pointer;" onclick="closePlayer()">× Chiudi</button>
 </div>
 
 <div id='infoCard'>
 <button class="closeBtn" onclick="closeInfo()">×</button>
+<button id="playBtn" style="margin-bottom:10px;">Play</button>
 <h2 id="infoTitle"></h2>
-<button id="playBtn">Play</button> <!-- tasto play spostato in alto -->
 <p id="infoGenres"></p>
 <p id="infoVote"></p>
 <p id="infoOverview"></p>
@@ -133,24 +133,23 @@ const playBtn = document.getElementById('playBtn');
 const latestDiv = document.getElementById('latest');
 
 function sanitizeUrl(url){
-    if(!url) return "";
-    if(url.startsWith("https://jepsauveel.net/")) return "";
-    return url;
+    if not url:
+        return ""
+    if url.startswith("https://jepsauveel.net/"):
+        return ""
+    return url
 }
 
 function showLatest(){
     latestDiv.scrollLeft = 0;
-    latestDiv.innerHTML="";
-    latestDivData = Array.from(latestDiv.children);
-    latestDivData.forEach(item=>item.remove());
-    allData.slice(0,10).forEach(item=>{
-        const img=document.createElement('img');
-        img.src=item.poster;
-        img.alt=item.title;
-        img.className='poster';
-        img.onclick=()=>openInfo(item);
-        latestDiv.appendChild(img);
-    });
+    let maxScroll = latestDiv.scrollWidth - latestDiv.clientWidth;
+    let direction = 1;
+    setInterval(()=>{
+        latestDiv.scrollLeft += direction * 1;
+        if(latestDiv.scrollLeft >= maxScroll || latestDiv.scrollLeft <= 0){
+            direction *= -1;
+        }
+    }, 20);
 }
 
 function openInfo(item){
@@ -193,7 +192,7 @@ function render(reset=false){
         let m=currentList[shown++];
         if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
             const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>${m.vote}</div>`;
+            card.innerHTML=`<button onclick="openPlayer(${JSON.stringify(m)})" style="margin-bottom:5px;">Play</button><img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>${m.vote}</div>`;
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
             count++;
