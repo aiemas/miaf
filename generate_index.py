@@ -225,12 +225,14 @@ function render(reset=false){{
         let m=currentList[shown++];
         if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
             const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'>
-<div class='badge'>${m.vote}</div>
-<p style="margin:2px 0;font-size:12px;color:#ccc;">
-  ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
-</p>`;
-card.onclick=()=>openInfo(m);
+            card.innerHTML = `
+  <img class='poster' src='${m.poster}' alt='${m.title}'>
+  <div class='badge'>${m.vote}</div>
+  <p style="margin:2px 0;font-size:12px;color:#ccc;">
+    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
+  </p>
+`;
+card.onclick = () => openInfo(m);
 grid.appendChild(card);
 count++;
         }}
@@ -298,20 +300,19 @@ duration = info.get("runtime", 0) if type_=="movie" else 0
 year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
             entries.append({
-                "id": tmdb_id,
-                "title": title,
-                "poster": poster,
-                "genres": genres,
-                "vote": vote,
-                "overview": overview,
-                "link": link,
-                "type": type_,
-                "seasons": seasons,
-                "episodes": episodes,
-                "duration": duration,
-"year": year
-            
-            })
+    "id": tmdb_id,
+    "title": title,
+    "poster": poster,
+    "genres": genres,
+    "vote": vote,
+    "overview": overview,
+    "link": link,
+    "type": type_,
+    "seasons": seasons,
+    "episodes": episodes,
+    "duration": info.get("runtime"),  # durata in minuti
+    "year": (info.get("release_date") or info.get("first_air_date") or "")[:4]
+})
 
             if idx < 10:  # ultime novità
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
