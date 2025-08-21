@@ -11,6 +11,8 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Lazy load: mostra 40 titoli per volta
 - Serie: tendine per stagione ed episodio
 - Scroll automatico ultime novità
+- Durata e anno nella card
+- Voto colorato
 """
 
 import os
@@ -51,7 +53,7 @@ def extract_ids(data):
             if key in item and item[key]:
                 ids.append(str(item[key]))
                 break
-    return ids  # non sorted, manteniamo ordine Vix
+    return ids
 
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
@@ -78,9 +80,9 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .card:hover{{transform:scale(1.05);}}
 .poster{{width:100%;border-radius:8px;display:block;}}
 .badge{{position:absolute;bottom:8px;right:8px;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
-.badge.green{{background:#21d07a;color:#fff;}}
-.badge.yellow{{background:#d2d531;color:#000;}}
-.badge.red{{background:#db2360;color:#fff;}}
+.badge.green{{background:#21d07a;}}
+.badge.yellow{{background:#d2d531;}}
+.badge.red{{background:#db2360;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:80%;height:60%;border:none;}}
@@ -119,10 +121,9 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <h2 id="infoTitle" style="margin:0;flex:1;"></h2>
     <button id="playBtn">Play</button>
   </div>
-  <p id="infoYear"></p>
-  <p id="infoDuration"></p>
   <p id="infoGenres"></p>
   <p id="infoVote"></p>
+  <p id="infoYearDuration"></p>
   <p id="infoOverview"></p>
   <select id="seasonSelect"></select>
   <select id="episodeSelect"></select>
@@ -130,7 +131,6 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <script>
 const allData = {entries};
-
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
@@ -139,123 +139,123 @@ const infoTitle = document.getElementById('infoTitle');
 const infoGenres = document.getElementById('infoGenres');
 const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
-const infoYear = document.getElementById('infoYear');
-const infoDuration = document.getElementById('infoDuration');
+const infoYearDuration = document.getElementById('infoYearDuration');
 const playBtn = document.getElementById('playBtn');
 const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 
-function sanitizeUrl(url){{
+function sanitizeUrl(url){
     if(!url) return "";
     if(url.startsWith("https://jepsauveel.net/")) return "";
     return url;
-}}
+}
 
-function showLatest(){{
+function showLatest(){
     let scrollPos = 0;
-    function scroll() {{
+    function scroll() {
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
-    }}
+        latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
+    }
     setInterval(scroll, 30);
-}}
+}
 
-function openInfo(item){{
+function openInfo(item){
     infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
+    infoVote.className = "";
+    if(item.vote>=7) infoVote.classList.add("green");
+    else if(item.vote>=4) infoVote.classList.add("yellow");
+    else infoVote.classList.add("red");
+    let yr = item.year || "";
+    let dur = item.duration ? item.duration + " min" : "";
+    infoYearDuration.textContent = (yr||dur) ? `${yr} ${dur}` : "";
     infoOverview.textContent = item.overview || "";
-    infoYear.textContent = item.year ? "Anno: " + item.year : "";
-    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
-    
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
-    
-    if(item.type==='tv'){{
+    if(item.type==='tv'){
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){{
+        for(let s=1;s<=item.seasons;s++){
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }}
+        }
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }}
-    
+    }
     playBtn.onclick = ()=>openPlayer(item);
-    
-    function updateEpisodes(){{
+    function updateEpisodes(){
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){{
+        for(let e=1;e<=epCount;e++){
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function closeInfo(){{
+function closeInfo(){
     infoCard.style.display='none';
-}}
+}
 
-function openPlayer(item){{
+function openPlayer(item){
     infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{
+    if(item.type==='tv'){
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}`;
-    }}
+        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}`;
+    }
     iframe.src = link;
-}}
+}
 
-function closePlayer(){{
+function closePlayer(){
     overlay.style.display='none';
     iframe.src='';
-}}
+}
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){{
-    if(reset){{grid.innerHTML='';shown=0;}}
+function render(reset=false){
+    if(reset){grid.innerHTML='';shown=0;}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){{
+    while(shown<currentList.length && count<40){
         let m=currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
-            let badgeClass = m.vote >= 7 ? 'green' : (m.vote >= 5 ? 'yellow' : 'red');
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
             const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge ${{badgeClass}}'>${{m.vote}}</div>`;
+            let badgeClass = m.vote>=7?"green":m.vote>=4?"yellow":"red";
+            card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge ${badgeClass}'>${m.vote}</div>`;
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
             count++;
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function populateGenres(){{
+function populateGenres(){
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
-}}
+    [...set].sort().forEach(g){ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }
+}
 
-function updateType(t){{
+function updateType(t){
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}}
+}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
@@ -274,11 +274,9 @@ def main():
     api_key = get_api_key()
     entries = []
     latest_entries = ""
-
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
         ids = extract_ids(data)
-
         for idx, tmdb_id in enumerate(ids):
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
@@ -286,7 +284,6 @@ def main():
                 info = None
             if not info:
                 continue
-
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
             genres = [g["name"] for g in info.get("genres", [])]
@@ -294,18 +291,10 @@ def main():
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
             seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
-            episodes = {
-    str(s["season_number"]): s.get("episode_count", 1)
-    for s in info.get("seasons", []) if s.get("season_number")
-} if type_ == "tv" else {}
+            episodes = {str(s.get("season_number")): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")} if type_=="tv" else {}
             duration = info.get("runtime") if type_=="movie" else None
-            year = None
-            if type_=="movie" and info.get("release_date"):
-                year = info["release_date"].split("-")[0]
-            elif type_=="tv" and info.get("first_air_date"):
-                year = info["first_air_date"].split("-")[0]
-
-            entries.append({{
+            year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -318,11 +307,9 @@ def main():
                 "episodes": episodes,
                 "duration": duration,
                 "year": year
-            }})
-
-            if idx < 10:  # ultime novità
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
-
+            })
+            if idx < 10:
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
