@@ -314,6 +314,7 @@ def main():
 })
 
             if idx < 10:  # ultime novità
+    html = f"""
     <div class='latest-card' onclick="openInfo({{
         id: '{tmdb_id}',
         title: `{title.replace("'", "\\'")}`,
