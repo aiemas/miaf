@@ -295,7 +295,7 @@ def main():
             episodes = {
                 str(s["season_number"]): s.get("episode_count", 1)
                 for s in info.get("seasons", []) if s.get("season_number") is not None
-            } if type_ == "tv" else {{}}
+            } if type_ == "tv" else {}
             duration = info.get("runtime") if type_=="movie" else None
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
