@@ -87,6 +87,9 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #infoCard p{{margin:5px 0;}}
 #infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
+#latest::-webkit-scrollbar {{display: none;}}
+#latest {{-ms-overflow-style: none;  /* IE/Edge */scrollbar-width: none;     /* Firefox *}}
+
 #latest .poster{{width:100px;flex-shrink:0;}}
 </style>
 </head>
