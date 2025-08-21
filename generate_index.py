@@ -225,13 +225,17 @@ function render(reset=false){{
         let m=currentList[shown++];
         if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
             const card=document.createElement('div'); card.className='card';
-            card_html = f'''
-<img class=\'poster\' src=\'{m['poster']}\' alt=\'{m['title']}\'>
-<div class=\'badge\'>{m['vote']}</div>
-<p style="margin:2px 0;font-size:12px;color:#ccc;">
-${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
-</p>
-'''
+            card_html = f"""
+...
+card.innerHTML = `
+  <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+  <div class='badge'>${{m.vote}}</div>
+  <p style="margin:2px 0;font-size:12px;color:#ccc;">
+    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
+  </p>
+`;
+...
+"""
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
             count++;
