@@ -10,6 +10,7 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Clic su locandina apre scheda info con play
 - Lazy load: mostra 40 titoli per volta
 - Per le Serie: tendine per stagione ed episodio
+- Ultime novità con scroll automatico
 """
 
 import os
@@ -50,7 +51,7 @@ def extract_ids(data):
             if key in item and item[key]:
                 ids.append(str(item[key]))
                 break
-    return ids  # non sorted, mantiene ordine Vix
+    return ids  # mantiene ordine Vix
 
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
@@ -60,7 +61,8 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     r.raise_for_status()
     return r.json()
 
-def build_html(entries, latest):
+def build_html(entries, latest_entries):
+    # latest_entries è lista di dict già pronta
     html = f"""<!doctype html>
 <html lang="it">
 <head>
@@ -80,21 +82,19 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:80%;height:60%;border:none;}}
-#playerOverlay button{{position:absolute;top:10px;right:10px;font-size:24px;padding:5px 10px;background:#e50914;border:none;color:#fff;cursor:pointer;}}
+#playerOverlay button{{position:absolute;top:10px;right:10px;padding:8px 12px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
 #infoCard p{{margin:5px 0;}}
-#infoCard select{{margin:5px 5px 0 0;padding:5px;border-radius:4px;border:none;}}
 #infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #infoCard button.closeBtn{{position:absolute;top:10px;right:10px;font-size:18px;background:transparent;border:none;color:#fff;}}
-#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior:smooth;}}
+#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;}}
 #latest .poster{{width:100px;flex-shrink:0;}}
 </style>
 </head>
 <body>
 <h1>Ultime Novità</h1>
 <div id="latest">
-{latest}
 </div>
 
 <h1>Movies & Series</h1>
@@ -107,7 +107,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <button id='loadMore'>Carica altri</button>
 
 <div id='playerOverlay'>
-<button onclick="closePlayer()">×</button>
+<button onclick="closePlayer()">X</button>
 <iframe allowfullscreen></iframe>
 </div>
 
@@ -124,35 +124,51 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <script>
 const allData = {entries};
+const latestData = {latest_entries};
 
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
+const seasonSelect=document.getElementById('seasonSelect');
+const episodeSelect=document.getElementById('episodeSelect');
 const infoCard = document.getElementById('infoCard');
 const infoTitle = document.getElementById('infoTitle');
 const infoGenres = document.getElementById('infoGenres');
 const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
-const seasonSelect = document.getElementById('seasonSelect');
-const episodeSelect = document.getElementById('episodeSelect');
 const latestDiv = document.getElementById('latest');
 
 function sanitizeUrl(url){
-    if(!url) return "";
-    if(url.startsWith("https://jepsauveel.net/")) return "";
-    return url;
+    if not url:
+        return ""
+    if url.startswith("https://jepsauveel.net/"):
+        return ""
+    return url
 }
 
-// Auto-scroll ultime novità
-let scrollPos = 0;
-function autoScroll(){
-    scrollPos += 1;
-    if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-    latestDiv.scrollLeft = scrollPos;
+function showLatest(){
+    latestDiv.innerHTML="";
+    latestData.forEach(item=>{
+        const img=document.createElement('img');
+        img.src=item.poster;
+        img.alt=item.title;
+        img.className='poster';
+        img.onclick=()=>openInfo(item);
+        latestDiv.appendChild(img);
+    });
+    // scroll automatico
+    let scrollAmount = 0;
+    function autoScroll(){
+        scrollAmount += 1;
+        if(scrollAmount > latestDiv.scrollWidth - latestDiv.clientWidth){
+            scrollAmount = 0;
+        }
+        latestDiv.scrollTo({left: scrollAmount, behavior: 'smooth'});
+        requestAnimationFrame(autoScroll);
+    }
     requestAnimationFrame(autoScroll);
 }
-autoScroll();
 
 function openInfo(item){
     infoCard.style.display='block';
@@ -160,45 +176,73 @@ function openInfo(item){
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
-    seasonSelect.innerHTML="";
-    episodeSelect.innerHTML="";
-    if(item.type==='tv' && item.seasons>0){
-        for(let s=1;s<=item.seasons;s++){
-            const opt = document.createElement('option');
-            opt.value=s; opt.textContent="Stagione "+s;
-            seasonSelect.appendChild(opt);
+
+    // Serie TV: popola tendine stagione/episodio
+    if(item.type==='tv'){
+        seasonSelect.innerHTML='';
+        episodeSelect.innerHTML='';
+        for(let s in item.episodes){
+            const o=document.createElement('option');
+            o.value=o.textContent="Stagione "+s;
+            seasonSelect.appendChild(o);
         }
-        populateEpisodes(1, item);
-        seasonSelect.onchange=()=>populateEpisodes(parseInt(seasonSelect.value), item);
+        seasonSelect.onchange = populateEpisodes;
+        populateEpisodes();
+    } else {
+        seasonSelect.innerHTML=''; episodeSelect.innerHTML='';
     }
+
     playBtn.onclick = ()=>openPlayer(item);
 }
 
-function populateEpisodes(season,item){
-    episodeSelect.innerHTML="";
-    const epCount = item.episodes[season] || 1;
-    for(let e=1;e<=epCount;e++){
-        const opt = document.createElement('option');
-        opt.value=e; opt.textContent="Episodio "+e;
-        episodeSelect.appendChild(opt);
+function populateEpisodes(){
+    episodeSelect.innerHTML='';
+    const selectedSeason = seasonSelect.selectedIndex+1;
+    const count = allData.find(x=>x.type==='tv' && x.id==document.getElementById('infoTitle').textContent).episodes[selectedSeason] || 1;
+    for(let e=1;e<=count;e++){
+        const o=document.createElement('option');
+        o.value=o.textContent="Episodio "+e;
+        episodeSelect.appendChild(o);
     }
 }
 
-function closeInfo(){ infoCard.style.display='none'; }
+function closeInfo(){
+    infoCard.style.display='none';
+}
 
 function openPlayer(item){
     infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){
-        const season = seasonSelect.value || 1;
-        const episode = episodeSelect.value || 1;
+        const season = seasonSelect.selectedIndex+1;
+        const episode = episodeSelect.selectedIndex+1;
         link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}`;
     }
     iframe.src = link;
 }
 
-function closePlayer(){ overlay.style.display='none'; iframe.src=''; }
+function closePlayer(){
+    overlay.style.display='none';
+    iframe.src='';
+}
+
+function render(reset=false){
+    if(reset){grid.innerHTML='';shown=0;}
+    let count=0;
+    let s=document.getElementById('searchBox').value.toLowerCase();
+    let g=document.getElementById('genreSelect').value;
+    while(shown<currentList.length && count<40){
+        let m=currentList[shown++];
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
+            const card=document.createElement('div'); card.className='card';
+            card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>${m.vote}</div>`;
+            card.onclick=()=>openInfo(m);
+            grid.appendChild(card);
+            count++;
+        }
+    }
+}
 
 let currentType='movie', currentList=[], shown=0;
 
@@ -216,29 +260,13 @@ function updateType(t){
     render(true);
 }
 
-function render(reset=false){
-    if(reset){grid.innerHTML='';shown=0;}
-    let count=0;
-    const s=document.getElementById('searchBox').value.toLowerCase();
-    const g=document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){
-        let m=currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
-            const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>${m.vote}</div>`;
-            card.onclick=()=>openInfo(m);
-            grid.appendChild(card);
-            count++;
-        }
-    }
-}
-
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 
 updateType('movie');
+showLatest();
 </script>
 </body>
 </html>
@@ -248,17 +276,19 @@ updateType('movie');
 def main():
     api_key = get_api_key()
     entries = []
-    latest_html = ""
+    latest_entries = []
 
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
         ids = extract_ids(data)
+
         for idx, tmdb_id in enumerate(ids):
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
             except:
                 info = None
-            if not info: continue
+            if not info:
+                continue
 
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
@@ -266,10 +296,10 @@ def main():
             vote = info.get("vote_average", 0)
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
-            seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
-            episodes = {str(s["season_number"]): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")} if type_=="tv" else {}
+            seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
+            episodes = { str(s["season_number"]): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number") } if type_=="tv" else {}
 
-            entries.append({
+            entry = {
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -280,15 +310,21 @@ def main():
                 "type": type_,
                 "seasons": seasons,
                 "episodes": episodes
-            })
+            }
+            entries.append(entry)
 
-            if idx < 10:  # prime 10 locandine per ultime novità
-                latest_html += f"<img class='poster' src='{poster}' title='{title}'>\n"
+            # Primi 10 per ultime novità
+            if idx < 10:
+                latest_entries.append({
+                    "poster": poster,
+                    "title": title,
+                    "link": link
+                })
 
-    html = build_html(entries, latest_html)
-    with open(OUTPUT_HTML,"w",encoding="utf-8") as f:
+    html = build_html(entries, latest_entries)
+    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi")
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi, ultime novità: {len(latest_entries)}")
 
 if __name__=="__main__":
     main()
