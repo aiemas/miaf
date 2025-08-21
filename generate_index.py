@@ -67,7 +67,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
 
 
 def build_html(entries, latest):
-    html = f"""<!doctype html>
+    html = """<!doctype html>
 <html lang="it">
 <head>
 <meta charset='utf-8'>
@@ -274,7 +274,7 @@ renderLatest();
 </body>
 </html>
 """
-    return html
+    return html.replace("{entries}", str(entries)).replace("{latest}", str(latest))
 
 
 def main():
