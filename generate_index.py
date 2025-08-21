@@ -2,21 +2,20 @@
 """
 generate_index.py
 
-- Locandine (griglia principale compatta)
-- Badge voto circolare
-- Scheda info in overlay (poster + overview + pulsante Play)
-- Sezione "Ultime uscite" (fila orizzontale scorrevole, locandine più piccole)
-- Player in overlay (serie con selettori stagione/episodio)
-- Blocco root pubblicità (jepsauveel.net)
+Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
+- Film e Serie TV
+- Ricerca per titolo
+- Filtro per genere
+- Clic su locandina apre scheda info overlay
+- Play apre il player overlay
+- Lazy load: mostra 40 titoli per volta
+- Ultime uscite scorrevoli in alto
 """
 
 import os
 import sys
-import json
 import requests
-from datetime import datetime
 
-# --- Config ---
 SRC_URLS = {
     "movie": "https://vixsrc.to/api/list/movie?lang=it",
     "tv": "https://vixsrc.to/api/list/tv?lang=it"
@@ -24,7 +23,6 @@ SRC_URLS = {
 TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
-VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
 OUTPUT_HTML = "index.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
@@ -65,257 +63,183 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     return r.json()
 
 
-def build_html(entries_json, latest_json):
-    html = """<!doctype html>
+def build_html(entries, latest):
+    html = f"""<!doctype html>
 <html lang="it">
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Movies & Series</title>
 <style>
-body{font-family:Arial,sans-serif;background:#000;color:#fff;margin:0;padding:20px;}
-h1{color:#fff;text-align:center;margin-bottom:20px;}
-h2{color:#e50914;margin-top:30px;margin-bottom:10px;}
-.controls{display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;}
-input,select{padding:8px;font-size:14px;border-radius:4px;border:none;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
-.card{position:relative;cursor:pointer;}
-.poster{width:100%;border-radius:6px;display:block;}
-.badge{position:absolute;bottom:8px;right:8px;width:36px;height:36px;border-radius:50%;
-       display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:bold;color:#fff;}
-#loadMore{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}
-#playerOverlay,#infoOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);
-  display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}
-#playerOverlay iframe{width:80%;height:80%;border:none;}
-.closeBtn{position:absolute;top:20px;right:40px;font-size:30px;background:transparent;border:none;color:#fff;cursor:pointer;}
-#episodeControls{margin-bottom:10px;color:#fff;}
-#episodeControls select{margin:0 5px;}
-.infoCard{background:#111;padding:20px;border-radius:8px;max-width:600px;max-height:80%;overflow:auto;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
-.infoCard img{max-width:200px;border-radius:6px;margin-bottom:10px;}
-.playBtn{margin-top:15px;padding:10px 20px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:16px;}
-.title{font-size:12px;margin-top:4px;color:#ddd;text-align:center;}
-
-/* Ultime uscite scorrevoli */
-#latestGrid{display:flex;overflow-x:auto;gap:8px;padding-bottom:10px;}
-#latestGrid .card{flex:0 0 auto;width:120px;}
-#latestGrid .poster{width:100%;}
+body{{font-family:Arial,sans-serif;background:#000;color:#fff;margin:0;padding:20px;}}
+h1{{color:#fff;text-align:center;margin-bottom:10px;}}
+.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
+input,select{{padding:6px;font-size:13px;border-radius:4px;border:none;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}}
+.card{{position:relative;cursor:pointer;}}
+.poster{{width:100%;border-radius:6px;display:block;}}
+.badge{{position:absolute;top:8px;right:8px;width:30px;height:30px;background:#e50914;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;}}
+#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
+#playerOverlay,#infoOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
+#playerOverlay iframe{{width:80%;height:60%;border:none;border-radius:6px;}}
+#infoOverlay .infoBox{{background:#111;color:#fff;padding:20px;border-radius:8px;max-width:600px;width:90%;text-align:left;position:relative;}}
+#infoOverlay button.closeBtn,#infoOverlay button.playBtn{{position:absolute;top:10px;font-size:18px;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;}}
+#infoOverlay button.closeBtn{{right:10px;background:#e50914;color:#fff;}}
+#infoOverlay button.playBtn{{right:70px;background:#1db954;color:#fff;}}
+#latest{{display:flex;overflow-x:auto;gap:8px;margin-bottom:20px;padding-bottom:10px;}}
+#latest .poster{{width:100px;flex-shrink:0;}}
 </style>
 </head>
 <body>
-<h1>Movies & Series</h1>
-
-<script id="allData" type="application/json">__ENTRIES_JSON__</script>
-<script id="latestData" type="application/json">__LATEST_JSON__</script>
-
-<h2>Ultime uscite</h2>
-<div id='latestGrid'></div>
-
-<div class='controls'>
-  <select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
-  <select id='genreSelect'><option value='all'>Tutti i generi</option></select>
-  <input type='text' id='searchBox' placeholder='Cerca...'>
+<h1>Ultime Uscite</h1>
+<div id="latest">
+{latest}
 </div>
 
+<div class='controls'>
+<select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
+<select id='genreSelect'><option value='all'>Tutti i generi</option></select>
+<input type='text' id='searchBox' placeholder='Cerca...'>
+</div>
 <div id='moviesGrid' class='grid'></div>
 <button id='loadMore'>Carica altri</button>
 
 <div id='infoOverlay'>
-  <div class='infoCard'>
-    <button class='closeBtn' onclick='closeInfo()'>×</button>
-    <img id='infoPoster' alt='poster'>
-    <h2 id='infoTitle'></h2>
-    <p id='infoOverview'></p>
-    <button class='playBtn' onclick='startPlayer()'>▶ Play</button>
-  </div>
+<div class="infoBox">
+<h2 id="infoTitle"></h2>
+<p id="infoGenres"></p>
+<p id="infoVote"></p>
+<p id="infoOverview"></p>
+<button class="playBtn" onclick="playMovie(currentInfo)">▶ Play</button>
+<button class="closeBtn" onclick="closeInfo()">×</button>
+</div>
 </div>
 
 <div id='playerOverlay'>
-  <div id='episodeControls' style='display:none;'>
-    Stagione: <select id='seasonSelect'></select>
-    Episodio: <select id='episodeSelect'></select>
-  </div>
-  <button class='closeBtn' onclick='closePlayer()'>×</button>
-  <iframe allowfullscreen></iframe>
+<iframe allowfullscreen></iframe>
+<button class='closeBtn' onclick='closePlayer()'>×</button>
 </div>
 
 <script>
-function readJSON(id){
-  const el = document.getElementById(id);
-  try { return JSON.parse(el.textContent); } catch(e){ console.error("JSON parse error", id, e); return []; }
-}
-const allData   = readJSON("allData");
-const latestData= readJSON("latestData");
-
-function sanitizeUrl(url){ if(!url) return ""; if(url.startsWith("https://jepsauveel.net/")){ console.log("Bloccata pubblicità:", url); return ""; } return url; }
-
-let currentType='movie', currentList=[], shown=0, step=40, currentShow=null, playTarget=null;
+const allData = {entries};
+let currentType='movie',currentList=[],shown=0,step=40,currentShow=null,currentInfo=null;
 const grid=document.getElementById('moviesGrid');
-const latestGrid=document.getElementById('latestGrid');
 const overlay=document.getElementById('playerOverlay');
-const iframe=overlay.querySelector('iframe');
-const seasonSelect=document.getElementById('seasonSelect');
-const episodeSelect=document.getElementById('episodeSelect');
-const epControls=document.getElementById('episodeControls');
 const infoOverlay=document.getElementById('infoOverlay');
-const infoPoster=document.getElementById('infoPoster');
-const infoTitle=document.getElementById('infoTitle');
-const infoOverview=document.getElementById('infoOverview');
+const iframe=overlay.querySelector('iframe');
 
-function voteColor(v){if(v>=7)return"#21d07a";if(v>=5)return"#d2d531";return"#db2360";}
+function sanitizeUrl(url){{
+    if(url.startsWith("https://jepsauveel.net/")) return "";
+    return url;
+}}
 
-function openInfo(item){
-  playTarget=item;
-  infoPoster.src=item.poster||"";
-  infoTitle.textContent=item.title||"";
-  infoOverview.textContent=item.overview||"Nessuna descrizione disponibile.";
-  infoOverlay.style.display='flex';
-}
+function showInfo(item){{
+    currentInfo=item;
+    document.getElementById("infoTitle").textContent = item.title;
+    document.getElementById("infoGenres").textContent = "Generi: " + item.genres.join(", ");
+    document.getElementById("infoVote").textContent = "Voto: " + item.vote;
+    document.getElementById("infoOverview").textContent = item.overview || "";
+    infoOverlay.style.display='flex';
+}}
 
-function closeInfo(){infoOverlay.style.display='none'; playTarget=null;}
+function closeInfo(){{
+    infoOverlay.style.display='none';
+}}
 
-function startPlayer(){if(playTarget){closeInfo(); openPlayer(playTarget);}}
+function playMovie(item){{
+    iframe.src = sanitizeUrl(item.link);
+    overlay.style.display='flex';
+}}
 
-function openPlayer(item){
-  overlay.style.display='flex';
-  currentShow=item;
-  if(item.type==='movie'){
-    epControls.style.display='none';
-    iframe.src=sanitizeUrl(item.link);
-  } else {
-    epControls.style.display='block';
-    seasonSelect.innerHTML='';
-    for(let s=1; s<=(item.seasons||1); s++){let o=document.createElement('option');o.value=s;o.text='S'+s;seasonSelect.appendChild(o);}
-    seasonSelect.onchange=()=>populateEpisodes(item);
-    episodeSelect.onchange=()=>loadEpisode(item);
-    seasonSelect.value=1; populateEpisodes(item);
-  }
-}
+function closePlayer(){{
+    overlay.style.display='none';
+    iframe.src='';
+}}
 
-function populateEpisodes(item){
-  episodeSelect.innerHTML='';
-  const s=String(seasonSelect.value);
-  const eps=(item.episodes&&item.episodes[s])?item.episodes[s]:1;
-  for(let e=1;e<=eps;e++){let o=document.createElement('option');o.value=e;o.text='E'+e;episodeSelect.appendChild(o);}
-  episodeSelect.value=1;
-  loadEpisode(item);
-}
+function render(reset=false){{
+    if(reset){{grid.innerHTML=''; shown=0;}}
+    let count=0;
+    const s=document.getElementById('searchBox').value.toLowerCase();
+    const g=document.getElementById('genreSelect').value;
+    while(shown<currentList.length && count<step){{
+        const m=currentList[shown++];
+        if((g==='all'||m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
+            const card=document.createElement('div'); card.className='card';
+            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>${{m.vote}}</div>`;
+            card.onclick=()=>showInfo(m);
+            grid.appendChild(card);
+            count++;
+        }}
+    }}
+}}
 
-function loadEpisode(item){
-  const s=seasonSelect.value,e=episodeSelect.value;
-  iframe.src=sanitizeUrl(`https://vixsrc.to/tv/${item.id}/${s}/${e}`);
-}
+function populateGenres(){{
+    const set=new Set();
+    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g=>{{const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o);}});
+}}
 
-function closePlayer(){overlay.style.display='none'; iframe.src=''; currentShow=null;}
-
-function cardHTML(m){
-  const v=(m.vote!=null)?m.vote:"";
-  return `<div class='card'><img class='poster' src='${m.poster||""}' alt='${m.title||""}'><div class='badge' style='background:${voteColor(v)}'>${v}</div></div>`;
-}
-
-function render(reset=false){
-  if(reset){grid.innerHTML=''; shown=0;}
-  let count=0;
-  const s=document.getElementById('searchBox').value.toLowerCase();
-  const g=document.getElementById('genreSelect').value;
-  while(shown<currentList.length&&count<step){
-    const m=currentList[shown++];
-    if((g==='all'||(m.genres||[]).includes(g)) && (m.title||"").toLowerCase().includes(s)){
-      const wrap=document.createElement('div');
-      wrap.innerHTML=cardHTML(m);
-      const card=wrap.firstElementChild;
-      card.onclick=()=>openInfo(m);
-      grid.appendChild(card);
-      count++;
-    }
-  }
-}
-
-function renderLatest(){
-  latestGrid.innerHTML="";
-  latestData.forEach(m=>{
-    const wrap=document.createElement('div');
-    wrap.innerHTML=cardHTML(m);
-    const card=wrap.firstElementChild;
-    card.onclick=()=>openInfo(m);
-    latestGrid.appendChild(card);
-  });
-}
-
-function populateGenres(){
-  const set=new Set(); currentList.forEach(m=>(m.genres||[]).forEach(g=>set.add(g)));
-  const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-  [...set].sort().forEach(g=>{const o=document.createElement('option');o.value=o.textContent=g;sel.appendChild(o);});
-}
-
-function updateType(t){currentType=t; currentList=allData.filter(x=>x.type===t); populateGenres(); render(true);}
+function updateType(t){{
+    currentType=t;
+    currentList=allData.filter(x=>x.type===t);
+    populateGenres();
+    render(true);
+}}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 
+// Scroll automatico ultime uscite
+const latestDiv = document.getElementById('latest');
+let scrollPos=0;
+setInterval(()=>{{scrollPos+=1; latestDiv.scrollLeft=scrollPos; if(scrollPos>=latestDiv.scrollWidth-latestDiv.clientWidth) scrollPos=0;}},50);
+
 updateType('movie');
-renderLatest();
 </script>
 </body>
 </html>
 """
-    return html.replace("__ENTRIES_JSON__", entries_json).replace("__LATEST_JSON__", latest_json)
+    return html
 
 
 def main():
     api_key = get_api_key()
     entries = []
-
+    latest_html = ""
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
         ids = extract_ids(data)
         for tmdb_id in ids:
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
-            except Exception as e:
-                print(f"Errore TMDb {tmdb_id}: {e}", file=sys.stderr)
+            except:
                 info = None
-            if not info:
-                continue
+            if not info: continue
 
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
             genres = [g["name"] for g in info.get("genres", [])]
-            vote = round(info.get("vote_average", 0) or 0, 1)
-            overview = info.get("overview", "") or ""
-            release_date = info.get("release_date") or info.get("first_air_date") or "1900-01-01"
+            vote = info.get("vote_average", 0)
+            overview = info.get("overview", "")
 
-            if type_ == "movie":
-                link = VIX_LINK_MOVIE.format(tmdb_id)
-                seasons, episodes = 0, {}
-            else:
-                link = ""
-                seasons = info.get("number_of_seasons", 1) or 1
-                episodes = {str(s["season_number"]): s.get("episode_count",1) for s in (info.get("seasons",[]) or []) if s.get("season_number") is not None}
+            link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
+            seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
+            episodes = {str(s["season_number"]): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")} if type_=="tv" else {}
 
-            entries.append({
-                "id": tmdb_id,
-                "title": title,
-                "poster": poster,
-                "genres": genres,
-                "vote": vote,
-                "overview": overview,
-                "release_date": release_date,
-                "link": link,
-                "type": type_,
-                "seasons": seasons,
-                "episodes": episodes
-            })
+            entries.append({"id":tmdb_id,"title":title,"poster":poster,"genres":genres,"vote":vote,"overview":overview,"link":link,"type":type_,"seasons":seasons,"episodes":episodes})
 
-    # Ordina le ultime uscite per data di rilascio decrescente
-    latest = sorted(entries, key=lambda x: x["release_date"], reverse=True)[:20]
+            # ultime uscite solo film per esempio (puoi personalizzare)
+            if type_=="movie":
+                latest_html += f"<img class='poster' src='{poster}' title='{title}'>\n"
 
-    html = build_html(json.dumps(entries), json.dumps(latest))
-    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
+    html = build_html(entries, latest_html)
+    with open(OUTPUT_HTML,"w",encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi, ultime 20 uscite incluse.")
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi")
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
