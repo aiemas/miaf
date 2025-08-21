@@ -1,7 +1,7 @@
-# config.yml
+# tvmov.yml
 
 project:
-  name: "tvmov"
+  name: "Movie & Series Generator"
   description: "Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix."
 
 api:
@@ -12,7 +12,7 @@ api:
     tv: "https://vixsrc.to/api/list/tv?lang=it"
 
 html:
-  output_file: "movies_miniplayers.html"
+  output_file: "tmov.html"
   title: "Movies & Series"
   stylesheet:
     body: 
