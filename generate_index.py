@@ -2,14 +2,14 @@
 """
 generate_index.py
 
-Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
-- Film e Serie TV
+Pagina HTML con locandine da TMDb (film e serie).
 - Ricerca per titolo
 - Filtro per genere
-- Clic su locandina apre scheda info overlay
-- Play apre il player overlay
-- Lazy load: mostra 40 titoli per volta
-- Ultime uscite scorrevoli in alto
+- Clic locandina apre scheda info overlay
+- Play apre player overlay (film e serie)
+- Lazy load
+- Ultime uscite scorrevoli
+- Hover animato locandine
 """
 
 import os
@@ -23,6 +23,7 @@ SRC_URLS = {
 TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
+VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
 OUTPUT_HTML = "index.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
@@ -63,7 +64,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     return r.json()
 
 
-def build_html(entries, latest):
+def build_html(entries, latest_html):
     html = f"""<!doctype html>
 <html lang="it">
 <head>
@@ -71,29 +72,32 @@ def build_html(entries, latest):
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Movies & Series</title>
 <style>
-body{{font-family:Arial,sans-serif;background:#000;color:#fff;margin:0;padding:20px;}}
-h1{{color:#fff;text-align:center;margin-bottom:10px;}}
+body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
+h1{{color:#e50914;text-align:center;margin-bottom:10px;}}
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
 input,select{{padding:6px;font-size:13px;border-radius:4px;border:none;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;}}
+.card{{position:relative;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s;}}
+.card:hover{{transform:scale(1.08);box-shadow:0 4px 12px rgba(255,255,255,0.3);}}
 .poster{{width:100%;border-radius:6px;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;width:30px;height:30px;background:#e50914;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:bold;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
-#playerOverlay,#infoOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
+#playerOverlay,#infoOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:80%;height:60%;border:none;border-radius:6px;}}
-#infoOverlay .infoBox{{background:#111;color:#fff;padding:20px;border-radius:8px;max-width:600px;width:90%;text-align:left;position:relative;}}
+#infoOverlay .infoBox{{background:#222;color:#fff;padding:20px;border-radius:8px;max-width:600px;width:90%;text-align:left;position:relative;}}
 #infoOverlay button.closeBtn,#infoOverlay button.playBtn{{position:absolute;top:10px;font-size:18px;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;}}
 #infoOverlay button.closeBtn{{right:10px;background:#e50914;color:#fff;}}
 #infoOverlay button.playBtn{{right:70px;background:#1db954;color:#fff;}}
 #latest{{display:flex;overflow-x:auto;gap:8px;margin-bottom:20px;padding-bottom:10px;}}
-#latest .poster{{width:100px;flex-shrink:0;}}
+#latest .poster{{width:100px;flex-shrink:0;border-radius:4px;}}
+select{{background:#333;color:#fff;}}
+input{{background:#333;color:#fff;}}
 </style>
 </head>
 <body>
 <h1>Ultime Uscite</h1>
 <div id="latest">
-{latest}
+{latest_html}
 </div>
 
 <div class='controls'>
@@ -110,7 +114,11 @@ input,select{{padding:6px;font-size:13px;border-radius:4px;border:none;}}
 <p id="infoGenres"></p>
 <p id="infoVote"></p>
 <p id="infoOverview"></p>
-<button class="playBtn" onclick="playMovie(currentInfo)">▶ Play</button>
+<div id="seasonEpisodeControls" style="display:none;">
+Stagione: <select id="seasonSelect"></select>
+Episodio: <select id="episodeSelect"></select>
+</div>
+<button class="playBtn" onclick="playItem(currentInfo)">▶ Play</button>
 <button class="closeBtn" onclick="closeInfo()">×</button>
 </div>
 </div>
@@ -121,12 +129,15 @@ input,select{{padding:6px;font-size:13px;border-radius:4px;border:none;}}
 </div>
 
 <script>
-const allData = {entries};
-let currentType='movie',currentList=[],shown=0,step=40,currentShow=null,currentInfo=null;
+const allData={entries};
+let currentType='movie',currentList=[],shown=0,step=40,currentInfo=null;
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const infoOverlay=document.getElementById('infoOverlay');
 const iframe=overlay.querySelector('iframe');
+const seasonSelect=document.getElementById('seasonSelect');
+const episodeSelect=document.getElementById('episodeSelect');
+const seControls=document.getElementById('seasonEpisodeControls');
 
 function sanitizeUrl(url){{
     if(url.startsWith("https://jepsauveel.net/")) return "";
@@ -135,10 +146,22 @@ function sanitizeUrl(url){{
 
 function showInfo(item){{
     currentInfo=item;
-    document.getElementById("infoTitle").textContent = item.title;
-    document.getElementById("infoGenres").textContent = "Generi: " + item.genres.join(", ");
-    document.getElementById("infoVote").textContent = "Voto: " + item.vote;
-    document.getElementById("infoOverview").textContent = item.overview || "";
+    document.getElementById("infoTitle").textContent=item.title;
+    document.getElementById("infoGenres").textContent="Generi: "+item.genres.join(", ");
+    document.getElementById("infoVote").textContent="Voto: "+item.vote;
+    document.getElementById("infoOverview").textContent=item.overview||"";
+    if(item.type==='tv'){{
+        seControls.style.display='block';
+        seasonSelect.innerHTML="";
+        for(let s=1;s<=item.seasons;s++){{
+            let o=document.createElement('option'); o.value=s; o.text='S'+s; seasonSelect.appendChild(o);
+        }}
+        seasonSelect.onchange=populateEpisodes;
+        episodeSelect.onchange=()=>{{loadEpisode(item);}};
+        seasonSelect.value=1; populateEpisodes();
+    }}else{{
+        seControls.style.display='none';
+    }}
     infoOverlay.style.display='flex';
 }}
 
@@ -146,9 +169,29 @@ function closeInfo(){{
     infoOverlay.style.display='none';
 }}
 
-function playMovie(item){{
-    iframe.src = sanitizeUrl(item.link);
+function populateEpisodes(){{
+    let s=parseInt(seasonSelect.value);
+    let eps=currentInfo.episodes[s]||1;
+    episodeSelect.innerHTML="";
+    for(let e=1;e<=eps;e++){{
+        let o=document.createElement('option'); o.value=e; o.text='E'+e; episodeSelect.appendChild(o);
+    }}
+    episodeSelect.value=1;
+}}
+
+function loadEpisode(item){{
+    let s=seasonSelect.value,e=episodeSelect.value;
+    iframe.src=sanitizeUrl(`https://vixsrc.to/tv/${{item.id}}/${{s}}/${{e}}`);
     overlay.style.display='flex';
+}}
+
+function playItem(item){{
+    if(item.type==='movie'){{
+        iframe.src=sanitizeUrl(item.link);
+        overlay.style.display='flex';
+    }}else{{
+        loadEpisode(item);
+    }}
 }}
 
 function closePlayer(){{
@@ -192,8 +235,8 @@ document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 
-// Scroll automatico ultime uscite
-const latestDiv = document.getElementById('latest');
+// scroll ultime uscite
+const latestDiv=document.getElementById('latest');
 let scrollPos=0;
 setInterval(()=>{{scrollPos+=1; latestDiv.scrollLeft=scrollPos; if(scrollPos>=latestDiv.scrollWidth-latestDiv.clientWidth) scrollPos=0;}},50);
 
@@ -206,36 +249,33 @@ updateType('movie');
 
 
 def main():
-    api_key = get_api_key()
-    entries = []
-    latest_html = ""
-    for type_, url in SRC_URLS.items():
-        data = fetch_list(url)
-        ids = extract_ids(data)
-        for tmdb_id in ids:
-            try:
-                info = tmdb_get(api_key, type_, tmdb_id)
-            except:
-                info = None
+    api_key=get_api_key()
+    entries=[]
+    latest_html=""
+    for type_,url in SRC_URLS.items():
+        data=fetch_list(url)
+        ids=extract_ids(data)
+        # prendere ultime 10 per ultime uscite
+        for idx,tmdb_id in enumerate(ids):
+            try: info=tmdb_get(api_key,type_,tmdb_id)
+            except: info=None
             if not info: continue
 
-            title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
-            poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
-            genres = [g["name"] for g in info.get("genres", [])]
-            vote = info.get("vote_average", 0)
-            overview = info.get("overview", "")
-
-            link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
-            seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
-            episodes = {str(s["season_number"]): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")} if type_=="tv" else {}
+            title=info.get("title") or info.get("name") or f"ID {tmdb_id}"
+            poster=TMDB_IMAGE_BASE+info["poster_path"] if info.get("poster_path") else ""
+            genres=[g["name"] for g in info.get("genres",[])]
+            vote=info.get("vote_average",0)
+            overview=info.get("overview","")
+            link=VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
+            seasons=info.get("number_of_seasons",1) if type_=="tv" else 0
+            episodes={str(s["season_number"]): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")} if type_=="tv" else {}
 
             entries.append({"id":tmdb_id,"title":title,"poster":poster,"genres":genres,"vote":vote,"overview":overview,"link":link,"type":type_,"seasons":seasons,"episodes":episodes})
 
-            # ultime uscite solo film per esempio (puoi personalizzare)
-            if type_=="movie":
-                latest_html += f"<img class='poster' src='{poster}' title='{title}'>\n"
+            if type_=="movie" and idx<10: # ultime 10 film
+                latest_html+=f"<img class='poster' src='{poster}' title='{title}'>\n"
 
-    html = build_html(entries, latest_html)
+    html=build_html(entries,latest_html)
     with open(OUTPUT_HTML,"w",encoding="utf-8") as f:
         f.write(html)
     print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi")
