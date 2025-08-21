@@ -51,7 +51,7 @@ def extract_ids(data):
             if key in item and item[key]:
                 ids.append(str(item[key]))
                 break
-    return ids  # non sorted, manteniamo ordine Vix
+    return ids
 
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
@@ -63,7 +63,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
 
 def build_html(entries, latest_entries):
     html = f"""<!doctype html>
-<html lang="it">
+<html lang='it'>
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1'>
@@ -92,7 +92,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </head>
 <body>
 <h1>Ultime Novità</h1>
-<div id="latest">
+<div id='latest'>
 {latest_entries}
 </div>
 
@@ -239,7 +239,6 @@ function render(reset=false){{
         }}
     }}
 }}
-                                                                 }
 
 function populateGenres(){{
     const set=new Set();
@@ -286,35 +285,30 @@ def main():
                 continue
 
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
-poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
-genres = [g["name"] for g in info.get("genres", [])]
-vote = info.get("vote_average", 0)
-overview = info.get("overview", "")
-link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
-seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
-episodes = {
-    str(s["season_number"]): s.get("episode_count",1)
-    for s in info.get("seasons",[]) if s.get("season_number")
-} if type_=="tv" else {}
-
-# --- Nuove info ---
-duration = info.get("runtime", 0) if type_=="movie" else 0
-year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
+            poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
+            genres = [g["name"] for g in info.get("genres", [])]
+            vote = info.get("vote_average", 0)
+            overview = info.get("overview", "")
+            link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
+            seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
+            episodes = {str(s["season_number"]): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")} if type_=="tv" else {}
+            duration = info.get("runtime",0) if type_=="movie" else 0
+            year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
             entries.append({
-    "id": tmdb_id,
-    "title": title,
-    "poster": poster,
-    "genres": genres,
-    "vote": vote,
-    "overview": overview,
-    "link": link,
-    "type": type_,
-    "seasons": seasons,
-    "episodes": episodes,
-    "duration": info.get("runtime"),  # durata in minuti
-    "year": (info.get("release_date") or info.get("first_air_date") or "")[:4]
-})
+                "id": tmdb_id,
+                "title": title,
+                "poster": poster,
+                "genres": genres,
+                "vote": vote,
+                "overview": overview,
+                "link": link,
+                "type": type_,
+                "seasons": seasons,
+                "episodes": episodes,
+                "duration": duration,
+                "year": year
+            })
 
             if idx < 10:  # ultime novità
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
