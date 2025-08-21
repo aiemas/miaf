@@ -2,10 +2,10 @@
 """
 generate_index.py
 
-- Locandine (griglia compatta)
-- Badge voto circolare con colore dinamico
+- Locandine (griglia principale compatta)
+- Badge voto circolare
 - Scheda info in overlay (poster + overview + pulsante Play)
-- Sezione "Ultime uscite" (10 più recenti tra film/serie)
+- Sezione "Ultime uscite" (fila orizzontale scorrevole, locandine più piccole)
 - Player in overlay (serie con selettori stagione/episodio)
 - Blocco root pubblicità (jepsauveel.net)
 """
@@ -53,8 +53,6 @@ def extract_ids(data):
             if key in item and item[key]:
                 ids.append(str(item[key]))
                 break
-    # Se vuoi limitare per velocizzare i run, de-commenta la riga sotto (es. primi 300)
-    # ids = ids[:300]
     return sorted(set(ids), key=int)
 
 
@@ -68,7 +66,6 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
 
 
 def build_html(entries_json, latest_json):
-    # NOTA: Niente f-string qui. Usiamo placeholder speciali e poi .replace
     html = """<!doctype html>
 <html lang="it">
 <head>
@@ -78,8 +75,8 @@ def build_html(entries_json, latest_json):
 <style>
 body{font-family:Arial,sans-serif;background:#000;color:#fff;margin:0;padding:20px;}
 h1{color:#fff;text-align:center;margin-bottom:20px;}
-h2{color:#e50914;margin-top:30px;}
-.controls{display:flex;gap:10px;justify-content:center;margin:20px 0;}
+h2{color:#e50914;margin-top:30px;margin-bottom:10px;}
+.controls{display:flex;gap:10px;justify-content:center;margin:20px 0;flex-wrap:wrap;}
 input,select{padding:8px;font-size:14px;border-radius:4px;border:none;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
 .card{position:relative;cursor:pointer;}
@@ -96,19 +93,22 @@ input,select{padding:8px;font-size:14px;border-radius:4px;border:none;}
 .infoCard{background:#111;padding:20px;border-radius:8px;max-width:600px;max-height:80%;overflow:auto;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.5);}
 .infoCard img{max-width:200px;border-radius:6px;margin-bottom:10px;}
 .playBtn{margin-top:15px;padding:10px 20px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:16px;}
-/* Titolo sotto le locandine? (opzionale) */
 .title{font-size:12px;margin-top:4px;color:#ddd;text-align:center;}
+
+/* Ultime uscite scorrevoli */
+#latestGrid{display:flex;overflow-x:auto;gap:8px;padding-bottom:10px;}
+#latestGrid .card{flex:0 0 auto;width:120px;}
+#latestGrid .poster{width:100%;}
 </style>
 </head>
 <body>
 <h1>Movies & Series</h1>
 
-<!-- Dati JSON sicuri -->
 <script id="allData" type="application/json">__ENTRIES_JSON__</script>
 <script id="latestData" type="application/json">__LATEST_JSON__</script>
 
 <h2>Ultime uscite</h2>
-<div id='latestGrid' class='grid'></div>
+<div id='latestGrid'></div>
 
 <div class='controls'>
   <select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
@@ -146,14 +146,7 @@ function readJSON(id){
 const allData   = readJSON("allData");
 const latestData= readJSON("latestData");
 
-function sanitizeUrl(url) {
-  if (!url) return "";
-  if (url.startsWith("https://jepsauveel.net/")) {
-      console.log("Bloccata pubblicità:", url);
-      return "";
-  }
-  return url;
-}
+function sanitizeUrl(url){ if(!url) return ""; if(url.startsWith("https://jepsauveel.net/")){ console.log("Bloccata pubblicità:", url); return ""; } return url; }
 
 let currentType='movie', currentList=[], shown=0, step=40, currentShow=null, playTarget=null;
 const grid=document.getElementById('moviesGrid');
@@ -163,103 +156,74 @@ const iframe=overlay.querySelector('iframe');
 const seasonSelect=document.getElementById('seasonSelect');
 const episodeSelect=document.getElementById('episodeSelect');
 const epControls=document.getElementById('episodeControls');
-
 const infoOverlay=document.getElementById('infoOverlay');
 const infoPoster=document.getElementById('infoPoster');
 const infoTitle=document.getElementById('infoTitle');
 const infoOverview=document.getElementById('infoOverview');
 
-function voteColor(v){
-  if(v>=7) return "#21d07a"; // verde
-  if(v>=5) return "#d2d531"; // giallo
-  return "#db2360";          // rosso
-}
+function voteColor(v){if(v>=7)return"#21d07a";if(v>=5)return"#d2d531";return"#db2360";}
 
 function openInfo(item){
   playTarget=item;
-  infoPoster.src=item.poster || "";
-  infoTitle.textContent=item.title || "";
-  infoOverview.textContent=item.overview || "Nessuna descrizione disponibile.";
+  infoPoster.src=item.poster||"";
+  infoTitle.textContent=item.title||"";
+  infoOverview.textContent=item.overview||"Nessuna descrizione disponibile.";
   infoOverlay.style.display='flex';
 }
 
-function closeInfo(){
-  infoOverlay.style.display='none';
-  playTarget=null;
-}
+function closeInfo(){infoOverlay.style.display='none'; playTarget=null;}
 
-function startPlayer(){
-  if(playTarget) {
-    closeInfo();
-    openPlayer(playTarget);
-  }
-}
+function startPlayer(){if(playTarget){closeInfo(); openPlayer(playTarget);}}
 
 function openPlayer(item){
   overlay.style.display='flex';
   currentShow=item;
   if(item.type==='movie'){
     epControls.style.display='none';
-    iframe.src = sanitizeUrl(item.link);
-    if(iframe.requestFullscreen) iframe.requestFullscreen();
+    iframe.src=sanitizeUrl(item.link);
   } else {
     epControls.style.display='block';
     seasonSelect.innerHTML='';
-    for(let s=1; s<= (item.seasons||1); s++){
-      const o=document.createElement('option'); o.value=s; o.text='S'+s; seasonSelect.appendChild(o);
-    }
+    for(let s=1; s<=(item.seasons||1); s++){let o=document.createElement('option');o.value=s;o.text='S'+s;seasonSelect.appendChild(o);}
     seasonSelect.onchange=()=>populateEpisodes(item);
     episodeSelect.onchange=()=>loadEpisode(item);
     seasonSelect.value=1; populateEpisodes(item);
-    if(iframe.requestFullscreen) iframe.requestFullscreen();
   }
 }
 
 function populateEpisodes(item){
   episodeSelect.innerHTML='';
-  const s = String(seasonSelect.value);
-  const eps = (item.episodes && item.episodes[s]) ? item.episodes[s] : 1;
-  for(let e=1; e<=eps; e++){
-    const o=document.createElement('option'); o.value=e; o.text='E'+e; episodeSelect.appendChild(o);
-  }
+  const s=String(seasonSelect.value);
+  const eps=(item.episodes&&item.episodes[s])?item.episodes[s]:1;
+  for(let e=1;e<=eps;e++){let o=document.createElement('option');o.value=e;o.text='E'+e;episodeSelect.appendChild(o);}
   episodeSelect.value=1;
   loadEpisode(item);
 }
 
 function loadEpisode(item){
-  const s = seasonSelect.value, e = episodeSelect.value;
-  iframe.src = sanitizeUrl(`https://vixsrc.to/tv/${item.id}/${s}/${e}`);
+  const s=seasonSelect.value,e=episodeSelect.value;
+  iframe.src=sanitizeUrl(`https://vixsrc.to/tv/${item.id}/${s}/${e}`);
 }
 
-function closePlayer(){
-  overlay.style.display='none';
-  iframe.src='';
-  currentShow=null;
-}
+function closePlayer(){overlay.style.display='none'; iframe.src=''; currentShow=null;}
 
 function cardHTML(m){
-  const v = (m.vote != null) ? m.vote : "";
-  return `
-    <div class='card'>
-      <img class='poster' src='${m.poster||""}' alt='${m.title||""}'>
-      <div class='badge' style='background:${voteColor(v)}'>${v}</div>
-    </div>`;
+  const v=(m.vote!=null)?m.vote:"";
+  return `<div class='card'><img class='poster' src='${m.poster||""}' alt='${m.title||""}'><div class='badge' style='background:${voteColor(v)}'>${v}</div></div>`;
 }
 
 function render(reset=false){
-  if(reset){ grid.innerHTML=''; shown=0; }
+  if(reset){grid.innerHTML=''; shown=0;}
   let count=0;
   const s=document.getElementById('searchBox').value.toLowerCase();
   const g=document.getElementById('genreSelect').value;
-  while(shown<currentList.length && count<step){
+  while(shown<currentList.length&&count<step){
     const m=currentList[shown++];
-    const okGenre = (g==='all' || (m.genres||[]).includes(g));
-    const okText = (m.title||"").toLowerCase().includes(s);
-    if(okGenre && okText){
+    if((g==='all'||(m.genres||[]).includes(g)) && (m.title||"").toLowerCase().includes(s)){
       const wrap=document.createElement('div');
-      wrap.innerHTML = cardHTML(m);
-      const card = wrap.firstElementChild;
-      card.onclick = ()=>openInfo(m);
+      wrap.innerHTML=cardHTML(m);
+      const card=wrap.firstElementChild;
+      card.onclick=()=>openInfo(m);
       grid.appendChild(card);
       count++;
     }
@@ -267,37 +231,28 @@ function render(reset=false){
 }
 
 function renderLatest(){
-  latestGrid.innerHTML = "";
+  latestGrid.innerHTML="";
   latestData.forEach(m=>{
     const wrap=document.createElement('div');
-    wrap.innerHTML = cardHTML(m);
-    const card = wrap.firstElementChild;
-    card.onclick = ()=>openInfo(m);
+    wrap.innerHTML=cardHTML(m);
+    const card=wrap.firstElementChild;
+    card.onclick=()=>openInfo(m);
     latestGrid.appendChild(card);
   });
 }
 
 function populateGenres(){
-  const set = new Set();
-  currentList.forEach(m => (m.genres||[]).forEach(g => set.add(g)));
-  const sel = document.getElementById('genreSelect');
-  sel.innerHTML='<option value="all">Tutti i generi</option>';
-  [...set].sort().forEach(g => {
-    const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o);
-  });
+  const set=new Set(); currentList.forEach(m=>(m.genres||[]).forEach(g=>set.add(g)));
+  const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
+  [...set].sort().forEach(g=>{const o=document.createElement('option');o.value=o.textContent=g;sel.appendChild(o);});
 }
 
-function updateType(t){
-  currentType = t;
-  currentList = allData.filter(x => x.type===t);
-  populateGenres();
-  render(true);
-}
+function updateType(t){currentType=t; currentList=allData.filter(x=>x.type===t); populateGenres(); render(true);}
 
-document.getElementById('typeSelect').onchange = e => updateType(e.target.value);
-document.getElementById('genreSelect').onchange = () => render(true);
-document.getElementById('searchBox').oninput = () => render(true);
-document.getElementById('loadMore').onclick = () => render(false);
+document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
+document.getElementById('genreSelect').onchange=()=>render(true);
+document.getElementById('searchBox').oninput=()=>render(true);
+document.getElementById('loadMore').onclick=()=>render(false);
 
 updateType('movie');
 renderLatest();
@@ -305,10 +260,7 @@ renderLatest();
 </body>
 </html>
 """
-    return (html
-            .replace("__ENTRIES_JSON__", entries_json)
-            .replace("__LATEST_JSON__", latest_json)
-            )
+    return html.replace("__ENTRIES_JSON__", entries_json).replace("__LATEST_JSON__", latest_json)
 
 
 def main():
@@ -338,12 +290,9 @@ def main():
                 link = VIX_LINK_MOVIE.format(tmdb_id)
                 seasons, episodes = 0, {}
             else:
-                link = ""  # serie: link composto al volo
+                link = ""
                 seasons = info.get("number_of_seasons", 1) or 1
-                episodes = {
-                    str(s["season_number"]): (s.get("episode_count", 1) or 1)
-                    for s in (info.get("seasons", []) or []) if s.get("season_number") is not None
-                }
+                episodes = {str(s["season_number"]): s.get("episode_count",1) for s in (info.get("seasons",[]) or []) if s.get("season_number") is not None}
 
             entries.append({
                 "id": tmdb_id,
@@ -351,32 +300,21 @@ def main():
                 "poster": poster,
                 "genres": genres,
                 "vote": vote,
+                "overview": overview,
+                "release_date": release_date,
                 "link": link,
                 "type": type_,
                 "seasons": seasons,
-                "episodes": episodes,
-                "overview": overview,
-                "release_date": release_date
+                "episodes": episodes
             })
 
-    # Ultime uscite: ordina per data
-    def parse_date(d):
-        try:
-            return datetime.strptime(d, "%Y-%m-%d")
-        except Exception:
-            return datetime(1900, 1, 1)
+    # Ordina le ultime uscite per data di rilascio decrescente
+    latest = sorted(entries, key=lambda x: x["release_date"], reverse=True)[:20]
 
-    latest = sorted(entries, key=lambda x: parse_date(x["release_date"]), reverse=True)[:10]
-
-    # Prepara JSON sicuro (evita chiusura <script>)
-    entries_json = json.dumps(entries, ensure_ascii=False).replace("</", "<\\/")
-    latest_json  = json.dumps(latest,  ensure_ascii=False).replace("</", "<\\/")
-
-    html = build_html(entries_json, latest_json)
+    html = build_html(json.dumps(entries), json.dumps(latest))
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi")
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi, ultime 20 uscite incluse.")
 
 
 if __name__ == "__main__":
