@@ -11,7 +11,6 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Lazy load: mostra 40 titoli per volta
 - Serie: tendine per stagione ed episodio
 - Scroll automatico ultime novità
-- Colore voto, durata e anno
 """
 
 import os
@@ -52,7 +51,7 @@ def extract_ids(data):
             if key in item and item[key]:
                 ids.append(str(item[key]))
                 break
-    return ids
+    return ids  # non sorted, manteniamo ordine Vix
 
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
@@ -78,15 +77,15 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
 .card:hover{{transform:scale(1.05);}}
 .poster{{width:100%;border-radius:8px;display:block;}}
-.badge{{position:absolute;bottom:8px;right:8px;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
+.badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:80%;height:60%;border:none;}}
 #playerOverlay button.closeBtn{{position:absolute;top:10px;right:10px;font-size:24px;background:#e50914;border:none;color:#fff;border-radius:50%;cursor:pointer;padding:0 10px;}}
 #infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;}}
-#infoCard h2{{margin-top:0;color:#e50914;display:inline;}}
+#infoCard h2{{margin-top:0;color:#e50914;}}
 #infoCard p{{margin:5px 0;}}
-#infoCard button{{margin-left:10px;padding:5px 10px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest .poster{{width:100px;flex-shrink:0;}}
 </style>
@@ -119,8 +118,6 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   </div>
   <p id="infoGenres"></p>
   <p id="infoVote"></p>
-  <p id="infoDuration"></p>
-  <p id="infoYear"></p>
   <p id="infoOverview"></p>
   <select id="seasonSelect"></select>
   <select id="episodeSelect"></select>
@@ -128,6 +125,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <script>
 const allData = {entries};
+
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
@@ -136,8 +134,6 @@ const infoTitle = document.getElementById('infoTitle');
 const infoGenres = document.getElementById('infoGenres');
 const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
-const infoDuration = document.getElementById('infoDuration');
-const infoYear = document.getElementById('infoYear');
 const playBtn = document.getElementById('playBtn');
 const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
@@ -164,14 +160,11 @@ function openInfo(item){{
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
-    infoVote.style.color = item.vote>=7 ? 'lightgreen' : item.vote>=5 ? 'yellow' : 'red';
-    infoDuration.textContent = item.duration ? "Durata: "+item.duration+" min" : "";
-    infoYear.textContent = item.year ? "Anno: "+item.year : "";
     infoOverview.textContent = item.overview || "";
-
+    
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
-
+    
     if(item.type==='tv'){{
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
@@ -185,9 +178,9 @@ function openInfo(item){{
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
     }}
-
+    
     playBtn.onclick = ()=>openPlayer(item);
-
+    
     function updateEpisodes(){{
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
@@ -232,8 +225,12 @@ function render(reset=false){{
         let m=currentList[shown++];
         if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
             const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
-            <div class='badge' style='background:${{m.vote>=7?'lightgreen':m.vote>=5?'yellow':'red'}}'>${{m.vote}}</div>`;
+            card.innerHTML=`
+<img class='poster' src='${m.poster}' alt='${m.title}'>
+<div class='badge'>${m.vote}</div>
+<p style="margin:2px 0;font-size:12px;color:#ccc;">
+${m.duration ? m.duration+' min • ' : ''}${m.year ? m.year : ''}
+</p>`;
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
             count++;
@@ -245,7 +242,7 @@ function populateGenres(){{
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g){{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
+    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
 }}
 
 function updateType(t){{
@@ -288,16 +285,14 @@ def main():
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
             genres = [g["name"] for g in info.get("genres", [])]
-            vote = round(info.get("vote_average", 0),1)
+            vote = info.get("vote_average", 0)
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
             seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
             episodes = {
-                str(s["season_number"]): s.get("episode_count", 1)
-                for s in info.get("seasons", []) if s.get("season_number") is not None
-            } if type_ == "tv" else {}
-            duration = info.get("runtime") if type_=="movie" else None
-            year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
+                str(s["season_number"]): s.get("episode_count",1)
+                for s in info.get("seasons",[]) if s.get("season_number")
+            } if type_=="tv" else {}
 
             entries.append({
                 "id": tmdb_id,
@@ -309,12 +304,10 @@ def main():
                 "link": link,
                 "type": type_,
                 "seasons": seasons,
-                "episodes": episodes,
-                "duration": duration,
-                "year": year
+                "episodes": episodes
             })
 
-            if idx < 10:
+            if idx < 10:  # ultime novità
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
     html = build_html(entries, latest_entries)
