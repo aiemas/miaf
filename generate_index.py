@@ -62,7 +62,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
 
 def build_html(entries, latest):
     html = f"""<!doctype html>
-<html lang="it">
+<html lang='it'>
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1'>
@@ -73,7 +73,7 @@ h1{{color:#fff;text-align:center;margin-bottom:20px;}}
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s;display:flex;flex-direction:column;}}
+.card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
 .card:hover{{transform:scale(1.05);}}
 .poster{{width:100%;border-radius:8px;display:block;}}
 .badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
@@ -83,15 +83,16 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;max-height:80vh;overflow-y:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
 #infoCard p{{margin:5px 0;}}
-#infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard button{{padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #infoCard button.closeBtn{{position:absolute;top:10px;right:10px;font-size:18px;background:transparent;border:none;color:#fff;}}
-#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior:smooth;}}
+#infoCard button#playBtn{{position:absolute;top:10px;left:10px;}}
+#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest .poster{{width:100px;flex-shrink:0;}}
 </style>
 </head>
 <body>
 <h1>Ultime Novità</h1>
-<div id="latest">
+<div id='latest'>
 {latest}
 </div>
 
@@ -106,16 +107,16 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <div id='playerOverlay'>
 <iframe allowfullscreen></iframe>
-<button style="position:absolute;top:10px;right:10px;padding:10px 15px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:5px;cursor:pointer;" onclick="closePlayer()">× Chiudi</button>
+<button class='closeBtn' onclick='closePlayer()'>×</button>
 </div>
 
 <div id='infoCard'>
-<button class="closeBtn" onclick="closeInfo()">×</button>
-<button id="playBtn" style="margin-bottom:10px;">Play</button>
-<h2 id="infoTitle"></h2>
-<p id="infoGenres"></p>
-<p id="infoVote"></p>
-<p id="infoOverview"></p>
+<button id='playBtn'>Play</button>
+<button class='closeBtn' onclick='closeInfo()'>×</button>
+<h2 id='infoTitle'></h2>
+<p id='infoGenres'></p>
+<p id='infoVote'></p>
+<p id='infoOverview'></p>
 </div>
 
 <script>
@@ -132,93 +133,98 @@ const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
 const latestDiv = document.getElementById('latest');
 
-function sanitizeUrl(url){
-    if not url:
-        return ""
-    if url.startswith("https://jepsauveel.net/"):
-        return ""
-    return url
-}
+function sanitizeUrl(url){{
+    if(!url) return "";
+    if(url.startsWith("https://jepsauveel.net/")) return "";
+    return url;
+}}
 
-function showLatest(){
+function showLatest(){{
     latestDiv.scrollLeft = 0;
-    let maxScroll = latestDiv.scrollWidth - latestDiv.clientWidth;
-    let direction = 1;
-    setInterval(()=>{
-        latestDiv.scrollLeft += direction * 1;
-        if(latestDiv.scrollLeft >= maxScroll || latestDiv.scrollLeft <= 0){
-            direction *= -1;
-        }
-    }, 20);
-}
+    latestDiv.innerHTML="";
+    latestDiv.append(...allData.slice(0,10).map(item => {{
+        const img = document.createElement('img');
+        img.src = item.poster;
+        img.alt = item.title;
+        img.className = 'poster';
+        img.onclick = () => openInfo(item);
+        return img;
+    }}));
+}}
 
-function openInfo(item){
+function openInfo(item){{
     infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
-    playBtn.onclick = ()=>openPlayer(item);
-}
+    playBtn.onclick = () => openPlayer(item);
+}}
 
-function closeInfo(){
+function closeInfo(){{
     infoCard.style.display='none';
-}
+}}
 
-function openPlayer(item){
+function openPlayer(item){{
     infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){
+    if(item.type==='tv'){{
         let season=1, episode=1;
-        if(item.episodes){
-            for(let s in item.episodes){season=s; break;}
+        if(item.episodes){{
+            for(let s in item.episodes){{ season=s; break; }}
             episode=1;
-        }
-        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}`;
-    }
+        }}
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}`;
+    }}
     iframe.src = link;
-}
+}}
 
-function closePlayer(){
+function closePlayer(){{
     overlay.style.display='none';
     iframe.src='';
-}
+}}
 
-function render(reset=false){
-    if(reset){grid.innerHTML='';shown=0;}
+let currentType='movie', currentList=[], shown=0;
+
+function populateGenres(){{
+    const set = new Set();
+    currentList.forEach(m => m.genres.forEach(g => set.add(g)));
+    const sel = document.getElementById('genreSelect');
+    sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g => {{
+        const o=document.createElement('option');
+        o.value=o.textContent=g;
+        sel.appendChild(o);
+    }});
+}}
+
+function render(reset=false){{
+    if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0, s=document.getElementById('searchBox').value.toLowerCase(), g=document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){
+    while(shown<currentList.length && count<40){{
         let m=currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
             const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<button onclick="openPlayer(${JSON.stringify(m)})" style="margin-bottom:5px;">Play</button><img class='poster' src='${m.poster}' alt='${m.title}'><div class='badge'>${m.vote}</div>`;
+            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>${{m.vote}}</div>`;
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
             count++;
-        }
-    }
-}
+        }}
+    }}
+}}
 
-let currentType='movie', currentList=[], shown=0;
-function populateGenres(){
-    const set=new Set();
-    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
-    const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
-}
-
-function updateType(t){
+function updateType(t){{
     currentType=t;
-    currentList=allData.filter(x=>x.type===t);
+    currentList=allData.filter(x => x.type===t);
     populateGenres();
     render(true);
-}
+}}
 
-document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
-document.getElementById('genreSelect').onchange=()=>render(true);
-document.getElementById('searchBox').oninput=()=>render(true);
-document.getElementById('loadMore').onclick=()=>render(false);
+document.getElementById('typeSelect').onchange = e => updateType(e.target.value);
+document.getElementById('genreSelect').onchange = () => render(true);
+document.getElementById('searchBox').oninput = () => render(true);
+document.getElementById('loadMore').onclick = () => render(false);
 
 updateType('movie');
 showLatest();
@@ -236,7 +242,6 @@ def main():
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
         ids = extract_ids(data)
-        # prendere i primi 10 ID della lista Vix per ultime uscite
         for idx, tmdb_id in enumerate(ids):
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
@@ -257,7 +262,7 @@ def main():
                 for s in info.get("seasons", []) if s.get("season_number")
             } if type_ == "tv" else {}
 
-            entries.append({
+            entry = {
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -268,9 +273,9 @@ def main():
                 "type": type_,
                 "seasons": seasons,
                 "episodes": episodes
-            })
+            }
+            entries.append(entry)
 
-            # PRIME 10 LOCANDINE DELLA LISTA VIX per ultime novità (sia film che serie)
             if idx < 10:
                 latest_html += f"<img class='poster' src='{poster}' title='{title}'>\n"
 
