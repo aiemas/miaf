@@ -296,19 +296,19 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
             entries.append({
-                "id": tmdb_id,
-                "title": title,
-                "poster": poster,
-                "genres": genres,
-                "vote": vote,
-                "overview": overview,
-                "link": link,
-                "type": type_,
-                "seasons": seasons,
-                "episodes": episodes,
-                "duration": duration,
-                "year": year
-            })
+    "id": tmdb_id,
+    "title": title,
+    "poster": poster,
+    "genres": genres,
+    "vote": vote,
+    "overview": overview,
+    "link": link,
+    "type": type_,
+    "seasons": seasons,
+    "episodes": episodes,
+    "duration": duration or 0,  # <-- forza 0 se None
+    "year": year or ""           # <-- forza stringa vuota se None
+})
 
             if idx < 10:  # ultime novità
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
