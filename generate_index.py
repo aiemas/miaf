@@ -314,7 +314,25 @@ def main():
 })
 
             if idx < 10:  # ultime novità
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
+    latest_entries += f"""
+    <div class='latest-card' onclick="openInfo({{
+        id: '{tmdb_id}',
+        title: `{title.replace("'", "\\'")}`,
+        poster: '{poster}',
+        genres: {genres},
+        vote: {vote},
+        overview: `{overview.replace("'", "\\'")}`,
+        link: '{link}',
+        type: '{type_}',
+        seasons: {seasons},
+        episodes: {episodes},
+        duration: {duration or 0},
+        year: '{year or ""}'
+    }})">
+        <img class='poster' src='{poster}' alt='{title}' title='{title}'>
+    </div>
+    """
+
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
