@@ -22,7 +22,7 @@ TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
-OUTPUT_HTML = "movies_miniplayers.html"
+OUTPUT_HTML = "tvmov.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
 
