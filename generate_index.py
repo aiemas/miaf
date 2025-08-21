@@ -227,6 +227,7 @@ function render(reset=false){{
             const card=document.createElement('div'); card.className='card';
             card_html = f"""
 ...
+card_html = f"""
 card.innerHTML = `
   <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
   <div class='badge'>${{m.vote}}</div>
@@ -234,7 +235,6 @@ card.innerHTML = `
     ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
   </p>
 `;
-...
 """
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
