@@ -311,7 +311,7 @@ def main():
 
             if idx < 10:  # ultime novità
     latest_entries += f"""
-    <div class='latest-card' onclick="openInfo({
+    <div class='latest-card' onclick="openInfo({{
         id: '{tmdb_id}',
         title: `{title.replace("'", "\\'")}`,
         poster: '{poster}',
@@ -324,7 +324,7 @@ def main():
         episodes: {episodes},
         duration: {duration or 0},
         year: '{year or ""}'
-    })">
+    }})">
         <img class='poster' src='{poster}' alt='{title}' title='{title}'>
     </div>
     """
