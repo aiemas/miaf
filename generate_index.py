@@ -77,7 +77,10 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
 .card:hover{{transform:scale(1.05);}}
 .poster{{width:100%;border-radius:8px;display:block;}}
-.badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
+.badge{{position:absolute;bottom:8px;right:8px;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
+.badge.green{{background:#21d07a;color:#fff;}}
+.badge.yellow{{background:#d2d531;color:#000;}}
+.badge.red{{background:#db2360;color:#fff;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:80%;height:60%;border:none;}}
@@ -116,6 +119,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <h2 id="infoTitle" style="margin:0;flex:1;"></h2>
     <button id="playBtn">Play</button>
   </div>
+  <p id="infoYear"></p>
+  <p id="infoDuration"></p>
   <p id="infoGenres"></p>
   <p id="infoVote"></p>
   <p id="infoOverview"></p>
@@ -134,6 +139,8 @@ const infoTitle = document.getElementById('infoTitle');
 const infoGenres = document.getElementById('infoGenres');
 const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
+const infoYear = document.getElementById('infoYear');
+const infoDuration = document.getElementById('infoDuration');
 const playBtn = document.getElementById('playBtn');
 const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
@@ -161,6 +168,8 @@ function openInfo(item){{
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
+    infoYear.textContent = item.year ? "Anno: " + item.year : "";
+    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
@@ -224,8 +233,9 @@ function render(reset=false){{
     while(shown<currentList.length && count<40){{
         let m=currentList[shown++];
         if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
+            let badgeClass = m.vote >= 7 ? 'green' : (m.vote >= 5 ? 'yellow' : 'red');
             const card=document.createElement('div'); card.className='card';
-            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>${{m.vote}}</div>`;
+            card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge ${{badgeClass}}'>${{m.vote}}</div>`;
             card.onclick=()=>openInfo(m);
             grid.appendChild(card);
             count++;
@@ -280,16 +290,22 @@ def main():
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
             genres = [g["name"] for g in info.get("genres", [])]
-            vote = info.get("vote_average", 0)
+            vote = round(info.get("vote_average", 0),1)
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
             seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
-            episodes = {
+            episodes = {{
                 str(s["season_number"]): s.get("episode_count",1)
                 for s in info.get("seasons",[]) if s.get("season_number")
-            } if type_=="tv" else {}
+            }} if type_=="tv" else {{}}
+            duration = info.get("runtime") if type_=="movie" else None
+            year = None
+            if type_=="movie" and info.get("release_date"):
+                year = info["release_date"].split("-")[0]
+            elif type_=="tv" and info.get("first_air_date"):
+                year = info["first_air_date"].split("-")[0]
 
-            entries.append({
+            entries.append({{
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -299,11 +315,13 @@ def main():
                 "link": link,
                 "type": type_,
                 "seasons": seasons,
-                "episodes": episodes
-            })
+                "episodes": episodes,
+                "duration": duration,
+                "year": year
+            }})
 
             if idx < 10:  # ultime novità
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
