@@ -286,17 +286,20 @@ def main():
                 continue
 
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
-            poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
-            genres = [g["name"] for g in info.get("genres", [])]
-            vote = info.get("vote_average", 0)
-            overview = info.get("overview", "")
-            link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
-            seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
-            episodes = {
-                str(s["season_number"]): s.get("episode_count",1)
-                for s in info.get("seasons",[]) if s.get("season_number")
-            } if type_=="tv" else {}
+poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
+genres = [g["name"] for g in info.get("genres", [])]
+vote = info.get("vote_average", 0)
+overview = info.get("overview", "")
+link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
+seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
+episodes = {
+    str(s["season_number"]): s.get("episode_count",1)
+    for s in info.get("seasons",[]) if s.get("season_number")
+} if type_=="tv" else {}
 
+# --- Nuove info ---
+duration = info.get("runtime", 0) if type_=="movie" else 0
+year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             entries.append({
                 "id": tmdb_id,
                 "title": title,
@@ -307,7 +310,9 @@ def main():
                 "link": link,
                 "type": type_,
                 "seasons": seasons,
-                "episodes": episodes
+                "episodes": episodes,
+                "duration": duration,
+                "year": year
             })
 
             if idx < 10:  # ultime novità
