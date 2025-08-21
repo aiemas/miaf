@@ -216,29 +216,29 @@ function closePlayer(){{
 }}
 
 let currentType='movie', currentList=[], shown=0;
-let currentType='movie', currentList=[], shown=0;
-function render(reset=false){
-    if(reset){ grid.innerHTML=''; shown=0; }
+function render(reset=false){{
+    if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){
+    while(shown<currentList.length && count<40){{
         let m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
-                <img class='poster' src='${m.poster}' alt='${m.title}'>
-                <div class='badge'>${m.vote}</div>
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
-                    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
+                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
             `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
             count++;
-        }
-    }
+        }}
+    }}
+}}
                                                                  }
 
 function populateGenres(){{
