@@ -142,23 +142,23 @@ const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 
-function sanitizeUrl(url){ 
+function sanitizeUrl(url){{ 
     if(!url) return "";
     if(url.startsWith("https://jepsauveel.net/")) return "";
     return url;
-}
+}}
 
-function showLatest(){ 
+function showLatest(){{ 
     let scrollPos = 0;
-    function scroll() {
+    function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
-    }
+        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+    }}
     setInterval(scroll, 30);
-}
+}}
 
-function openInfo(item){ 
+function openInfo(item){{ 
     infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
@@ -168,130 +168,130 @@ function openInfo(item){
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
-    if(item.type==='tv'){ 
+    if(item.type==='tv'){{ 
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){ 
+        for(let s=1;s<=item.seasons;s++){{ 
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }
+        }}
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }
+    }}
     
     playBtn.onclick = ()=>openPlayer(item);
     
-    function updateEpisodes(){ 
+    function updateEpisodes(){{ 
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){ 
+        for(let e=1;e<=epCount;e++){{ 
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function closeInfo(){ 
+function closeInfo(){{ 
     infoCard.style.display='none';
-}
+}}
 
-function openPlayer(item){ 
+function openPlayer(item){{ 
     infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){ 
+    if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}?lang=it`;
-    } else {
-        link = `https://vixsrc.to/movie/${item.id}/?lang=it`;
-    }
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
+    }} else {{
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`;
+    }}
     iframe.src = link;
 
     // Forza fullscreen vero
-    if (overlay.requestFullscreen) {
+    if (overlay.requestFullscreen) {{
         overlay.requestFullscreen();
-    } else if (overlay.webkitRequestFullscreen) {
+    }} else if (overlay.webkitRequestFullscreen) {{
         overlay.webkitRequestFullscreen();
-    } else if (overlay.msRequestFullscreen) {
+    }} else if (overlay.msRequestFullscreen) {{
         overlay.msRequestFullscreen();
-    }
+    }}
 
     // Gestione auto-hide X
     setupCloseBtnAutoHide();
-}
+}}
 
-function closePlayer(){ 
+function closePlayer(){{ 
     overlay.style.display='none';
     iframe.src='';
 
-    if (document.fullscreenElement) {
+    if (document.fullscreenElement) {{
         document.exitFullscreen();
-    } else if (document.webkitFullscreenElement) {
+    }} else if (document.webkitFullscreenElement) {{
         document.webkitExitFullscreen();
-    } else if (document.msFullscreenElement) {
+    }} else if (document.msFullscreenElement) {{
         document.msExitFullscreen();
-    }
-}
+    }}
+}}
 
-function setupCloseBtnAutoHide() {
+function setupCloseBtnAutoHide() {{
     const btn = document.getElementById("closePlayerBtn");
     let hideTimeout;
 
-    function showBtn() {
+    function showBtn() {{
         btn.classList.remove("hidden");
         clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => btn.classList.add("hidden"), 3000);
-    }
+    }}
 
     overlay.onmousemove = showBtn;
     showBtn();
-}
+}}
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){ 
-    if(reset){ grid.innerHTML=''; shown=0; }
+function render(reset=false){{ 
+    if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){ 
+    while(shown<currentList.length && count<40){{ 
         let m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){ 
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{ 
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
-                <img class='poster' src='${m.poster}' alt='${m.title}'>
-                <div class='badge'>${m.vote}</div>
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
-                    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
+                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
             `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
             count++;
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function populateGenres(){ 
+function populateGenres(){{ 
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
-}
+    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
+}}
 
-function updateType(t){ 
+function updateType(t){{ 
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}
+}}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
