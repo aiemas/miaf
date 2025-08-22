@@ -226,9 +226,9 @@ function openPlayer(item){{
     if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&subtitles=off';
     }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`;
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`&subtitles=off';
     }}
     iframe.src = link;
 
