@@ -175,7 +175,7 @@ function openInfo(item){{
         }}
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }
+    }}
 
     playBtn.onclick = ()=>openPlayer(item);
 
