@@ -11,6 +11,8 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Lazy load: mostra 40 titoli per volta
 - Serie: tendine per stagione ed episodio
 - Scroll automatico ultime novità
+- Card fullscreen con sfondo locandina in trasparenza
+- Play nasconde la card temporaneamente
 """
 
 import os
@@ -82,10 +84,11 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
 
-#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:rgba(34,34,34,0.95);border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;}}
-#infoCard h2{{margin-top:0;color:#e50914;}}
+#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
+#infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
+#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
 #infoCard p{{margin:5px 0;}}
-#infoCard button{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
@@ -112,9 +115,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <div id='infoCard'>
-  <button class="closeBtn" onclick="closeInfo()">×</button>
   <div style="display:flex;align-items:center;gap:10px;">
-    <h2 id="infoTitle" style="margin:0;"></h2>
+    <h2 id="infoTitle"></h2>
     <button id="playBtn">Play</button>
   </div>
   <p id="infoGenres"></p>
@@ -167,7 +169,7 @@ function openInfo(item){{
     infoCard.style.backgroundImage = item.poster ? `url(${{item.poster}})` : "none";
     infoCard.style.backgroundSize = "cover";
     infoCard.style.backgroundPosition = "center";
-    
+
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -175,7 +177,7 @@ function openInfo(item){{
     infoYear.textContent = item.year ? "Anno: " + item.year : "";
     infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
-    
+
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
@@ -192,9 +194,9 @@ function openInfo(item){{
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
     }}
-    
+
     playBtn.onclick = ()=>openPlayer(item);
-    
+
     function updateEpisodes(){{ 
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
@@ -213,6 +215,8 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
+    // Nascondi card per evitare sovrapposizione
+    infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
@@ -228,25 +232,29 @@ function openPlayer(item){{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
         overlay.webkitRequestFullscreen();
-    }} else if (overlay.msRequestFullscreen) {{
+    }} else
+    if (overlay.msRequestFullscreen) {{
         overlay.msRequestFullscreen();
     }}
 
-    try {{
-        history.pushState({{playerOpen:true}}, "");
-    }} catch(e) {{}}
+    overlay.dataset.prevCardVisible = 'true';
+    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
 }}
 
-function closePlayer(fromPop){{ 
+function closePlayer(fromPop) {{
     overlay.style.display='none';
     iframe.src='';
-    
+
     if (document.fullscreenElement) {{
         document.exitFullscreen();
     }} else if (document.webkitFullscreenElement) {{
         document.webkitExitFullscreen();
     }} else if (document.msFullscreenElement) {{
         document.msExitFullscreen();
+    }}
+
+    if(overlay.dataset.prevCardVisible === 'true') {{
+        infoCard.style.display = 'block';
     }}
 
     if (!fromPop && history.state && history.state.playerOpen) {{
@@ -358,7 +366,7 @@ def main():
             })
 
             if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
