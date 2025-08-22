@@ -143,13 +143,13 @@ function sanitizeUrl(url){{
     return url;
 }}
 
-function showLatest(){
+function showLatest(){{
     let scrollPos = 0;
     function scroll() {
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
         latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
-    }
+    }}
     setInterval(scroll, 30);
 }
 
