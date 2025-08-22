@@ -88,7 +88,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
-#latest {{-ms-overflow-style: none;  /* IE/Edge */scrollbar-width: none;     /* Firefox *}}
+#latest {{-ms-overflow-style: none;scrollbar-width: none;}}
 
 #latest .poster{{width:100px;flex-shrink:0;}}
 </style>
@@ -142,23 +142,23 @@ const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 
-function sanitizeUrl(url){{
+function sanitizeUrl(url){
     if(!url) return "";
     if(url.startsWith("https://jepsauveel.net/")) return "";
     return url;
-}}
+}
 
-function showLatest(){{
+function showLatest(){
     let scrollPos = 0;
-    function scroll() {{
+    function scroll() {
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
-    }}
+        latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
+    }
     setInterval(scroll, 30);
-}}
+}
 
-function openInfo(item){{
+function openInfo(item){
     infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
@@ -168,94 +168,97 @@ function openInfo(item){{
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
-    if(item.type==='tv'){{
+    if(item.type==='tv'){
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){{
+        for(let s=1;s<=item.seasons;s++){
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }}
+        }
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }}
+    }
     
     playBtn.onclick = ()=>openPlayer(item);
     
-    function updateEpisodes(){{
+    function updateEpisodes(){
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){{
+        for(let e=1;e<=epCount;e++){
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function closeInfo(){{
+function closeInfo(){
     infoCard.style.display='none';
-}}
+}
 
-function openPlayer(item){{
+function openPlayer(item){
     infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{
+    if(item.type==='tv'){
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}`;
-    }}
+        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}?lang=it`;
+    } else {
+        // Film
+        link = link.includes("?") ? link + "lang=it" : link + "?lang=it";
+    }
     iframe.src = link;
-}}
+}
 
-function closePlayer(){{
+function closePlayer(){
     overlay.style.display='none';
     iframe.src='';
-}}
+}
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){{
-    if(reset){{ grid.innerHTML=''; shown=0; }}
+function render(reset=false){
+    if(reset){ grid.innerHTML=''; shown=0; }
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){{
+    while(shown<currentList.length && count<40){
         let m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
-                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
-                <div class='badge'>${{m.vote}}</div>
+                <img class='poster' src='${m.poster}' alt='${m.title}'>
+                <div class='badge'>${m.vote}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
-                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
+                    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
                 </p>
             `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
             count++;
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function populateGenres(){{
+function populateGenres(){
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
-}}
+    [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
+}
 
-function updateType(t){{
+function updateType(t){
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}}
+}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
@@ -299,21 +302,21 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
             entries.append({
-    "id": tmdb_id,
-    "title": title,
-    "poster": poster,
-    "genres": genres,
-    "vote": vote,
-    "overview": overview,
-    "link": link,
-    "type": type_,
-    "seasons": seasons,
-    "episodes": episodes,
-    "duration": duration or 0,  # <-- forza 0 se None
-    "year": year or ""           # <-- forza stringa vuota se None
-})
+                "id": tmdb_id,
+                "title": title,
+                "poster": poster,
+                "genres": genres,
+                "vote": vote,
+                "overview": overview,
+                "link": link,
+                "type": type_,
+                "seasons": seasons,
+                "episodes": episodes,
+                "duration": duration or 0,
+                "year": year or ""
+            })
 
-            if idx < 10:  # ultime novità
+            if idx < 10:
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
     html = build_html(entries, latest_entries)
