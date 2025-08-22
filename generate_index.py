@@ -182,8 +182,7 @@ function showLatest(){{
 
 function openInfo(item){{ 
     infoCard.style.display='block';
-    infoCard.style.backgroundImage = item.poster ? `url(${item.poster})` : "none";
-    infoTitle.textContent = item.title;
+    infoCard.style.backgroundImage = item.poster ? `url(${{item.poster}})` : "none"; infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
