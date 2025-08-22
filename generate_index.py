@@ -83,6 +83,10 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
 #playerOverlay button.closeBtn{{position:absolute;top:10px;right:10px;font-size:28px;background:#e50914;border:none;color:#fff;border-radius:50%;cursor:pointer;padding:0 12px;opacity:0.8;transition:opacity 0.3s;}}
 #playerOverlay button.closeBtn.hidden{{opacity:0;pointer-events:none;}}
+
+/* Zona trasparente per far ricomparire la X su tap/click anche sopra l'iframe */
+#revealZone{{position:fixed;top:0;right:0;width:90px;height:90px;z-index:1002;background:transparent;}}
+
 #infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
 #infoCard p{{margin:5px 0;}}
@@ -110,6 +114,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <div id='playerOverlay'>
   <button class="closeBtn" id="closePlayerBtn" onclick="closePlayer()">×</button>
+  <div id="revealZone" aria-hidden="true"></div>
   <iframe allowfullscreen></iframe>
 </div>
 
@@ -214,7 +219,7 @@ function openPlayer(item){{
     }}
     iframe.src = link;
 
-    // Forza fullscreen vero
+    /* Forza fullscreen vero */
     if (overlay.requestFullscreen) {{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
@@ -223,11 +228,16 @@ function openPlayer(item){{
         overlay.msRequestFullscreen();
     }}
 
-    // Gestione auto-hide X
+    /* State per tasto Indietro */
+    try {{
+        history.pushState({{playerOpen:true}}, "");
+    }} catch(e) {{}}
+
+    /* Avvia logica X a scomparsa */
     setupCloseBtnAutoHide();
 }}
 
-function closePlayer(){{ 
+function closePlayer(fromPop){{ 
     overlay.style.display='none';
     iframe.src='';
 
@@ -238,28 +248,46 @@ function closePlayer(){{
     }} else if (document.msFullscreenElement) {{
         document.msExitFullscreen();
     }}
+
+    /* se chiudo manualmente, torno indietro di una history per “consumare” lo state */
+    if (!fromPop && history.state && history.state.playerOpen) {{
+        try {{ history.back(); }} catch(e) {{}}
+    }}
 }}
 
+/* X a scomparsa: mostra al tocco/click sul “reveal zone” e si nasconde dopo 2.5s */
 function setupCloseBtnAutoHide() {{
     const btn = document.getElementById("closePlayerBtn");
+    const zone = document.getElementById("revealZone");
     let hideTimeout;
 
     function showBtn() {{
         btn.classList.remove("hidden");
         clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => btn.classList.add("hidden"), 3000);
+        hideTimeout = setTimeout(() => btn.classList.add("hidden"), 2500);
     }}
 
-    // Mostra la X al tocco/click su mobile e al movimento su desktop
-    overlay.addEventListener("mousemove", showBtn);
-    overlay.addEventListener("click", showBtn);
+    /* Mostra su click/tap nella hot area (funziona anche sopra l'iframe) */
+    zone.addEventListener("click", showBtn);
+    zone.addEventListener("touchstart", function(e){{ e.preventDefault(); showBtn(); }}, {{ passive: false }});
 
-    showBtn(); // mostra subito quando parte
+    /* Mostra anche quando entri/esci dal fullscreen */
+    document.addEventListener("fullscreenchange", showBtn);
+
+    /* Tasto Esc fa ricomparire (oltre a chiudere col browser) */
+    document.addEventListener("keydown", function(e){{ 
+        if (e.key === "Escape") showBtn();
+    }});
+
+    showBtn(); /* mostra subito quando parte */
 }}
 
-    overlay.onmousemove = showBtn;
-    showBtn();
-}}
+/* Tasto Indietro del browser chiude il player quando è aperto */
+window.addEventListener("popstate", function(e){{ 
+    if (overlay.style.display === 'flex') {{
+        closePlayer(true);
+    }}
+}});
 
 let currentType='movie', currentList=[], shown=0;
 function render(reset=false){{ 
