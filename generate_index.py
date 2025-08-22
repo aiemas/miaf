@@ -153,7 +153,7 @@ function showLatest(){{
     setInterval(scroll, 30);
 }}
 
-function openInfo(item){
+function openInfo(item){{
     infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
@@ -172,7 +172,7 @@ function openInfo(item){
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }
+        }}
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
     }
