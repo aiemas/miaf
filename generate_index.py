@@ -137,11 +137,11 @@ const episodeSelect = document.getElementById('episodeSelect');
 
 let lastInfo = null;
 
-function sanitizeUrl(url){
+function sanitizeUrl(url){{
     if(!url) return "";
     if(url.startsWith("https://jepsauveel.net/")) return "";
     return url;
-}
+}}
 
 function showLatest(){
     let scrollPos = 0;
