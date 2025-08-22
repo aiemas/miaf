@@ -147,8 +147,6 @@ const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 
-let lastInfo = null; // 👈 memorizza ultima card
-
 function sanitizeUrl(url){{ 
     if(!url) return "";
     if(url.startsWith("https://jepsauveel.net/")) return "";
@@ -209,26 +207,18 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    if(item.type==='tv') {{
-        // 👇 memorizza card corrente
-        lastInfo = {{
-            item: item,
-            season: seasonSelect.value,
-            episode: episodeSelect.value
-        }};
-    }} else {{
-        lastInfo = null;
+    // 🔴 Differenzio comportamento Film vs Serie
+    if(item.type==='movie') {{
+        infoCard.style.display='none'; // nei film la chiudo
     }}
-
-    infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it';
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
     }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it';
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`;
     }}
     iframe.src = link;
 
@@ -261,14 +251,6 @@ function closePlayer(fromPop){{
 
     if (!fromPop && history.state && history.state.playerOpen) {{
         try {{ history.back(); }} catch(e) {{}}
-    }}
-
-    // 👇 riapri card se era una serie
-    if(lastInfo) {{
-        openInfo(lastInfo.item);
-        seasonSelect.value = lastInfo.season;
-        episodeSelect.value = lastInfo.episode;
-        lastInfo = null;
     }}
 }}
 
