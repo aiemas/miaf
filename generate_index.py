@@ -147,6 +147,8 @@ const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 
+let lastInfo = null; // 👈 memorizza ultima card
+
 function sanitizeUrl(url){{ 
     if(!url) return "";
     if(url.startsWith("https://jepsauveel.net/")) return "";
@@ -207,10 +209,18 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    // 🔴 Differenzio comportamento Film vs Serie
-    if(item.type==='movie') {{
-        infoCard.style.display='none'; // nei film la chiudo
+    if(item.type==='tv') {{
+        // 👇 memorizza card corrente
+        lastInfo = {{
+            item: item,
+            season: seasonSelect.value,
+            episode: episodeSelect.value
+        }};
+    }} else {{
+        lastInfo = null;
     }}
+
+    infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
@@ -251,6 +261,14 @@ function closePlayer(fromPop){{
 
     if (!fromPop && history.state && history.state.playerOpen) {{
         try {{ history.back(); }} catch(e) {{}}
+    }}
+
+    // 👇 riapri card se era una serie
+    if(lastInfo) {{
+        openInfo(lastInfo.item);
+        seasonSelect.value = lastInfo.season;
+        episodeSelect.value = lastInfo.episode;
+        lastInfo = null;
     }}
 }}
 
