@@ -115,18 +115,21 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <div id='infoCard'>
-  <div style="display:flex;align-items:center;gap:10px;">
-    <h2 id="infoTitle"></h2>
-    <button id="playBtn">Play</button>
+  <div style="position:relative;">
+    <button id="closeCardBtn" style="position:absolute;top:10px;left:10px;padding:5px 10px;background:#e50914;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:16px;">×</button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <h2 id="infoTitle"></h2>
+      <button id="playBtn">Play</button>
+    </div>
+    <p id="infoGenres"></p>
+    <p id="infoVote"></p>
+    <p id="infoOverview"></p>
+    <p id="infoYear"></p>
+    <p id="infoDuration"></p>
+    <p id="infoCast"></p>
+    <select id="seasonSelect"></select>
+    <select id="episodeSelect"></select>
   </div>
-  <p id="infoGenres"></p>
-  <p id="infoVote"></p>
-  <p id="infoOverview"></p>
-  <p id="infoYear"></p>
-  <p id="infoDuration"></p>
-  <p id="infoCast"></p>
-  <select id="seasonSelect"></select>
-  <select id="episodeSelect"></select>
 </div>
 
 <script>
@@ -141,7 +144,10 @@ const infoGenres = document.getElementById('infoGenres');
 const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
+const closeCardBtn = document.getElementById('closeCardBtn');
 const latestDiv = document.getElementById('latest');
+
+closeCardBtn.onclick = () => infoCard.style.display = 'none';
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 const infoYear = document.getElementById('infoYear');
