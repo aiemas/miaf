@@ -7,7 +7,7 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Ultime novità in alto (primi 10 della lista Vix)
 - Ricerca per titolo
 - Filtro per genere
-- Clic su locandina apre scheda info con play
+- Clic su locandina apre scheda info fullscreen con play
 - Lazy load: mostra 40 titoli per volta
 - Serie: tendine per stagione ed episodio
 - Scroll automatico ultime novità
@@ -82,9 +82,33 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
 
-#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;}}
+#infoCard{{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  display:none;
+  z-index:1001;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  color:#fff;
+  padding:20px;
+  overflow-y:auto;
+}}
+#infoCard::before{{
+  content:"";
+  position:absolute;
+  top:0;left:0;width:100%;height:100%;
+  background:rgba(0,0,0,0.75);
+  z-index:0;
+}}
+#infoCard > *{{
+  position:relative;
+  z-index:1;
+}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
-#infoCard p{{margin:5px 0;}}
 #infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
@@ -158,6 +182,7 @@ function showLatest(){{
 
 function openInfo(item){{ 
     infoCard.style.display='block';
+    infoCard.style.backgroundImage = item.poster ? `url(${item.poster})` : "none";
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -200,24 +225,18 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    // Film: chiudo la card; Serie: la lascio aperta
-    if(item.type==='movie') {{
-        infoCard.style.display='none';
-    }}
+    infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        // sottotitoli disattivati
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off`;
     }} else {{
-        // sottotitoli disattivati
         link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off`;
     }}
     iframe.src = link;
 
-    /* Forza fullscreen vero */
     if (overlay.requestFullscreen) {{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
@@ -226,7 +245,6 @@ function openPlayer(item){{
         overlay.msRequestFullscreen();
     }}
 
-    /* State per tasto Indietro */
     try {{
         history.pushState({{playerOpen:true}}, "");
     }} catch(e) {{}}
@@ -336,7 +354,7 @@ def main():
             duration = info.get("runtime", 0) if type_=="movie" else 0
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
-            entries.append({
+            entries.append({{
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -349,10 +367,10 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or ""
-            })
+            }})
 
             if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
