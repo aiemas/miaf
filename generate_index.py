@@ -212,11 +212,29 @@ function openPlayer(item){{
         link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`;
     }}
     iframe.src = link;
+
+    // Forza fullscreen
+    if (overlay.requestFullscreen) {{
+        overlay.requestFullscreen();
+    }} else if (overlay.webkitRequestFullscreen) {{
+        overlay.webkitRequestFullscreen();
+    }} else if (overlay.msRequestFullscreen) {{
+        overlay.msRequestFullscreen();
+    }}
 }}
 
 function closePlayer(){{ 
     overlay.style.display='none';
     iframe.src='';
+
+    // Uscita fullscreen
+    if (document.fullscreenElement) {{
+        document.exitFullscreen();
+    }} else if (document.webkitFullscreenElement) {{
+        document.webkitExitFullscreen();
+    }} else if (document.msFullscreenElement) {{
+        document.msExitFullscreen();
+    }}
 }}
 
 let currentType='movie', currentList=[], shown=0;
@@ -288,7 +306,6 @@ def main():
             if not info:
                 continue
 
-            title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
             genres = [g["name"] for g in info.get("genres", [])]
