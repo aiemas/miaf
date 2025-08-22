@@ -201,6 +201,14 @@ function closeInfo(){{
     infoCard.style.display='none';
 }}
 
+// Aggiunge l'evento per gestire il tasto "indietro"
+window.addEventListener('popstate', function(event) {{
+    if (overlay.style.display === 'flex') {{ // Controlla se il player è aperto
+        closePlayer(); // Chiama la funzione closePlayer
+    }}
+}});
+
+// Funzione per aprire il player
 function openPlayer(item) {{
     infoCard.style.display = 'none';
     overlay.style.display = 'flex';
@@ -227,6 +235,7 @@ function openPlayer(item) {{
     setupCloseBtnAutoHide();
 }}
 
+// Funzione per chiudere il player
 function closePlayer() {{
     if (confirm("Sei sicuro di voler interrompere la riproduzione?")) {{
         if (overlay) {{ // Controlla se overlay esiste
