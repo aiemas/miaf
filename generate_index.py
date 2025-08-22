@@ -210,10 +210,10 @@ function openPlayer(item){{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         // sottotitoli disattivati
-        link = `https://vixsrc.to/movie/${item.id}/?lang=it&sub=0&subs=0&subtitle=0&captions=0`;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sub=0&subs=0&subtitle=0&captions=0`;
     }} else {{
         // sottotitoli disattivati
-        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}?lang=it&sub=0&subs=0&subtitle=0&captions=0`;
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sub=0&subs=0&subtitle=0&captions=0`;
     }}
     iframe.src = link;
 
@@ -361,3 +361,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+```0
