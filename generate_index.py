@@ -354,7 +354,7 @@ def main():
             duration = info.get("runtime", 0) if type_=="movie" else 0
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
 
-            entries.append({{
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -367,7 +367,7 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or ""
-            }})
+            })
 
             if idx < 10:
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
