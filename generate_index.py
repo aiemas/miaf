@@ -207,7 +207,10 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    infoCard.style.display='none';
+    // 🔴 Differenzio comportamento Film vs Serie
+    if(item.type==='movie') {{
+        infoCard.style.display='none'; // nei film la chiudo
+    }}
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
@@ -219,7 +222,6 @@ function openPlayer(item){{
     }}
     iframe.src = link;
 
-    /* Forza fullscreen vero */
     if (overlay.requestFullscreen) {{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
@@ -228,12 +230,10 @@ function openPlayer(item){{
         overlay.msRequestFullscreen();
     }}
 
-    /* State per tasto Indietro */
     try {{
         history.pushState({{playerOpen:true}}, "");
     }} catch(e) {{}}
 
-    /* Avvia logica X a scomparsa */
     setupCloseBtnAutoHide();
 }}
 
@@ -249,13 +249,11 @@ function closePlayer(fromPop){{
         document.msExitFullscreen();
     }}
 
-    /* se chiudo manualmente, torno indietro di una history per “consumare” lo state */
     if (!fromPop && history.state && history.state.playerOpen) {{
         try {{ history.back(); }} catch(e) {{}}
     }}
 }}
 
-/* X a scomparsa: mostra al tocco/click sul “reveal zone” e si nasconde dopo 2.5s */
 function setupCloseBtnAutoHide() {{
     const btn = document.getElementById("closePlayerBtn");
     const zone = document.getElementById("revealZone");
@@ -267,22 +265,13 @@ function setupCloseBtnAutoHide() {{
         hideTimeout = setTimeout(() => btn.classList.add("hidden"), 2500);
     }}
 
-    /* Mostra su click/tap nella hot area (funziona anche sopra l'iframe) */
     zone.addEventListener("click", showBtn);
     zone.addEventListener("touchstart", function(e){{ e.preventDefault(); showBtn(); }}, {{ passive: false }});
-
-    /* Mostra anche quando entri/esci dal fullscreen */
     document.addEventListener("fullscreenchange", showBtn);
-
-    /* Tasto Esc fa ricomparire (oltre a chiudere col browser) */
-    document.addEventListener("keydown", function(e){{ 
-        if (e.key === "Escape") showBtn();
-    }});
-
-    showBtn(); /* mostra subito quando parte */
+    document.addEventListener("keydown", function(e){{ if (e.key === "Escape") showBtn(); }});
+    showBtn();
 }}
 
-/* Tasto Indietro del browser chiude il player quando è aperto */
 window.addEventListener("popstate", function(e){{ 
     if (overlay.style.display === 'flex') {{
         closePlayer(true);
