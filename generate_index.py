@@ -201,19 +201,11 @@ function closeInfo(){{
     infoCard.style.display='none';
 }}
 
-// Aggiunge l'evento per gestire il tasto "indietro"
-window.addEventListener('popstate', function(event) {{
-    if (overlay.style.display === 'flex') {{ // Controlla se il player è aperto
-        closePlayer(); // Chiama la funzione closePlayer
-    }}
-}});
-
-// Funzione per aprire il player
-function openPlayer(item) {{
-    infoCard.style.display = 'none';
-    overlay.style.display = 'flex';
+function openPlayer(item){{ 
+    infoCard.style.display='none';
+    overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if (item.type === 'tv') {{
+    if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
@@ -222,7 +214,7 @@ function openPlayer(item) {{
     }}
     iframe.src = link;
 
-    // Forza fullscreen sul overlay
+    // Forza fullscreen vero
     if (overlay.requestFullscreen) {{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
@@ -230,23 +222,21 @@ function openPlayer(item) {{
     }} else if (overlay.msRequestFullscreen) {{
         overlay.msRequestFullscreen();
     }}
-    
+
     // Gestione auto-hide X
     setupCloseBtnAutoHide();
 }}
 
-// Funzione per chiudere il player
-function closePlayer() {{
-    if (confirm("Sei sicuro di voler interrompere la riproduzione?")) {{
-        if (overlay) {{ // Controlla se overlay esiste
-            overlay.style.display = 'none';
-        }}
-        iframe.src = '';
+function closePlayer(){{ 
+    overlay.style.display='none';
+    iframe.src='';
 
-        // Uscita dal fullscreen
-        if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {{
-            document.exitFullscreen();
-        }}
+    if (document.fullscreenElement) {{
+        document.exitFullscreen();
+    }} else if (document.webkitFullscreenElement) {{
+        document.webkitExitFullscreen();
+    }} else if (document.msFullscreenElement) {{
+        document.msExitFullscreen();
     }}
 }}
 
@@ -259,6 +249,13 @@ function setupCloseBtnAutoHide() {{
         clearTimeout(hideTimeout);
         hideTimeout = setTimeout(() => btn.classList.add("hidden"), 3000);
     }}
+
+    // Mostra la X al tocco/click su mobile e al movimento su desktop
+    overlay.addEventListener("mousemove", showBtn);
+    overlay.addEventListener("click", showBtn);
+
+    showBtn(); // mostra subito quando parte
+}}
 
     overlay.onmousemove = showBtn;
     showBtn();
