@@ -201,11 +201,11 @@ function closeInfo(){{
     infoCard.style.display='none';
 }}
 
-function openPlayer(item){{ 
-    infoCard.style.display='none';
-    overlay.style.display='flex';
+function openPlayer(item) {{
+    infoCard.style.display = 'none';
+    overlay.style.display = 'flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{ 
+    if (item.type === 'tv') {{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
@@ -214,7 +214,7 @@ function openPlayer(item){{
     }}
     iframe.src = link;
 
-    // Forza fullscreen vero
+    // Forza fullscreen sul overlay
     if (overlay.requestFullscreen) {{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
@@ -222,7 +222,7 @@ function openPlayer(item){{
     }} else if (overlay.msRequestFullscreen) {{
         overlay.msRequestFullscreen();
     }}
-
+    
     // Gestione auto-hide X
     setupCloseBtnAutoHide();
 }}
@@ -233,15 +233,11 @@ function closePlayer() {{
             overlay.style.display = 'none';
         }}
         iframe.src = '';
-    }}
-}}
 
-    if (document.fullscreenElement) {{
-        document.exitFullscreen();
-    }} else if (document.webkitFullscreenElement) {{
-        document.webkitExitFullscreen();
-    }} else if (document.msFullscreenElement) {{
-        document.msExitFullscreen();
+        // Uscita dal fullscreen
+        if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {{
+            document.exitFullscreen();
+        }}
     }}
 }}
 
