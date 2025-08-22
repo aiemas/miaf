@@ -81,11 +81,6 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
-#playerOverlay button.closeBtn{{position:absolute;top:10px;right:10px;font-size:28px;background:#e50914;border:none;color:#fff;border-radius:50%;cursor:pointer;padding:0 12px;opacity:0.8;transition:opacity 0.3s;}}
-#playerOverlay button.closeBtn.hidden{{opacity:0;pointer-events:none;}}
-
-/* Zona trasparente per far ricomparire la X su tap/click anche sopra l'iframe */
-#revealZone{{position:fixed;top:0;right:0;width:90px;height:90px;z-index:1002;background:transparent;}}
 
 #infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
@@ -113,8 +108,6 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <button id='loadMore'>Carica altri</button>
 
 <div id='playerOverlay'>
-  <button class="closeBtn" id="closePlayerBtn" onclick="closePlayer()">×</button>
-  <div id="revealZone" aria-hidden="true"></div>
   <iframe allowfullscreen></iframe>
 </div>
 
@@ -147,23 +140,23 @@ const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 
-function sanitizeUrl(url){{ 
+function sanitizeUrl(url){ 
     if(!url) return "";
     if(url.startsWith("https://jepsauveel.net/")) return "";
     return url;
-}}
+}
 
-function showLatest(){{ 
+function showLatest(){ 
     let scrollPos = 0;
-    function scroll() {{
+    function scroll() {
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
-    }}
+        latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
+    }
     setInterval(scroll, 30);
-}}
+}
 
-function openInfo(item){{ 
+function openInfo(item){ 
     infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
@@ -173,149 +166,128 @@ function openInfo(item){{
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
-    if(item.type==='tv'){{ 
+    if(item.type==='tv'){ 
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){{ 
+        for(let s=1;s<=item.seasons;s++){ 
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }}
+        }
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }}
+    }
     
     playBtn.onclick = ()=>openPlayer(item);
     
-    function updateEpisodes(){{ 
+    function updateEpisodes(){ 
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){{ 
+        for(let e=1;e<=epCount;e++){ 
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function closeInfo(){{ 
+function closeInfo(){ 
     infoCard.style.display='none';
-}}
+}
 
-function openPlayer(item){{ 
-    // 🔴 Differenzio comportamento Film vs Serie
-    if(item.type==='movie') {{
-        infoCard.style.display='none'; // nei film la chiudo
-    }}
+function openPlayer(item){ 
+    if(item.type==='movie') {
+        infoCard.style.display='none';
+    }
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{ 
+    if(item.type==='tv'){ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
-    }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`;
-    }}
+        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}?lang=it#subtitles=0`;
+    } else {
+        link = `https://vixsrc.to/movie/${item.id}/?lang=it#subtitles=0`;
+    }
     iframe.src = link;
 
-    if (overlay.requestFullscreen) {{
+    if (overlay.requestFullscreen) {
         overlay.requestFullscreen();
-    }} else if (overlay.webkitRequestFullscreen) {{
+    } else if (overlay.webkitRequestFullscreen) {
         overlay.webkitRequestFullscreen();
-    }} else if (overlay.msRequestFullscreen) {{
+    } else if (overlay.msRequestFullscreen) {
         overlay.msRequestFullscreen();
-    }}
+    }
 
-    try {{
-        history.pushState({{playerOpen:true}}, "");
-    }} catch(e) {{}}
+    try {
+        history.pushState({playerOpen:true}, "");
+    } catch(e) {}
+}
 
-    setupCloseBtnAutoHide();
-}}
-
-function closePlayer(fromPop){{ 
+function closePlayer(fromPop){ 
     overlay.style.display='none';
     iframe.src='';
 
-    if (document.fullscreenElement) {{
+    if (document.fullscreenElement) {
         document.exitFullscreen();
-    }} else if (document.webkitFullscreenElement) {{
+    } else if (document.webkitFullscreenElement) {
         document.webkitExitFullscreen();
-    }} else if (document.msFullscreenElement) {{
+    } else if (document.msFullscreenElement) {
         document.msExitFullscreen();
-    }}
+    }
 
-    if (!fromPop && history.state && history.state.playerOpen) {{
-        try {{ history.back(); }} catch(e) {{}}
-    }}
-}}
+    if (!fromPop && history.state && history.state.playerOpen) {
+        try { history.back(); } catch(e) {}
+    }
+}
 
-function setupCloseBtnAutoHide() {{
-    const btn = document.getElementById("closePlayerBtn");
-    const zone = document.getElementById("revealZone");
-    let hideTimeout;
-
-    function showBtn() {{
-        btn.classList.remove("hidden");
-        clearTimeout(hideTimeout);
-        hideTimeout = setTimeout(() => btn.classList.add("hidden"), 2500);
-    }}
-
-    zone.addEventListener("click", showBtn);
-    zone.addEventListener("touchstart", function(e){{ e.preventDefault(); showBtn(); }}, {{ passive: false }});
-    document.addEventListener("fullscreenchange", showBtn);
-    document.addEventListener("keydown", function(e){{ if (e.key === "Escape") showBtn(); }});
-    showBtn();
-}}
-
-window.addEventListener("popstate", function(e){{ 
-    if (overlay.style.display === 'flex') {{
+window.addEventListener("popstate", function(e){ 
+    if (overlay.style.display === 'flex') {
         closePlayer(true);
-    }}
-}});
+    }
+});
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){{ 
-    if(reset){{ grid.innerHTML=''; shown=0; }}
+function render(reset=false){ 
+    if(reset){ grid.innerHTML=''; shown=0; }
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){{ 
+    while(shown<currentList.length && count<40){ 
         let m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{ 
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){ 
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
-                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
-                <div class='badge'>${{m.vote}}</div>
+                <img class='poster' src='${m.poster}' alt='${m.title}'>
+                <div class='badge'>${m.vote}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
-                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
+                    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
                 </p>
             `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
             count++;
-        }}
-    }}
-}}
+        }
+    }
+}
 
-function populateGenres(){{ 
+function populateGenres(){ 
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
-}}
+    [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
+}
 
-function updateType(t){{ 
+function updateType(t){ 
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}}
+}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
