@@ -228,8 +228,10 @@ function openPlayer(item){{
 }}
 
 function closePlayer() {{
-    if (confirm("Sei sicuro di voler interrompere la riproduzione?")) {
-        overlay.style.display = 'none';
+    if (confirm("Sei sicuro di voler interrompere la riproduzione?")) {{
+        if (overlay) {{ // Controlla se overlay esiste
+            overlay.style.display = 'none';
+        }}
         iframe.src = '';
     }}
 }}
