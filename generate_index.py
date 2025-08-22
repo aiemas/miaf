@@ -227,9 +227,12 @@ function openPlayer(item){{
     setupCloseBtnAutoHide();
 }}
 
-function closePlayer(){{ 
-    overlay.style.display='none';
-    iframe.src='';
+function closePlayer() {
+    if (confirm("Sei sicuro di voler interrompere la riproduzione?")) {
+        overlay.style.display = 'none';
+        iframe.src = '';
+    }
+}
 
     if (document.fullscreenElement) {{
         document.exitFullscreen();
