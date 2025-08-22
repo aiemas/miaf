@@ -172,7 +172,8 @@ function showLatest(){{
 
 function openInfo(item){{ 
     infoCard.style.display='block';
-    infoCard.style.backgroundImage = item.poster ? `url(${{item.poster}})` : "none";
+    infoCard.style.backgroundImage = "none";
+    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)"; // sfondo nero semi-trasparente
     infoCard.style.backgroundSize = "cover";
     infoCard.style.backgroundPosition = "center";
 
