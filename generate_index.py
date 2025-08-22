@@ -7,7 +7,7 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Ultime novità in alto (primi 10 della lista Vix)
 - Ricerca per titolo
 - Filtro per genere
-- Clic su locandina apre scheda info fullscreen con play
+- Clic su locandina apre scheda info con play
 - Lazy load: mostra 40 titoli per volta
 - Serie: tendine per stagione ed episodio
 - Scroll automatico ultime novità
@@ -55,7 +55,7 @@ def extract_ids(data):
 
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
-    r = requests.get(url, params={"api_key": api_key, "language": language}, timeout=15)
+    r = requests.get(url, params={"api_key": api_key, "language": language, "append_to_response": "credits"}, timeout=15)
     if r.status_code == 404:
         return None
     r.raise_for_status()
@@ -82,34 +82,10 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
 
-#infoCard{{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-  display:none;
-  z-index:1001;
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  color:#fff;
-  padding:20px;
-  overflow-y:auto;
-}}
-#infoCard::before{{
-  content:"";
-  position:absolute;
-  top:0;left:0;width:100%;height:100%;
-  background:rgba(0,0,0,0.75);
-  z-index:0;
-}}
-#infoCard > *{{
-  position:relative;
-  z-index:1;
-}}
+#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:rgba(34,34,34,0.95);border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
-#infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard p{{margin:5px 0;}}
+#infoCard button{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
@@ -137,13 +113,16 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <div id='infoCard'>
   <button class="closeBtn" onclick="closeInfo()">×</button>
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-    <h2 id="infoTitle" style="margin:0;flex:1;"></h2>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <h2 id="infoTitle" style="margin:0;"></h2>
     <button id="playBtn">Play</button>
   </div>
   <p id="infoGenres"></p>
   <p id="infoVote"></p>
   <p id="infoOverview"></p>
+  <p id="infoYear"></p>
+  <p id="infoDuration"></p>
+  <p id="infoCast"></p>
   <select id="seasonSelect"></select>
   <select id="episodeSelect"></select>
 </div>
@@ -163,6 +142,9 @@ const playBtn = document.getElementById('playBtn');
 const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
+const infoYear = document.getElementById('infoYear');
+const infoDuration = document.getElementById('infoDuration');
+const infoCast = document.getElementById('infoCast');
 
 function sanitizeUrl(url){{ 
     if(!url) return "";
@@ -182,10 +164,17 @@ function showLatest(){{
 
 function openInfo(item){{ 
     infoCard.style.display='block';
-    infoCard.style.backgroundImage = item.poster ? `url(${{item.poster}})` : "none"; infoTitle.textContent = item.title;
+    infoCard.style.backgroundImage = item.poster ? `url(${{item.poster}})` : "none";
+    infoCard.style.backgroundSize = "cover";
+    infoCard.style.backgroundPosition = "center";
+    
+    infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
+    infoYear.textContent = item.year ? "Anno: " + item.year : "";
+    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
+    infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
     
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
@@ -224,7 +213,6 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
@@ -252,7 +240,7 @@ function openPlayer(item){{
 function closePlayer(fromPop){{ 
     overlay.style.display='none';
     iframe.src='';
-
+    
     if (document.fullscreenElement) {{
         document.exitFullscreen();
     }} else if (document.webkitFullscreenElement) {{
@@ -266,7 +254,6 @@ function closePlayer(fromPop){{
     }}
 }}
 
-/* Tasto Indietro del browser chiude il player quando è aperto */
 window.addEventListener("popstate", function(e){{ 
     if (overlay.style.display === 'flex') {{
         closePlayer(true);
@@ -352,6 +339,7 @@ def main():
             episodes = {str(s["season_number"]): s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
             duration = info.get("runtime", 0) if type_=="movie" else 0
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
+            cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
             entries.append({
                 "id": tmdb_id,
@@ -365,11 +353,12 @@ def main():
                 "seasons": seasons,
                 "episodes": episodes,
                 "duration": duration or 0,
-                "year": year or ""
+                "year": year or "",
+                "cast": cast
             })
 
             if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>"
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
