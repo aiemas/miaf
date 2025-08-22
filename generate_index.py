@@ -145,13 +145,13 @@ function sanitizeUrl(url){{
 
 function showLatest(){{
     let scrollPos = 0;
-    function scroll() {
+    function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
         latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
     }}
     setInterval(scroll, 30);
-}
+}}
 
 function openInfo(item){
     infoCard.style.display='block';
