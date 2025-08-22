@@ -227,12 +227,12 @@ function openPlayer(item){{
     setupCloseBtnAutoHide();
 }}
 
-function closePlayer() {
+function closePlayer() {{
     if (confirm("Sei sicuro di voler interrompere la riproduzione?")) {
         overlay.style.display = 'none';
         iframe.src = '';
-    }
-}
+    }}
+}}
 
     if (document.fullscreenElement) {{
         document.exitFullscreen();
