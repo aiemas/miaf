@@ -114,12 +114,12 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   <iframe allowfullscreen></iframe>
 </div>
 
-<div id='infoCard'>
-  <div style="position:relative;">
-    <button id="closeCardBtn" style="position:absolute;top:10px;left:10px;padding:5px 10px;background:#e50914;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:16px;">×</button>
-    <div style="display:flex;align-items:center;gap:10px;">
-      <h2 id="infoTitle"></h2>
-      <button id="playBtn">Play</button>
+<div id='infoCard' style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;z-index:1000;overflow:auto;background:rgba(0,0,0,0.85);">
+  <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
+    <h2 id="infoTitle" style="margin-top:0;color:#e50914;"></h2>
+    <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
+      <button id="playBtn" class="btn-play">Play</button>
+      <button id="closeCardBtn" class="btn-close">×</button>
     </div>
     <p id="infoGenres"></p>
     <p id="infoVote"></p>
@@ -131,6 +131,27 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <select id="episodeSelect"></select>
   </div>
 </div>
+
+<style>
+.btn-play {{
+  padding: 5px 10px;
+  background: orange;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
+.btn-close {{
+  padding: 5px 10px;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
+</style>
 
 <script>
 const allData = {entries};
