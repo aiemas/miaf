@@ -243,7 +243,7 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    infoCard.style.display = 'none';
+    infoCard.style.display='none';
     overlay.style.display='flex';
 
     let link = sanitizeUrl(item.link);
@@ -265,6 +265,9 @@ function openPlayer(item){{
     }}
 
     overlay.dataset.prevCardVisible = 'true';
+
+    // PushState con replace, così non accumuliamo più stati
+    try {{ history.replaceState({{playerOpen:true}}, ""); }} catch(e) {{}}
 }}
 
 function closePlayer(){{
@@ -284,6 +287,13 @@ function closePlayer(){{
     }}
     overlay.dataset.prevCardVisible = 'false';
 }}
+
+// Gestione popstate: chiudi il player se c'è overlay aperto
+window.addEventListener("popstate", function(e){{
+    if(overlay.style.display === 'flex'){{
+        closePlayer();
+    }}
+}});
 
     // Mostra la card solo se esiste un film selezionato
     if(overlay.dataset.prevCardVisible === 'true'){{
