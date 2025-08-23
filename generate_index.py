@@ -97,9 +97,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </head>
 <body>
 <h1>Ultime Novità</h1>
-<p id="totalCount" style="text-align:center;font-size:14px;color:#ccc;margin-bottom:10px;"></p>
 <div id='latest'>
-  {latest_entries}
+{latest_entries}
 </div>
 
 <h1>Movies & Series</h1>
@@ -147,10 +146,6 @@ const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
 const closeCardBtn = document.getElementById('closeCardBtn');
 const latestDiv = document.getElementById('latest');
-const totalCount = document.getElementById('totalCount');
-const movieCount = allData.filter(x => x.type === 'movie').length;
-const tvCount = allData.filter(x => x.type === 'tv').length;
-totalCount.textContent = `Sono presenti circa ${movieCount} film e ${tvCount} serie TV.`;
 
 closeCardBtn.onclick = () => infoCard.style.display = 'none';
 const seasonSelect = document.getElementById('seasonSelect');
