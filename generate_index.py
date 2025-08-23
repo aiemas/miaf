@@ -243,12 +243,11 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    // Nascondi card per evitare sovrapposizione
     infoCard.style.display = 'none';
     overlay.style.display='flex';
 
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{ 
+    if(item.type==='tv'){{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off`;
@@ -265,16 +264,10 @@ function openPlayer(item){{
         overlay.msRequestFullscreen();
     }}
 
-    // Resetta stato storico precedente se già aperto
-    if(history.state && history.state.playerOpen){{
-        history.replaceState({{}}, "");
-    }}
-    history.pushState({{playerOpen:true}}, "");
-
     overlay.dataset.prevCardVisible = 'true';
 }}
 
-function closePlayer(fromPop){{ 
+function closePlayer(){{
     overlay.style.display='none';
     iframe.src='';
 
@@ -285,6 +278,12 @@ function closePlayer(fromPop){{
     }} else if(document.msFullscreenElement){{
         document.msExitFullscreen();
     }}
+
+    if(overlay.dataset.prevCardVisible === 'true'){{
+        infoCard.style.display = 'block';
+    }}
+    overlay.dataset.prevCardVisible = 'false';
+}}
 
     // Mostra la card solo se esiste un film selezionato
     if(overlay.dataset.prevCardVisible === 'true'){{
