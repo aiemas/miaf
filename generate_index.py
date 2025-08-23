@@ -64,41 +64,43 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     return r.json()
 
 def build_html(entries, latest_entries):
-    html = f"""<!doctype html>
+    <!doctype html>
 <html lang='it'>
 <head>
 <meta charset='utf-8'>
 <meta name='viewport' content='width=device-width,initial-scale=1'>
 <title>Movies & Series</title>
 <style>
-body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
-h1{{color:#fff;text-align:center;margin-bottom:20px;}}
-.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
-input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
-.card:hover{{transform:scale(1.05);}}
-.poster{{width:100%;border-radius:8px;display:block;}}
-.badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
-#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
-#playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
-#playerOverlay iframe{{width:100%;height:100%;border:none;}}
-
-#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
-#infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
-#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
-#infoCard p{{margin:5px 0;}}
-#infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
-#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
-#latest::-webkit-scrollbar {{display: none;}}
-#latest {{-ms-overflow-style: none;scrollbar-width: none;}}
-#latest .poster{{width:100px;flex-shrink:0;}}
+/* STILI INVARIATI DALL'ORIGINALE */
+body{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}
+h1{color:#fff;text-align:center;margin-bottom:20px;}
+.controls{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}
+input,select{padding:8px;font-size:14px;border-radius:4px;border:none;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.card{position:relative;cursor:pointer;transition: transform 0.2s;}
+.card:hover{transform:scale(1.05);}
+.poster{width:100%;border-radius:8px;display:block;}
+.badge{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}
+#loadMore{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+#playerOverlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}
+#playerOverlay iframe{width:100%;height:100%;border:none;}
+#infoCard{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}
+#infoCard h2{margin-top:0;color:#e50914;display:inline-block;}
+#infoCard button#playBtn{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}
+#infoCard p{margin:5px 0;}
+#infoCard select{margin:5px 5px 5px 0;padding:6px;}
+#latest{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}
+#latest::-webkit-scrollbar {display: none;}
+#latest {-ms-overflow-style: none;scrollbar-width: none;}
+#latest .poster{width:100px;flex-shrink:0;}
+.btn-play {padding: 5px 10px;background: orange;color: #fff;border: none;border-radius: 5px;cursor: pointer;font-size: 14px;}
+.btn-close {padding: 5px 10px;background: #e50914;color: #fff;border: none;border-radius: 5px;cursor: pointer;font-size: 14px;}
 </style>
 </head>
 <body>
 <h1>Ultime Novità</h1>
 <div id='latest'>
-{latest_entries}
+<!-- latest_entries inserite qui -->
 </div>
 
 <h1>Movies & Series</h1>
@@ -114,9 +116,9 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   <iframe allowfullscreen></iframe>
 </div>
 
-<div id='infoCard' style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;z-index:1000;overflow:auto;background:rgba(0,0,0,0.85);">
+<div id='infoCard'>
   <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
-    <h2 id="infoTitle" style="margin-top:0;color:#e50914;"></h2>
+    <h2 id="infoTitle"></h2>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn" class="btn-play">Play</button>
       <button id="closeCardBtn" class="btn-close">×</button>
@@ -132,29 +134,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   </div>
 </div>
 
-<style>
-.btn-play {{
-  padding: 5px 10px;
-  background: orange;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}}
-.btn-close {{
-  padding: 5px 10px;
-  background: #e50914;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}}
-</style>
-
 <script>
-const allData = {entries};
+const allData = /* entries inserite qui */;
 
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
@@ -167,13 +148,13 @@ const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
 const closeCardBtn = document.getElementById('closeCardBtn');
 const latestDiv = document.getElementById('latest');
-
-closeCardBtn.onclick = () => infoCard.style.display = 'none';
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 const infoYear = document.getElementById('infoYear');
 const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
+
+closeCardBtn.onclick = () => infoCard.style.display = 'none';
 
 function sanitizeUrl(url){{ 
     if(!url) return "";
@@ -194,7 +175,7 @@ function showLatest(){{
 function openInfo(item){{ 
     infoCard.style.display='block';
     infoCard.style.backgroundImage = "none";
-    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)"; // sfondo nero semi-trasparente
+    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoCard.style.backgroundSize = "cover";
     infoCard.style.backgroundPosition = "center";
 
@@ -238,16 +219,11 @@ function openInfo(item){{
     }}
 }}
 
-function closeInfo(){{ 
-    infoCard.style.display='none';
-}}
-
-function openPlayer(item){{ 
+function openPlayer(item) {{
     infoCard.style.display='none';
     overlay.style.display='flex';
-
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{
+    if(item.type==='tv') {{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off`;
@@ -265,77 +241,35 @@ function openPlayer(item){{
     }}
 
     overlay.dataset.prevCardVisible = 'true';
-
-    // PushState con replace, così non accumuliamo più stati
-    try {{ history.replaceState({{playerOpen:true}}, ""); }} catch(e) {{}}
+    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
 }}
-
-function closePlayer(){{
-    overlay.style.display='none';
-    iframe.src='';
-
-    if(document.fullscreenElement){{
-        document.exitFullscreen();
-    }} else if(document.webkitFullscreenElement){{
-        document.webkitExitFullscreen();
-    }} else if(document.msFullscreenElement){{
-        document.msExitFullscreen();
-    }}
-
-    if(overlay.dataset.prevCardVisible === 'true'){{
-        infoCard.style.display = 'block';
-    }}
-    overlay.dataset.prevCardVisible = 'false';
-}}
-
-// Gestione popstate: chiudi il player se c'è overlay aperto
-window.addEventListener("popstate", function(e){{
-    if(overlay.style.display === 'flex'){{
-        closePlayer();
-    }}
-}});
-
-    // Mostra la card solo se esiste un film selezionato
-    if(overlay.dataset.prevCardVisible === 'true'){{
-        infoCard.style.display = 'block';
-    }}
-    overlay.dataset.prevCardVisible = 'false';
-
-    // Gestione storico
-    if(!fromPop && history.state && history.state.playerOpen){{
-        try {{ history.back(); }} catch(e){{}}
-    }}
-}}
-
 
 function closePlayer(fromPop) {{
     overlay.style.display='none';
     iframe.src='';
 
-    if (document.fullscreenElement) {{
+    if(document.fullscreenElement) {{
         document.exitFullscreen();
-    }} else if (document.webkitFullscreenElement) {{
+    }} else if(document.webkitFullscreenElement) {{
         document.webkitExitFullscreen();
-    }} else if (document.msFullscreenElement) {{
+    }} else if(document.msFullscreenElement) {{
         document.msExitFullscreen();
     }}
 
     if(overlay.dataset.prevCardVisible === 'true') {{
         infoCard.style.display = 'block';
     }}
-
-    if (!fromPop && history.state && history.state.playerOpen) {{
-        try {{ history.back(); }} catch(e) {{}}
-    }}
+    overlay.dataset.prevCardVisible = 'false';
 }}
 
-window.addEventListener("popstate", function(e){{ 
-    if (overlay.style.display === 'flex') {{
+window.addEventListener("popstate", function(e) {{
+    if(overlay.style.display === 'flex') {{
         closePlayer(true);
     }}
 }});
 
 let currentType='movie', currentList=[], shown=0;
+
 function render(reset=false){{ 
     if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
@@ -384,6 +318,7 @@ showLatest();
 </script>
 </body>
 </html>
+
 """
     return html
 
