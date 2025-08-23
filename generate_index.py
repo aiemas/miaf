@@ -246,6 +246,7 @@ function openPlayer(item){{
     // Nascondi card per evitare sovrapposizione
     infoCard.style.display = 'none';
     overlay.style.display='flex';
+
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
@@ -260,14 +261,43 @@ function openPlayer(item){{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
         overlay.webkitRequestFullscreen();
-    }} else
-    if (overlay.msRequestFullscreen) {{
+    }} else if (overlay.msRequestFullscreen) {{
         overlay.msRequestFullscreen();
     }}
 
+    // Resetta stato storico precedente se già aperto
+    if(history.state && history.state.playerOpen){{
+        history.replaceState({{}}, "");
+    }}
+    history.pushState({{playerOpen:true}}, "");
+
     overlay.dataset.prevCardVisible = 'true';
-    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
 }}
+
+function closePlayer(fromPop){{ 
+    overlay.style.display='none';
+    iframe.src='';
+
+    if(document.fullscreenElement){{
+        document.exitFullscreen();
+    }} else if(document.webkitFullscreenElement){{
+        document.webkitExitFullscreen();
+    }} else if(document.msFullscreenElement){{
+        document.msExitFullscreen();
+    }}
+
+    // Mostra la card solo se esiste un film selezionato
+    if(overlay.dataset.prevCardVisible === 'true'){{
+        infoCard.style.display = 'block';
+    }}
+    overlay.dataset.prevCardVisible = 'false';
+
+    // Gestione storico
+    if(!fromPop && history.state && history.state.playerOpen){{
+        try {{ history.back(); }} catch(e){{}}
+    }}
+}}
+
 
 function closePlayer(fromPop) {{
     overlay.style.display='none';
