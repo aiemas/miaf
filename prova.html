@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang='it'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Movies & Series</title>
+<style>
+body{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}
+h1{color:#fff;text-align:center;margin-bottom:20px;}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+.card{position:relative;cursor:pointer;}
+.poster{width:100%;border-radius:8px;display:block;}
+#latest{display:flex;overflow-x:auto;gap:10px;}
+</style>
+</head>
+<body>
+<h1>Ultime Novità</h1>
+<div id='latest'>
+<div class='card'><img class='poster' src='https://via.placeholder.com/300x450' alt='Film di esempio'></div><div class='card'><img class='poster' src='https://via.placeholder.com/300x450' alt='Serie di esempio'></div>
+</div>
+
+<h1>Movies & Series</h1>
+<div id='moviesGrid' class='grid'></div>
+
+<script>
+const allData = [{"id": "1", "title": "Film di esempio", "poster": "https://via.placeholder.com/300x450", "genres": ["Azione", "Avventura"], "vote": 7.5, "overview": "Trama del film di esempio.", "type": "movie", "seasons": 0, "episodes": {}, "duration": 120, "year": "2023", "cast": ["Attore 1", "Attore 2"]}, {"id": "2", "title": "Serie di esempio", "poster": "https://via.placeholder.com/300x450", "genres": ["Commedia"], "vote": 8.2, "overview": "Trama della serie di esempio.", "type": "tv", "seasons": 2, "episodes": {"1": 5, "2": 6}, "duration": 0, "year": "2022", "cast": ["Attrice 1", "Attrice 2"]}];
+const grid = document.getElementById('moviesGrid');
+
+allData.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+        <img class='poster' src='${m.poster}' alt='${m.title}'>
+        <p>${m.title}</p>
+    `;
+    grid.appendChild(card);
+});
+</script>
+</body>
+</html>
