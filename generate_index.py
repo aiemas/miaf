@@ -11,6 +11,8 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Lazy load: mostra 40 titoli per volta
 - Serie: tendine per stagione ed episodio
 - Scroll automatico ultime novità
+- Card fullscreen con sfondo locandina in trasparenza
+- Play nasconde la card temporaneamente
 """
 
 import os
@@ -55,7 +57,7 @@ def extract_ids(data):
 
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
-    r = requests.get(url, params={"api_key": api_key, "language": language}, timeout=15)
+    r = requests.get(url, params={"api_key": api_key, "language": language, "append_to_response": "credits"}, timeout=15)
     if r.status_code == 404:
         return None
     r.raise_for_status()
@@ -80,12 +82,13 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
-#playerOverlay iframe{{width:80%;height:60%;border:none;}}
-#playerOverlay button.closeBtn{{position:absolute;top:10px;right:10px;font-size:24px;background:#e50914;border:none;color:#fff;border-radius:50%;cursor:pointer;padding:0 10px;}}
-#infoCard{{position:fixed;top:10%;left:50%;transform:translateX(-50%);background:#222;border-radius:10px;padding:20px;width:80%;max-width:600px;display:none;z-index:1001;}}
-#infoCard h2{{margin-top:0;color:#e50914;}}
+#playerOverlay iframe{{width:100%;height:100%;border:none;}}
+
+#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
+#infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
+#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
 #infoCard p{{margin:5px 0;}}
-#infoCard button{{margin-top:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
@@ -108,22 +111,47 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <button id='loadMore'>Carica altri</button>
 
 <div id='playerOverlay'>
-<button class="closeBtn" onclick="closePlayer()">×</button>
-<iframe allowfullscreen></iframe>
+  <iframe allowfullscreen></iframe>
 </div>
 
-<div id='infoCard'>
-  <button class="closeBtn" onclick="closeInfo()">×</button>
-  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
-    <h2 id="infoTitle" style="margin:0;flex:1;"></h2>
-    <button id="playBtn">Play</button>
+<div id='infoCard' style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;z-index:1000;overflow:auto;background:rgba(0,0,0,0.85);">
+  <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
+    <h2 id="infoTitle" style="margin-top:0;color:#e50914;"></h2>
+    <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
+      <button id="playBtn" class="btn-play">Play</button>
+      <button id="closeCardBtn" class="btn-close">×</button>
+    </div>
+    <p id="infoGenres"></p>
+    <p id="infoVote"></p>
+    <p id="infoOverview"></p>
+    <p id="infoYear"></p>
+    <p id="infoDuration"></p>
+    <p id="infoCast"></p>
+    <select id="seasonSelect"></select>
+    <select id="episodeSelect"></select>
   </div>
-  <p id="infoGenres"></p>
-  <p id="infoVote"></p>
-  <p id="infoOverview"></p>
-  <select id="seasonSelect"></select>
-  <select id="episodeSelect"></select>
 </div>
+
+<style>
+.btn-play {{
+  padding: 5px 10px;
+  background: orange;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
+.btn-close {{
+  padding: 5px 10px;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
+</style>
 
 <script>
 const allData = {entries};
@@ -137,9 +165,15 @@ const infoGenres = document.getElementById('infoGenres');
 const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
+const closeCardBtn = document.getElementById('closeCardBtn');
 const latestDiv = document.getElementById('latest');
+
+closeCardBtn.onclick = () => infoCard.style.display = 'none';
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
+const infoYear = document.getElementById('infoYear');
+const infoDuration = document.getElementById('infoDuration');
+const infoCast = document.getElementById('infoCast');
 
 function sanitizeUrl(url){{ 
     if(!url) return "";
@@ -159,11 +193,19 @@ function showLatest(){{
 
 function openInfo(item){{ 
     infoCard.style.display='block';
+    infoCard.style.backgroundImage = "none";
+    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)"; // sfondo nero semi-trasparente
+    infoCard.style.backgroundSize = "cover";
+    infoCard.style.backgroundPosition = "center";
+
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
-    
+    infoYear.textContent = item.year ? "Anno: " + item.year : "";
+    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
+    infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
+
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
@@ -180,9 +222,9 @@ function openInfo(item){{
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
     }}
-    
+
     playBtn.onclick = ()=>openPlayer(item);
-    
+
     function updateEpisodes(){{ 
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
@@ -201,23 +243,58 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    infoCard.style.display='none';
+    // Nascondi card per evitare sovrapposizione
+    infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
     if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off`;
     }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`;
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off`;
     }}
     iframe.src = link;
+
+    if (overlay.requestFullscreen) {{
+        overlay.requestFullscreen();
+    }} else if (overlay.webkitRequestFullscreen) {{
+        overlay.webkitRequestFullscreen();
+    }} else
+    if (overlay.msRequestFullscreen) {{
+        overlay.msRequestFullscreen();
+    }}
+
+    overlay.dataset.prevCardVisible = 'true';
+    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
 }}
 
-function closePlayer(){{ 
+function closePlayer(fromPop) {{
     overlay.style.display='none';
     iframe.src='';
+
+    if (document.fullscreenElement) {{
+        document.exitFullscreen();
+    }} else if (document.webkitFullscreenElement) {{
+        document.webkitExitFullscreen();
+    }} else if (document.msFullscreenElement) {{
+        document.msExitFullscreen();
+    }}
+
+    if(overlay.dataset.prevCardVisible === 'true') {{
+        infoCard.style.display = 'block';
+    }}
+
+    if (!fromPop && history.state && history.state.playerOpen) {{
+        try {{ history.back(); }} catch(e) {{}}
+    }}
 }}
+
+window.addEventListener("popstate", function(e){{ 
+    if (overlay.style.display === 'flex') {{
+        closePlayer(true);
+    }}
+}});
 
 let currentType='movie', currentList=[], shown=0;
 function render(reset=false){{ 
@@ -294,12 +371,13 @@ def main():
             vote = info.get("vote_average", 0)
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
-            seasons = info.get("number_of_seasons",1) if type_=="tv" else 0
-            episodes = {{str(s["season_number"]): s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")}} if type_=="tv" else {{}}
-            duration = info.get("runtime",0) if type_=="movie" else 0
+            seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
+            episodes = {str(s["season_number"]): s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
+            duration = info.get("runtime", 0) if type_=="movie" else 0
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
+            cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
-            entries.append({{
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -311,11 +389,12 @@ def main():
                 "seasons": seasons,
                 "episodes": episodes,
                 "duration": duration or 0,
-                "year": year or ""
-            }})
+                "year": year or "",
+                "cast": cast
+            })
 
             if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
