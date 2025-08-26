@@ -76,23 +76,40 @@ h1{{color:#fff;text-align:center;margin-bottom:20px;}}
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s, box-shadow 0.3s;border-radius:16px;overflow:hidden;border:2px solid #444;background:#1f1f1f;box-shadow:0 4px 10px rgba(0,0,0,0.5);}}
-.card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;box-shadow:0 8px 20px rgba(0,0,0,0.7);}}
+.card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
+.card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
-#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(12px);color:#fff;padding:20px;overflow:auto;}}
+#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
-#infoCard button#playBtn{{margin-left:10px;padding:8px 14px;background:orange;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
-#infoCard button#closeCardBtn{{margin-left:10px;padding:8px 14px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
+#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
 #infoCard p{{margin:5px 0;}}
 #infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
-#latest .poster{{width:120px;flex-shrink:0;border-radius:8px;}}
+#latest .poster{{width:100px;flex-shrink:0;}}
+.btn-play {{
+  padding: 5px 10px;
+  background: orange;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
+.btn-close {{
+  padding: 5px 10px;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
 </style>
 </head>
 <body>
@@ -115,11 +132,11 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <div id='infoCard'>
-  <div style="position:relative;background:#222;border-radius:12px;padding:20px;max-width:800px;width:90%;">
+  <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
     <h2 id="infoTitle"></h2>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
-      <button id="playBtn">Play</button>
-      <button id="closeCardBtn">×</button>
+      <button id="playBtn" class="btn-play">Play</button>
+      <button id="closeCardBtn" class="btn-close">×</button>
     </div>
     <p id="infoGenres"></p>
     <p id="infoVote"></p>
@@ -131,9 +148,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <select id="episodeSelect"></select>
   </div>
 </div>
-"""
-    return html
 
+<script>
 const allData = {entries};
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
@@ -317,7 +333,7 @@ showLatest();
 </script>
 </body>
 </html>
-
+"""
     return html
 
 def main():
