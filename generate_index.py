@@ -1,8 +1,22 @@
 #!/usr/bin/env python3
 """
 generate_index.py
+
 Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
+- Film e Serie TV (due tendine: Movies / Series)
+- Ultime novità in alto (primi 10 della lista Vix)
+- Ricerca per titolo
+- Filtro per genere
+- Clic su locandina apre scheda info con play
+- Lazy load: mostra 40 titoli per volta
+- Serie: tendine per stagione ed episodio
+- Scroll automatico ultime novità
+- Card fullscreen con sfondo locandina in trasparenza
+- Play nasconde la card temporaneamente
+- Card uniformi con colori più gradevoli
+- Hover e animazioni più eleganti
 """
+
 import os
 import sys
 import requests
@@ -60,29 +74,40 @@ def build_html(entries, latest_entries):
 <style>
 body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
 h1{{color:#fff;text-align:center;margin-bottom:20px;}}
-.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
-input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
-.card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
-.poster{{width:100%;border-radius:0;display:block;}}
+.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
+input,select{{padding:8px;font-size:14px;border-radius:6px;border:none;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:16px;}}
+.card{{position:relative;cursor:pointer;transition: transform 0.25s, box-shadow 0.25s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;box-shadow:0 2px 8px rgba(0,0,0,0.5);}}
+.card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;box-shadow:0 6px 20px rgba(0,0,0,0.7);}}
+.poster{{width:100%;border-radius:0;display:block;transition: opacity 0.3s;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
-#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
-#playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
-#playerOverlay iframe{{width:100%;height:100%;border:none;}}
-#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
-#infoCard h2{{margin-top:0;color:#ff4c29;display:inline-block;}}
-#infoCard .inner{{position:relative;background: linear-gradient(135deg, rgba(20,20,20,0.95), rgba(50,50,50,0.95));border-radius:20px;padding:25px;max-width:800px;width:90%;box-shadow:0 10px 25px rgba(0,0,0,0.7);transition: transform 0.3s ease, background 0.3s ease, opacity 0.3s ease;}}
-#infoCard .inner:hover{{transform:scale(1.02);background: linear-gradient(135deg, rgba(30,30,30,0.95), rgba(70,70,70,0.95));}}
-#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
+#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;transition: background 0.3s;}}
+#loadMore:hover{{background:#ff2a2a;}}
+#playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.95);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
+#playerOverlay iframe{{width:100%;height:100%;border:none;border-radius:8px;}}
+#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.9);display:none;z-index:1001;backdrop-filter:blur(10px);color:#fff;padding:20px;overflow:auto;}}
+#infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
+#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;transition:background 0.3s;}}
+#infoCard button#playBtn:hover{{background:#ff2a2a;}}
 #infoCard p{{margin:5px 0;}}
-#infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
-#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
+#infoCard select{{margin:5px 5px 5px 0;padding:6px;border-radius:5px;}}
+#latest{{display:flex;overflow-x:auto;gap:12px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
-#latest .poster{{width:100px;flex-shrink:0;}}
-.btn-play {{padding: 5px 10px;background: orange;color: #fff;border: none;border-radius: 5px;cursor: pointer;font-size: 14px;}}
-.btn-close {{padding: 5px 10px;background: #e50914;color: #fff;border: none;border-radius: 5px;cursor: pointer;font-size: 14px;}}
+#latest .poster{{width:100px;flex-shrink:0;border-radius:6px;transition: transform 0.3s;}}
+#latest .poster:hover{{transform:scale(1.1);}}
+.btn-play, .btn-close {{
+  padding: 6px 12px;
+  background: orange;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}}
+.btn-play:hover {{ background:#ff7f00; }}
+.btn-close:hover {{ background:#ff2a2a; }}
 </style>
 </head>
 <body>
@@ -90,6 +115,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <div id='latest'>
 {latest_entries}
 </div>
+
 <h1>Movies & Series</h1>
 <div class='controls'>
 <select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
@@ -98,11 +124,13 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 <div id='moviesGrid' class='grid'></div>
 <button id='loadMore'>Carica altri</button>
+
 <div id='playerOverlay'>
   <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
 </div>
+
 <div id='infoCard'>
-  <div class="inner">
+  <div style="position:relative;background:#222;border-radius:12px;padding:20px;max-width:800px;width:90%;">
     <h2 id="infoTitle"></h2>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn" class="btn-play">Play</button>
@@ -118,6 +146,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <select id="episodeSelect"></select>
   </div>
 </div>
+
 <script>
 const allData = {entries};
 const grid=document.getElementById('moviesGrid');
@@ -138,20 +167,25 @@ const infoYear = document.getElementById('infoYear');
 const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
 
-function sanitizeUrl(url){ if(!url) return ""; return url; }
+function sanitizeUrl(url){{ 
+    if(!url) return "";
+    return url;
+}}
 
-function showLatest(){ 
+function showLatest(){{ 
     let scrollPos = 0;
-    function scroll() {
+    function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
-    }
+        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+    }}
     setInterval(scroll, 30);
-}
+}}
 
-function openInfo(item){
+function openInfo(item){{ 
     infoCard.style.display='block';
+    infoCard.style.backgroundImage = "none";
+    infoCard.style.backgroundColor = "rgba(0,0,0,0.9)";
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -163,69 +197,94 @@ function openInfo(item){
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
-    if(item.type==='tv'){ 
+    if(item.type==='tv'){{ 
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){ 
+        for(let s=1;s<=item.seasons;s++){{ 
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }
+        }}
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }
+    }}
 
     playBtn.onclick = ()=>openPlayer(item);
 
-    function updateEpisodes(){ 
+    function updateEpisodes(){{ 
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){ 
+        for(let e=1;e<=epCount;e++){{ 
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function openPlayer(item){ 
+function closeInfo(){{ 
+    infoCard.style.display='none';
+}}
+
+function openPlayer(item){{ 
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){ 
+    if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}?lang=it&sottotitoli=off&autoplay=1`;
-    } else {
-        link = `https://vixsrc.to/movie/${item.id}/?lang=it&sottotitoli=off&autoplay=1`;
-    }
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
+    }} else {{
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
+    }}
     iframe.src = link;
 
-    if (overlay.requestFullscreen) overlay.requestFullscreen();
-    else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
-    else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
+    if (overlay.requestFullscreen) {{
+        overlay.requestFullscreen();
+    }} else if (overlay.webkitRequestFullscreen) {{
+        overlay.webkitRequestFullscreen();
+    }} else if (overlay.msRequestFullscreen) {{
+        overlay.msRequestFullscreen();
+    }}
 
     overlay.dataset.prevCardVisible = 'true';
-    try { history.pushState({playerOpen:true}, ""); } catch(e) {}
-}
+    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
+}}
 
-function closePlayer(fromPop) {
+function closePlayer(fromPop) {{
     overlay.style.display='none';
     iframe.src='';
-    if(document.fullscreenElement) document.exitFullscreen();
-    else if(document.webkitFullscreenElement) document.webkitExitFullscreen();
-    else if(document.msFullscreenElement) document.msExitFullscreen();
-    if(overlay.dataset.prevCardVisible === 'true') infoCard.style.display = 'block';
-    if(!fromPop && history.state && history.state.playerOpen){ try { history.back(); } catch(e) {} }
-}
+
+    if (document.fullscreenElement) {{
+        document.exitFullscreen();
+    }} else if (document.webkitFullscreenElement) {{
+        document.webkitExitFullscreen();
+    }} else if (document.msFullscreenElement) {{
+        document.msExitFullscreen();
+    }}
+
+    if(overlay.dataset.prevCardVisible === 'true') {{
+        infoCard.style.display = 'block';
+    }}
+
+    if (!fromPop && history.state && history.state.playerOpen) {{
+        try {{ history.back(); }} catch(e) {{}}
+    }}
+}}
+
+window.addEventListener("popstate", function(e){{ 
+    if (overlay.style.display === 'flex') {{
+        closePlayer(true);
+    }}
+}});
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){ 
-    if(reset){ grid.innerHTML=''; shown=0; }
+function render(reset=false){{ 
+    if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
@@ -234,29 +293,33 @@ function render(reset=false){
         if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){ 
             const card = document.createElement('div'); 
             card.className='card';
-            card.innerHTML = `<img class='poster' src='${m.poster}' alt='${m.title}'>
+            card.innerHTML = `
+                <img class='poster' src='${m.poster}' alt='${m.title}'>
                 <div class='badge'>${m.vote}</div>
-                <p style="margin:2px 0;font-size:12px;color:#ccc;">${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}</p>`;
+                <p style="margin:2px 0;font-size:12px;color:#ccc;">
+                    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
+                </p>
+            `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
             count++;
         }
     }
-}
+}}
 
 function populateGenres(){ 
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
     [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
-}
+}}
 
 function updateType(t){ 
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}
+}}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
@@ -295,7 +358,7 @@ def main():
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
             seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
-            episodes = {s["season_number"]: s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
+            episodes = {str(s["season_number"]): s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
             duration = info.get("runtime", 0) if type_=="movie" else 0
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
