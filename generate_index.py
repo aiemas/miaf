@@ -134,7 +134,6 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 """
     return html
 
-<script>
 const allData = {entries};
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
