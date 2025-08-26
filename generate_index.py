@@ -1,85 +1,333 @@
-import requests, os, sys
+#!/usr/bin/env python3
+"""
+generate_index.py
 
+Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
+- Film e Serie TV (due tendine: Movies / Series)
+- Ultime novità in alto (primi 10 della lista Vix)
+- Ricerca per titolo
+- Filtro per genere
+- Clic su locandina apre pagina dettagli a schermo intero
+- Lazy load: mostra 40 titoli per volta
+- Serie: tendine per stagione ed episodio
+- Scroll automatico ultime novità
+"""
+
+import os
+import sys
+import requests
+
+# --- Config ---
+SRC_URLS = {
+    "movie": "https://vixsrc.to/api/list/movie?lang=it",
+    "tv": "https://vixsrc.to/api/list/tv?lang=it"
+}
+TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
+TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
+VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
+VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
 OUTPUT_HTML = "index.html"
+HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
-Funzione per scaricare lista da Vix
 
-def fetch_list(url): print(f"Scarico lista da: {url}") r = requests.get(url, timeout=30) r.raise_for_status() data = r.json() if isinstance(data, dict) and "result" in data: return data["result"] elif isinstance(data, list): return data else: return []
+def get_api_key():
+    key = os.getenv("TMDB_API_KEY")
+    if not key:
+        print("Errore: manca TMDB_API_KEY", file=sys.stderr)
+        sys.exit(1)
+    return key
 
-Funzione HTML builder
 
-def build_html(entries, latest_entries): return f"""<!DOCTYPE html>
+def fetch_list(url):
+    r = requests.get(url, headers=HEADERS, timeout=20)
+    r.raise_for_status()
+    return r.json()
 
+
+def extract_ids(data):
+    ids = []
+    items = data if isinstance(data, list) else data.get("results", [])
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        for key in ("tmdb_id", "tmdbId", "id"):
+            if key in item and item[key]:
+                ids.append(str(item[key]))
+                break
+    return ids
+
+
+def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
+    url = TMDB_BASE.format(type=type_, id=tmdb_id)
+    r = requests.get(
+        url,
+        params={"api_key": api_key, "language": language, "append_to_response": "credits"},
+        timeout=15
+    )
+    if r.status_code == 404:
+        return None
+    r.raise_for_status()
+    return r.json()
+
+
+def build_html(entries, latest_entries):
+    html = f"""<!doctype html>
 <html lang='it'>
 <head>
-<meta charset='UTF-8'>
-<title>Catalogo Vix+TMDB</title>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>Movies & Series</title>
 <style>
- body {{ margin:0; font-family:sans-serif; background:#111; color:#fff; }}
- #homePage {{ padding:10px; }}
- .grid {{ display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; }}
- .card {{ background:#222; border-radius:8px; overflow:hidden; cursor:pointer; }}
- .card img {{ width:100%; display:block; }}
- .card .title {{ padding:5px; font-size:14px; text-align:center; }}
- #detailsPage {{ display:none; padding:20px; }}
- #detailsPage img {{ width:200px; float:left; margin-right:20px; }}
- #detailsPage h2 {{ margin-top:0; }}
- .actions button {{ margin:5px; padding:10px; border:none; border-radius:6px; cursor:pointer; }}
- #latest {{ white-space:nowrap; overflow-x:auto; padding:10px; background:#000; }}
- #latest .card {{ display:inline-block; width:120px; vertical-align:top; }}
+body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
+h1{{color:#fff;text-align:center;margin-bottom:20px;}}
+.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
+input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
+.card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
+.card:hover{{transform:scale(1.05);}}
+.poster{{width:100%;border-radius:8px;display:block;}}
+.badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
+#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
+.page{{display:none;}}
+.page.active{{display:block;}}
+.detail-page{{padding:20px;}}
+.detail-page h2{{color:#e50914;}}
+.btn-back{{background:#e50914;color:#fff;padding:8px 12px;border:none;border-radius:5px;cursor:pointer;margin-bottom:15px;}}
+.btn-play{{background:orange;color:#fff;padding:8px 12px;border:none;border-radius:5px;cursor:pointer;margin-left:10px;}}
 </style>
 </head>
 <body>
- <div id='latest'>{latest_entries}</div>
- <div id='homePage'>
-   <h1>Catalogo</h1>
-   <div id='grid' class='grid'></div>
- </div>
- <div id='detailsPage'>
-   <button onclick='backToHome()'>⟵ Indietro</button>
-   <div id='detailContent'></div>
- </div>
+<div id="mainPage" class="page active">
+<h1>Ultime Novità</h1>
+<div id='latest'>
+{latest_entries}
+</div>
+
+<h1>Movies & Series</h1>
+<div class='controls'>
+<select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
+<select id='genreSelect'><option value='all'>Tutti i generi</option></select>
+<input type='text' id='searchBox' placeholder='Cerca...'>
+</div>
+<div id='moviesGrid' class='grid'></div>
+<button id='loadMore'>Carica altri</button>
+</div>
+
+<div id="detailPage" class="page detail-page">
+  <button class="btn-back" onclick="goBack()">← Indietro</button>
+  <h2 id="infoTitle"></h2>
+  <button id="playBtn" class="btn-play">Play</button>
+  <p id="infoGenres"></p>
+  <p id="infoVote"></p>
+  <p id="infoOverview"></p>
+  <p id="infoYear"></p>
+  <p id="infoDuration"></p>
+  <p id="infoCast"></p>
+  <select id="seasonSelect"></select>
+  <select id="episodeSelect"></select>
+</div>
+
 <script>
-const grid=document.getElementById('grid');
-const latest=document.getElementById('latest');
-const homePage=document.getElementById('homePage');
-const detailsPage=document.getElementById('detailsPage');
-const detailContent=document.getElementById('detailContent');let allItems={entries};
+const allData = {entries};
+let currentItem = null;
 
-function renderGrid(items){{ grid.innerHTML=''; items.forEach(item=>{{ const div=document.createElement('div'); div.className='card'; div.innerHTML=<img src="${{item.poster}}" alt="${{item.title}}"><div class='title'>${{item.title}}</div>; div.onclick=()=>openDetails(item); grid.appendChild(div); }}); }}
+const grid=document.getElementById('moviesGrid');
+const latestDiv = document.getElementById('latest');
+const mainPage = document.getElementById('mainPage');
+const detailPage = document.getElementById('detailPage');
 
-function openDetails(item){{ homePage.style.display='none'; detailsPage.style.display='block'; detailContent.innerHTML= <img src="${{item.poster}}" alt="${{item.title}}"> <h2>${{item.title}}</h2> <p>${{item.overview||''}}</p> <div class='actions'> <button onclick='openPlayer(${{JSON.stringify(item).replace(/"/g,'&quot;')}})'>▶ Guarda</button> </div>; history.pushState({{page:"detail"}}, "", "?id="+item.id); }}
+const infoTitle = document.getElementById('infoTitle');
+const infoGenres = document.getElementById('infoGenres');
+const infoVote = document.getElementById('infoVote');
+const infoOverview = document.getElementById('infoOverview');
+const infoYear = document.getElementById('infoYear');
+const infoDuration = document.getElementById('infoDuration');
+const infoCast = document.getElementById('infoCast');
+const playBtn = document.getElementById('playBtn');
+const seasonSelect = document.getElementById('seasonSelect');
+const episodeSelect = document.getElementById('episodeSelect');
 
-function backToHome(){{ detailsPage.style.display='none'; homePage.style.display='block'; history.pushState({{page:"home"}}, "", ""); }}
+function showLatest(){{
+    let scrollPos = 0;
+    function scroll() {{
+        scrollPos += 1;
+        if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
+        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+    }}
+    setInterval(scroll, 30);
+}}
 
-window.addEventListener("popstate",e=>{{ if(!e.state||e.state.page!=="detail") backToHome(); }});
+function openDetail(item){{
+    currentItem = item;
+    mainPage.classList.remove('active');
+    detailPage.classList.add('active');
 
-function openPlayer(item){{ let link; if(item.type==='tv'){{ link=https://vixsrc.to/tv/${{item.id}}/1/1?lang=it&sottotitoli=off&autoplay=1; }} else {{ link=https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1; }} window.open(link,'_blank'); }}
+    infoTitle.textContent = item.title;
+    infoGenres.textContent = "Generi: " + item.genres.join(", ");
+    infoVote.textContent = "★ " + item.vote;
+    infoOverview.textContent = item.overview || "";
+    infoYear.textContent = item.year ? "Anno: " + item.year : "";
+    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
+    infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
 
-renderGrid(allItems); </script>
+    seasonSelect.style.display = 'none';
+    episodeSelect.style.display = 'none';
 
-</body></html>"""def main(): entries=[] urls=[ "https://vixsrc.to/api/list/movie?lang=it", "https://vixsrc.to/api/list/tv?lang=it" ]
+    if(item.type==='tv'){{
+        seasonSelect.style.display = 'inline';
+        episodeSelect.style.display = 'inline';
+        seasonSelect.innerHTML = "";
+        for(let s=1;s<=item.seasons;s++){{
+            let o = document.createElement('option');
+            o.value = s;
+            o.textContent = "Stagione " + s;
+            seasonSelect.appendChild(o);
+        }}
+        seasonSelect.onchange = updateEpisodes;
+        updateEpisodes();
+    }}
 
-for url in urls:
-    items=fetch_list(url)
-    for it in items:
-        entries.append({
-            "id": it.get("id"),
-            "title": it.get("title"),
-            "poster": it.get("poster"),
-            "overview": it.get("overview",""),
-            "type": "movie" if "movie" in url else "tv"
-        })
-    print(f"Aggiunti {len(items)} elementi da {url}")
+    playBtn.onclick = ()=>openPlayer(item);
+}}
 
-latest_entries=''.join([
-    f"<div class='card'><img src='{e['poster']}' alt='{e['title']}'></div>"
-    for e in entries[:10]
-])
+function updateEpisodes(){{
+    let season = parseInt(seasonSelect.value);
+    let epCount = currentItem.episodes[season] || 1;
+    episodeSelect.innerHTML = "";
+    for(let e=1;e<=epCount;e++){{
+        let o = document.createElement('option');
+        o.value = e;
+        o.textContent = "Episodio " + e;
+        episodeSelect.appendChild(o);
+    }}
+}}
 
-html=build_html(entries, latest_entries)
-with open(OUTPUT_HTML,"w",encoding="utf-8") as f:
-    f.write(html)
-print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi.")
+function openPlayer(item){{
+    let link = "";
+    if(item.type==='tv'){{
+        let season = parseInt(seasonSelect.value) || 1;
+        let episode = parseInt(episodeSelect.value) || 1;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
+    }} else {{
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
+    }}
+    window.open(link, "_blank");
+}}
 
-if name=="main": main()
+function goBack(){{
+    detailPage.classList.remove('active');
+    mainPage.classList.add('active');
+}}
+
+let currentType='movie', currentList=[], shown=0;
+function render(reset=false){{
+    if(reset){{ grid.innerHTML=''; shown=0; }}
+    let count=0;
+    let s = document.getElementById('searchBox').value.toLowerCase();
+    let g = document.getElementById('genreSelect').value;
+    while(shown<currentList.length && count<40){{
+        let m = currentList[shown++];
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
+            const card = document.createElement('div'); 
+            card.className='card';
+            card.innerHTML = `
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
+            `;
+            card.onclick = () => openDetail(m);
+            grid.appendChild(card);
+            count++;
+        }}
+    }}
+}}
+
+function populateGenres(){{
+    const set=new Set();
+    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    const sel=document.getElementById('genreSelect'); 
+    sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g=>{{
+        const o=document.createElement('option');
+        o.value=o.textContent=g;
+        sel.appendChild(o);
+    }});
+}}
+
+function updateType(t){{
+    currentType=t;
+    currentList=allData.filter(x=>x.type===t);
+    populateGenres();
+    render(true);
+}}
+
+document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
+document.getElementById('genreSelect').onchange=()=>render(true);
+document.getElementById('searchBox').oninput=()=>render(true);
+document.getElementById('loadMore').onclick=()=>render(false);
+
+updateType('movie');
+showLatest();
+</script>
+</body>
+</html>
+"""
+    return html
+
+
+def main():
+    api_key = get_api_key()
+    entries = []
+    latest_entries = ""
+
+    for type_, url in SRC_URLS.items():
+        data = fetch_list(url)
+        ids = extract_ids(data)
+
+        for idx, tmdb_id in enumerate(ids):
+            try:
+                info = tmdb_get(api_key, type_, tmdb_id)
+            except:
+                info = None
+            if not info:
+                continue
+
+            title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
+            poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
+            genres = [g["name"] for g in info.get("genres", [])]
+            vote = info.get("vote_average", 0)
+            overview = info.get("overview", "")
+            link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
+            seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
+            episodes = {str(s["season_number"]): s.get("episode_count", 1)
+                        for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
+            duration = info.get("runtime", 0) if type_=="movie" else 0
+            year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
+            cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
+
+            entries.append({
+                "id": tmdb_id,
+                "title": title,
+                "poster": poster,
+                "genres": genres,
+                "vote": vote,
+                "overview": overview,
+                "link": link,
+                "type": type_,
+                "seasons": seasons,
+                "episodes": episodes,
+                "duration": duration or 0,
+                "year": year or "",
+                "cast": cast
+            })
+
+            if idx < 10:
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
+
+    html = build_html(entries, latest_entries)
+    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
+
+
+if __name__ == "__main__":
+    main()
