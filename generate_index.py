@@ -318,7 +318,7 @@ showLatest();
 </script>
 </body>
 </html>
-"""
+
     return html
 
 def main():
