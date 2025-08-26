@@ -132,8 +132,17 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <div id='infoCard'>
-  <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
-    <h2 id="infoTitle"></h2>
+  <div style="
+      position:relative;
+      background: linear-gradient(135deg, rgba(34,34,34,0.95), rgba(50,50,50,0.95));
+      border-radius: 20px;
+      padding: 25px;
+      max-width:800px;
+      width:90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      transition: transform 0.3s ease, background 0.3s ease, opacity 0.3s ease;
+  ">
+    <h2 id="infoTitle" style="color:#ff4c29; margin-top:0;"></h2>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn" class="btn-play">Play</button>
       <button id="closeCardBtn" class="btn-close">×</button>
@@ -148,6 +157,39 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <select id="episodeSelect"></select>
   </div>
 </div>
+
+<style>
+.btn-play {
+  padding: 8px 15px;
+  background: #ff4c29;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-play:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255,76,41,0.6);
+}
+
+.btn-close {
+  padding: 8px 15px;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.btn-close:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(229,9,20,0.6);
+}
+</style>
 
 <script>
 const allData = {entries};
