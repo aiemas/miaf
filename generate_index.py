@@ -29,8 +29,8 @@ SRC_URLS = {
 }
 TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
-VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
-VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
+VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?lang=it&sottotitoli=off&autoplay=1"
+VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}?lang=it&sottotitoli=off&autoplay=1"
 OUTPUT_HTML = "index.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
@@ -224,7 +224,7 @@ function openInfo(item){
 function openPlayer(item){ 
     infoCard.style.display = 'none';
     overlay.style.display='flex';
-    let link = sanitizeUrl(item.link);
+    let link;
     if(item.type==='tv'){ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
