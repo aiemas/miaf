@@ -11,8 +11,10 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Lazy load: mostra 40 titoli per volta
 - Serie: tendine per stagione ed episodio
 - Scroll automatico ultime novità
-- Card fullscreen con sfondo locandina in trasparenza e abbellimento
+- Card fullscreen con sfondo locandina in trasparenza
 - Play nasconde la card temporaneamente
+- Chiusura card con tasto indietro
+- Lingua italiana e sottotitoli off di default
 """
 
 import os
@@ -83,16 +85,25 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
-#infoCard{{position:fixed;top:50%;left:50%;transform:translate(-50%, -50%);width:80%;max-width:800px;height:auto;background:#222;border-radius:12px;padding:20px;display:none;z-index:1001;color:#fff;overflow:auto;box-shadow:0 0 20px rgba(0,0,0,0.8);}}
+#infoCard{{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:90%;max-width:800px;background:rgba(34,34,34,0.95);display:none;z-index:1001;border-radius:12px;padding:20px;overflow:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;}}
-#infoCard button#playBtn{{margin:10px 10px 0 0;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
-#infoCard button#closeCardBtn{{margin:10px 0;padding:8px 12px;background:#555;border:none;color:#fff;border-radius:5px;cursor:pointer;}}
+#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
 #infoCard p{{margin:5px 0;}}
 #infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
-#latest .poster{{width:80px;flex-shrink:0;}}
+#latest .poster{{width:100px;flex-shrink:0;}}
+.btn-play, .btn-close {{
+  padding: 5px 10px;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
+.btn-play{{background: orange;}}
+.btn-close{{background: #e50914;}}
 </style>
 </head>
 <body>
@@ -116,9 +127,9 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <div id='infoCard'>
   <h2 id="infoTitle"></h2>
-  <div>
-    <button id="playBtn">Guarda</button>
-    <button id="closeCardBtn">×</button>
+  <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
+    <button id="playBtn" class="btn-play">Guarda</button>
+    <button id="closeCardBtn" class="btn-close">×</button>
   </div>
   <p id="infoGenres"></p>
   <p id="infoVote"></p>
@@ -132,6 +143,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <script>
 const allData = {entries};
+
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
@@ -142,18 +154,16 @@ const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
 const closeCardBtn = document.getElementById('closeCardBtn');
+const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 const infoYear = document.getElementById('infoYear');
 const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
-const latestDiv = document.getElementById('latest');
-
-closeCardBtn.onclick = () => infoCard.style.display = 'none';
 
 function sanitizeUrl(url){ 
-    if not url: return "";
-    if url.startswith("https://jepsauveel.net/"): return "";
+    if(!url) return "";
+    if(url.startsWith("https://jepsauveel.net/")) return "";
     return url;
 }
 
@@ -179,6 +189,7 @@ function openInfo(item){
 
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
+    
     if(item.type==='tv'){ 
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
@@ -194,6 +205,7 @@ function openInfo(item){
     }
 
     playBtn.onclick = ()=>openPlayer(item);
+    closeCardBtn.onclick = closeInfo;
 
     function updateEpisodes(){ 
         let season = parseInt(seasonSelect.value);
@@ -206,6 +218,10 @@ function openInfo(item){
             episodeSelect.appendChild(o);
         }
     }
+}
+
+function closeInfo(){ 
+    infoCard.style.display='none';
 }
 
 function openPlayer(item){ 
@@ -226,19 +242,27 @@ function openPlayer(item){
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
 
     overlay.dataset.prevCardVisible = 'true';
+    try { history.pushState({playerOpen:true}, ""); } catch(e) {}
 }
 
-function closePlayer(){
+function closePlayer(fromPop) {
     overlay.style.display='none';
     iframe.src='';
-    if(document.fullscreenElement) document.exitFullscreen();
-    else if(document.webkitFullscreenElement) document.webkitExitFullscreen();
-    else if(document.msFullscreenElement) document.msExitFullscreen();
-    if(overlay.dataset.prevCardVisible==='true') infoCard.style.display='block';
+
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+    else if (document.msFullscreenElement) document.msExitFullscreen();
+
+    if(overlay.dataset.prevCardVisible === 'true') infoCard.style.display = 'block';
+
+    if (!fromPop && history.state && history.state.playerOpen) {
+        try { history.back(); } catch(e) {}
+    }
 }
 
 window.addEventListener("popstate", function(e){ 
-    if (overlay.style.display==='flex') closePlayer();
+    if (overlay.style.display === 'flex') closePlayer(true);
+    else if (infoCard.style.display === 'block') closeInfo();
 });
 
 let currentType='movie', currentList=[], shown=0;
