@@ -169,12 +169,6 @@ const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
 const latestDiv = document.getElementById('latest');
 
-function sanitizeUrl(url) {
-    if (!url) return "";
-    if (url.startsWith("https://jepsauveel.net/")) return "";
-    return url;
-}
-
 function showLatest(){ 
     let scrollPos = 0;
     function scroll() {
