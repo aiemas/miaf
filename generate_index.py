@@ -1,16 +1,9 @@
 #!/usr/bin/env python3
 """
-generate_index.py
+generate_index_detail.py
 
-Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
-- Film e Serie TV (due tendine: Movies / Series)
-- Ultime novità in alto (primi 10 della lista Vix)
-- Ricerca per titolo
-- Filtro per genere
-- Clic su locandina apre pagina dettagli a schermo intero
-- Lazy load: mostra 40 titoli per volta
-- Serie: tendine per stagione ed episodio
-- Scroll automatico ultime novità
+Genera una pagina HTML principale con locandine da TMDb partendo dalla lista di Vix,
+e genera una pagina detail separata per ogni film/serie.
 """
 
 import os
@@ -26,9 +19,8 @@ TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
-OUTPUT_HTML = "index.html"
+OUTPUT_INDEX = "index.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
-
 
 def get_api_key():
     key = os.getenv("TMDB_API_KEY")
@@ -37,12 +29,10 @@ def get_api_key():
         sys.exit(1)
     return key
 
-
 def fetch_list(url):
     r = requests.get(url, headers=HEADERS, timeout=20)
     r.raise_for_status()
     return r.json()
-
 
 def extract_ids(data):
     ids = []
@@ -56,21 +46,16 @@ def extract_ids(data):
                 break
     return ids
 
-
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
-    r = requests.get(
-        url,
-        params={"api_key": api_key, "language": language, "append_to_response": "credits"},
-        timeout=15
-    )
+    r = requests.get(url, params={"api_key": api_key, "language": language, "append_to_response": "credits"}, timeout=15)
     if r.status_code == 404:
         return None
     r.raise_for_status()
     return r.json()
 
-
-def build_html(entries, latest_entries):
+def build_index_html(entries, latest_entries):
+    # Genera la pagina principale (index.html)
     html = f"""<!doctype html>
 <html lang='it'>
 <head>
@@ -88,16 +73,13 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .poster{{width:100%;border-radius:8px;display:block;}}
 .badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
-.page{{display:none;}}
-.page.active{{display:block;}}
-.detail-page{{padding:20px;}}
-.detail-page h2{{color:#e50914;}}
-.btn-back{{background:#e50914;color:#fff;padding:8px 12px;border:none;border-radius:5px;cursor:pointer;margin-bottom:15px;}}
-.btn-play{{background:orange;color:#fff;padding:8px 12px;border:none;border-radius:5px;cursor:pointer;margin-left:10px;}}
+#latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
+#latest::-webkit-scrollbar {{display: none;}}
+#latest {{-ms-overflow-style: none;scrollbar-width: none;}}
+#latest .poster{{width:100px;flex-shrink:0;}}
 </style>
 </head>
 <body>
-<div id="mainPage" class="page active">
 <h1>Ultime Novità</h1>
 <div id='latest'>
 {latest_entries}
@@ -111,149 +93,44 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 <div id='moviesGrid' class='grid'></div>
 <button id='loadMore'>Carica altri</button>
-</div>
-
-<div id="detailPage" class="page detail-page">
-  <button class="btn-back" onclick="goBack()">← Indietro</button>
-  <h2 id="infoTitle"></h2>
-  <button id="playBtn" class="btn-play">Play</button>
-  <p id="infoGenres"></p>
-  <p id="infoVote"></p>
-  <p id="infoOverview"></p>
-  <p id="infoYear"></p>
-  <p id="infoDuration"></p>
-  <p id="infoCast"></p>
-  <select id="seasonSelect"></select>
-  <select id="episodeSelect"></select>
-</div>
 
 <script>
 const allData = {entries};
-let currentItem = null;
-
 const grid=document.getElementById('moviesGrid');
-const latestDiv = document.getElementById('latest');
-const mainPage = document.getElementById('mainPage');
-const detailPage = document.getElementById('detailPage');
-
-const infoTitle = document.getElementById('infoTitle');
-const infoGenres = document.getElementById('infoGenres');
-const infoVote = document.getElementById('infoVote');
-const infoOverview = document.getElementById('infoOverview');
-const infoYear = document.getElementById('infoYear');
-const infoDuration = document.getElementById('infoDuration');
-const infoCast = document.getElementById('infoCast');
-const playBtn = document.getElementById('playBtn');
-const seasonSelect = document.getElementById('seasonSelect');
-const episodeSelect = document.getElementById('episodeSelect');
-
-function showLatest(){{
-    let scrollPos = 0;
-    function scroll() {{
-        scrollPos += 1;
-        if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
-    }}
-    setInterval(scroll, 30);
-}}
-
-function openDetail(item){{
-    currentItem = item;
-    mainPage.classList.remove('active');
-    detailPage.classList.add('active');
-
-    infoTitle.textContent = item.title;
-    infoGenres.textContent = "Generi: " + item.genres.join(", ");
-    infoVote.textContent = "★ " + item.vote;
-    infoOverview.textContent = item.overview || "";
-    infoYear.textContent = item.year ? "Anno: " + item.year : "";
-    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
-    infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
-
-    seasonSelect.style.display = 'none';
-    episodeSelect.style.display = 'none';
-
-    if(item.type==='tv'){{
-        seasonSelect.style.display = 'inline';
-        episodeSelect.style.display = 'inline';
-        seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){{
-            let o = document.createElement('option');
-            o.value = s;
-            o.textContent = "Stagione " + s;
-            seasonSelect.appendChild(o);
-        }}
-        seasonSelect.onchange = updateEpisodes;
-        updateEpisodes();
-    }}
-
-    playBtn.onclick = ()=>openPlayer(item);
-}}
-
-function updateEpisodes(){{
-    let season = parseInt(seasonSelect.value);
-    let epCount = currentItem.episodes[season] || 1;
-    episodeSelect.innerHTML = "";
-    for(let e=1;e<=epCount;e++){{
-        let o = document.createElement('option');
-        o.value = e;
-        o.textContent = "Episodio " + e;
-        episodeSelect.appendChild(o);
-    }}
-}}
-
-function openPlayer(item){{
-    let link = "";
-    if(item.type==='tv'){{
-        let season = parseInt(seasonSelect.value) || 1;
-        let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
-    }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
-    }}
-    window.open(link, "_blank");
-}}
-
-function goBack(){{
-    detailPage.classList.remove('active');
-    mainPage.classList.add('active');
-}}
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){{
+function render(reset=false){{ 
     if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){{
+    while(shown<currentList.length && count<40){{ 
         let m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{ 
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
                 <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
                 <div class='badge'>${{m.vote}}</div>
+                <p style="margin:2px 0;font-size:12px;color:#ccc;">
+                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
+                </p>
             `;
-            card.onclick = () => openDetail(m);
+            card.onclick = () => window.location.href='detail_' + m.id + '.html';
             grid.appendChild(card);
             count++;
         }}
     }}
 }}
 
-function populateGenres(){{
+function populateGenres(){{ 
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
-    const sel=document.getElementById('genreSelect'); 
-    sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{{
-        const o=document.createElement('option');
-        o.value=o.textContent=g;
-        sel.appendChild(o);
-    }});
+    const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
 }}
 
-function updateType(t){{
+function updateType(t){{ 
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
@@ -266,13 +143,80 @@ document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 
 updateType('movie');
-showLatest();
 </script>
 </body>
 </html>
 """
     return html
 
+def build_detail_html(item):
+    # Genera una pagina detail_ID.html per ogni titolo
+    seasons_html = ""
+    if item["type"]=="tv" and item["seasons"]>0:
+        seasons_html = f"""
+<select id='seasonSelect'></select>
+<select id='episodeSelect'></select>
+<script>
+const seasonSelect=document.getElementById('seasonSelect');
+const episodeSelect=document.getElementById('episodeSelect');
+seasonSelect.style.display='inline';
+episodeSelect.style.display='inline';
+for(let s=1;s<={item['seasons']};s++){{
+    let o=document.createElement('option');
+    o.value=o.textContent=s;
+    o.textContent="Stagione "+s;
+    seasonSelect.appendChild(o);
+}}
+function updateEpisodes(){{
+    let season=parseInt(seasonSelect.value);
+    let epCount={item['episodes']};
+    episodeSelect.innerHTML='';
+    for(let e=1;e<=epCount[season];e++){{
+        let o=document.createElement('option');
+        o.value=o.textContent=e;
+        o.textContent="Episodio "+e;
+        episodeSelect.appendChild(o);
+    }}
+}}
+seasonSelect.onchange=updateEpisodes;
+updateEpisodes();
+</script>
+"""
+    link = item["link"] if item["type"]=="movie" else VIX_LINK_SERIE.format(item["id"], 1, 1)
+    html = f"""<!doctype html>
+<html lang='it'>
+<head>
+<meta charset='utf-8'>
+<meta name='viewport' content='width=device-width,initial-scale=1'>
+<title>{item['title']}</title>
+<style>
+body{{margin:0;background:#000;color:#fff;font-family:Arial,sans-serif;}}
+h1{{color:#e50914;text-align:center;}}
+.player-container{{position:relative;width:100%;height:60vh;}}
+iframe{{width:100%;height:100%;border:none;}}
+.details{{padding:20px;}}
+button{{padding:8px 12px;background:#e50914;color:#fff;border:none;border-radius:5px;cursor:pointer;}}
+</style>
+</head>
+<body>
+<h1>{item['title']}</h1>
+<div class='player-container'>
+<iframe src='{link}?lang=it&sottotitoli=off&autoplay=1' allow='autoplay; fullscreen; encrypted-media' allowfullscreen></iframe>
+</div>
+<div class='details'>
+<p>Generi: {', '.join(item['genres'])}</p>
+<p>Anno: {item['year']}</p>
+<p>Durata: {item['duration']} min</p>
+<p>Voto: {item['vote']}</p>
+<p>Cast: {', '.join(item['cast'][:5])}</p>
+<p>{item['overview']}</p>
+{seasons_html}
+<button onclick="history.back()">Indietro</button>
+</div>
+</body>
+</html>
+"""
+    return html
 
 def main():
     api_key = get_api_key()
@@ -282,7 +226,6 @@ def main():
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
         ids = extract_ids(data)
-
         for idx, tmdb_id in enumerate(ids):
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
@@ -298,13 +241,12 @@ def main():
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
             seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
-            episodes = {str(s["season_number"]): s.get("episode_count", 1)
-                        for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
+            episodes = {str(s["season_number"]): s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
             duration = info.get("runtime", 0) if type_=="movie" else 0
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
-            entries.append({
+            item = {
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -318,16 +260,24 @@ def main():
                 "duration": duration or 0,
                 "year": year or "",
                 "cast": cast
-            })
+            }
+            entries.append(item)
 
+            # Ultime novità
             if idx < 10:
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
-    html = build_html(entries, latest_entries)
-    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
-        f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
+            # Genera pagina detail
+            detail_html = build_detail_html(item)
+            with open(f"detail_{tmdb_id}.html", "w", encoding="utf-8") as f:
+                f.write(detail_html)
 
+    # Genera index.html
+    index_html = build_index_html(entries, latest_entries)
+    with open(OUTPUT_INDEX, "w", encoding="utf-8") as f:
+        f.write(index_html)
 
-if __name__ == "__main__":
+    print(f"Generati {OUTPUT_INDEX} e {len(entries)} pagine detail.")
+
+if __name__=="__main__":
     main()
