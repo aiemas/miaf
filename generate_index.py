@@ -14,12 +14,11 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Card fullscreen con sfondo locandina in trasparenza
 - Play nasconde la card temporaneamente
 - Card uniformi con colori più gradevoli
-- Aggiunta funzione Preferiti (stellina)
+- Aggiunta gestione Preferiti
 """
 
 import os
 import sys
-import json
 import requests
 
 # --- Config ---
@@ -75,21 +74,21 @@ def build_html(entries, latest_entries):
 <style>
 body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
 h1{{color:#fff;text-align:center;margin-bottom:20px;}}
-.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
+.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
 .card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
 .card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
-.poster{{width:100%;border-radius:0;display:block;aspect-ratio:2/3;object-fit:cover;}}
-.badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
-.favorite{{position:absolute;top:8px;left:8px;color:yellow;font-size:18px;cursor:pointer;}}
+.poster{{width:100%;border-radius:0;display:block;}}
+.badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
+.favorite{{position:absolute;top:8px;left:8px;color:#ff0;font-size:20px;cursor:pointer;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
 #infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
 #infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
-#infoCard button.favoriteInfo{{margin-left:10px;padding:6px 10px;background:orange;border:none;color:#fff;border-radius:5px;cursor:pointer;font-size:14px;}}
+#infoCard .favoriteInfo{{margin-left:10px;color:#ff0;font-size:20px;cursor:pointer;}}
 #infoCard p{{margin:5px 0;}}
 #infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
@@ -120,7 +119,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <div id='infoCard'>
   <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
     <h2 id="infoTitle"></h2>
-    <button class="favoriteInfo" id="infoFavoriteBtn">★</button>
+    <span class="favoriteInfo" id="favoriteInfo">★</span>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn">Play</button>
       <button id="closeCardBtn">×</button>
@@ -138,7 +137,6 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <script>
 const allData = {entries};
-let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
@@ -149,47 +147,45 @@ const infoVote = document.getElementById('infoVote');
 const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
 const closeCardBtn = document.getElementById('closeCardBtn');
+const favoriteInfo = document.getElementById('favoriteInfo');
 const latestDiv = document.getElementById('latest');
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 const infoYear = document.getElementById('infoYear');
 const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
-const infoFavoriteBtn = document.getElementById('infoFavoriteBtn');
+let favorites = JSON.parse(localStorage.getItem('favorites')||'[]');
 
-closeCardBtn.onclick = () => infoCard.style.display = 'none';
+closeCardBtn.onclick = ()=>infoCard.style.display='none';
 
-function sanitizeUrl(url){ 
+function sanitizeUrl(url){{
     if(!url) return "";
     return url;
-}
+}}
 
-function showLatest(){ 
+function toggleFavorite(item){{
+    const idx = favorites.indexOf(item.id);
+    if(idx>-1) favorites.splice(idx,1);
+    else favorites.push(item.id);
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    render(true);
+}}
+
+function showLatest(){{
     let scrollPos = 0;
-    function scroll() {
+    function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
-    }
+        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+    }}
     setInterval(scroll, 30);
-}
+}}
 
-function toggleFavorite(id){
-    const index = favorites.indexOf(id);
-    if(index>=0){ favorites.splice(index,1);} else { favorites.push(id);}
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-    render(true);
-}
-
-function openInfo(item){ 
+function openInfo(item){{
     infoCard.style.display='block';
     infoCard.style.backgroundImage = "none";
     infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoTitle.textContent = item.title;
-
-    infoFavoriteBtn.textContent = favorites.includes(item.id) ? "★" : "☆";
-    infoFavoriteBtn.onclick = ()=>{ toggleFavorite(item.id); infoFavoriteBtn.textContent = favorites.includes(item.id) ? "★" : "☆"; };
-
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
@@ -197,117 +193,118 @@ function openInfo(item){
     infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
 
-    seasonSelect.style.display = 'none';
-    episodeSelect.style.display = 'none';
-    
-    if(item.type==='tv'){ 
-        seasonSelect.style.display = 'inline';
-        episodeSelect.style.display = 'inline';
-        seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){ 
+    favoriteInfo.textContent = favorites.includes(item.id)?'★':'☆';
+    favoriteInfo.onclick = ()=>toggleFavorite(item);
+
+    seasonSelect.style.display='none';
+    episodeSelect.style.display='none';
+    if(item.type==='tv'){{
+        seasonSelect.style.display='inline';
+        episodeSelect.style.display='inline';
+        seasonSelect.innerHTML="";
+        for(let s=1;s<=item.seasons;s++){{
             let o = document.createElement('option');
-            o.value = s;
+            o.value=o.textContent=s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }
+        }}
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }
+    }}
 
     playBtn.onclick = ()=>openPlayer(item);
 
-    function updateEpisodes(){ 
+    function updateEpisodes(){{
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){ 
+        for(let e=1;e<=epCount;e++){{
             let o = document.createElement('option');
-            o.value = e;
-            o.textContent = "Episodio " + e;
+            o.value=e;
+            o.textContent="Episodio "+e;
             episodeSelect.appendChild(o);
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function openPlayer(item){ 
-    infoCard.style.display = 'none';
+function openPlayer(item){{
+    infoCard.style.display='none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){ 
+    if(item.type==='tv'){{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}?lang=it&sottotitoli=off&autoplay=1`;
-    } else {
-        link = `https://vixsrc.to/movie/${item.id}/?lang=it&sottotitoli=off&autoplay=1`;
-    }
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
+    }} else {{
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
+    }}
     iframe.src = link;
 
-    if (overlay.requestFullscreen) { overlay.requestFullscreen(); }
-    else if (overlay.webkitRequestFullscreen) { overlay.webkitRequestFullscreen(); }
-    else if (overlay.msRequestFullscreen) { overlay.msRequestFullscreen(); }
+    if (overlay.requestFullscreen) overlay.requestFullscreen();
+    else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
+    else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
 
-    overlay.dataset.prevCardVisible = 'true';
-    try { history.pushState({playerOpen:true}, ""); } catch(e) {}
-}
+    overlay.dataset.prevCardVisible='true';
+    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
+}}
 
-function closePlayer(fromPop) {
+function closePlayer(fromPop){{
     overlay.style.display='none';
     iframe.src='';
+    if(document.fullscreenElement) document.exitFullscreen();
+    else if(document.webkitFullscreenElement) document.webkitExitFullscreen();
+    else if(document.msFullscreenElement) document.msExitFullscreen();
 
-    if (document.fullscreenElement) { document.exitFullscreen(); }
-    else if (document.webkitFullscreenElement) { document.webkitExitFullscreen(); }
-    else if (document.msFullscreenElement) { document.msExitFullscreen(); }
+    if(overlay.dataset.prevCardVisible==='true') infoCard.style.display='block';
+    if(!fromPop && history.state && history.state.playerOpen){{
+        try{{ history.back(); }}catch(e){{}}
+    }}
+}}
 
-    if(overlay.dataset.prevCardVisible === 'true') { infoCard.style.display = 'block'; }
-
-    if (!fromPop && history.state && history.state.playerOpen) {
-        try { history.back(); } catch(e) {}
-    }
-}
-
-window.addEventListener("popstate", function(e){ 
-    if (overlay.style.display === 'flex') { closePlayer(true); }
-});
+window.addEventListener("popstate", function(e){{
+    if(overlay.style.display==='flex') closePlayer(true);
+}});
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){ 
-    if(reset){ grid.innerHTML=''; shown=0; }
+function render(reset=false){{
+    if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){ 
+    while(shown<currentList.length && count<40){{
         let m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){ 
+        if((g==='all'||m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
             const card = document.createElement('div'); 
             card.className='card';
-            card.innerHTML = `
-                <img class='poster' src='${m.poster}' alt='${m.title}'>
-                <div class='badge'>${m.vote}</div>
-                <div class='favorite' onclick="toggleFavorite('${m.id}');event.stopPropagation();">${favorites.includes(m.id) ? '★' : '☆'}</div>
+            const fav = favorites.includes(m.id)?'★':'☆';
+            card.innerHTML=`
+                <span class='favorite' onclick="toggleFavorite({{id:'${{m.id}}'}});event.stopPropagation();">${{fav}}</span>
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
-                    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
+                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
             `;
-            card.onclick = () => openInfo(m);
+            card.onclick = ()=>openInfo(m);
             grid.appendChild(card);
             count++;
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function populateGenres(){ 
+function populateGenres(){{
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
-    [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
-}
+    [...set].sort().forEach(g){{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }}
+}}
 
-function updateType(t){ 
+function updateType(t){{
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}
+}}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
