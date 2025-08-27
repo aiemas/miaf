@@ -13,6 +13,7 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Scroll automatico ultime novità
 - Card fullscreen con sfondo locandina in trasparenza
 - Play nasconde la card temporaneamente
+- Card uniformi con colori più gradevoli
 """
 
 import os
@@ -27,7 +28,6 @@ SRC_URLS = {
 TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
-VIX_LINK_SERIE = "https://vixsrc.to/tv/{}/{}/{}"
 OUTPUT_HTML = "index.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
@@ -76,14 +76,13 @@ h1{{color:#fff;text-align:center;margin-bottom:20px;}}
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s;}}
-.card:hover{{transform:scale(1.05);}}
-.poster{{width:100%;border-radius:8px;display:block;}}
-.badge{{position:absolute;bottom:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:50%;text-align:center;}}
-#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:4px;cursor:pointer;}}
+.card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
+.card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
+.poster{{width:100%;border-radius:0;display:block;}}
+.badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
+#loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
-
 #infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
 #infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
@@ -93,6 +92,24 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
 #latest .poster{{width:100px;flex-shrink:0;}}
+.btn-play {{
+  padding: 5px 10px;
+  background: orange;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
+.btn-close {{
+  padding: 5px 10px;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}}
 </style>
 </head>
 <body>
@@ -114,9 +131,9 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
 </div>
 
-<div id='infoCard' style="position:fixed;top:0;left:0;width:100%;height:100%;display:none;align-items:center;justify-content:center;z-index:1000;overflow:auto;background:rgba(0,0,0,0.85);">
+<div id='infoCard'>
   <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
-    <h2 id="infoTitle" style="margin-top:0;color:#e50914;"></h2>
+    <h2 id="infoTitle"></h2>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn" class="btn-play">Play</button>
       <button id="closeCardBtn" class="btn-close">×</button>
@@ -132,30 +149,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   </div>
 </div>
 
-<style>
-.btn-play {{
-  padding: 5px 10px;
-  background: orange;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}}
-.btn-close {{
-  padding: 5px 10px;
-  background: #e50914;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}}
-</style>
-
 <script>
 const allData = {entries};
-
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
@@ -167,7 +162,6 @@ const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
 const closeCardBtn = document.getElementById('closeCardBtn');
 const latestDiv = document.getElementById('latest');
-
 closeCardBtn.onclick = () => infoCard.style.display = 'none';
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
@@ -176,8 +170,7 @@ const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
 
 function sanitizeUrl(url){{ 
-    if(!url) return "";
-    if(url.startsWith("https://jepsauveel.net/")) return "";
+   if(!url) return "";
     return url;
 }}
 
@@ -194,10 +187,7 @@ function showLatest(){{
 function openInfo(item){{ 
     infoCard.style.display='block';
     infoCard.style.backgroundImage = "none";
-    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)"; // sfondo nero semi-trasparente
-    infoCard.style.backgroundSize = "cover";
-    infoCard.style.backgroundPosition = "center";
-
+    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -243,7 +233,6 @@ function closeInfo(){{
 }}
 
 function openPlayer(item){{ 
-    // Nascondi card per evitare sovrapposizione
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
@@ -260,8 +249,7 @@ function openPlayer(item){{
         overlay.requestFullscreen();
     }} else if (overlay.webkitRequestFullscreen) {{
         overlay.webkitRequestFullscreen();
-    }} else
-    if (overlay.msRequestFullscreen) {{
+    }} else if (overlay.msRequestFullscreen) {{
         overlay.msRequestFullscreen();
     }}
 
