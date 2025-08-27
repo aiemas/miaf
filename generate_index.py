@@ -91,6 +91,19 @@ input,select{{{{padding:8px;font-size:14px;border-radius:4px;border:none;}}}}
 #latest .poster{{{{width:100px;flex-shrink:0;}}}}
 .btn-play {{{{padding:5px 10px;background:orange;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:14px;}}}}
 .btn-close {{{{padding:5px 10px;background:#e50914;color:#fff;border:none;border-radius:5px;cursor:pointer;font-size:14px;}}}}
+#overlayTitle {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  display: none;
+  z-index: 1100;
+}
 </style>
 </head>
 <body>
@@ -109,7 +122,7 @@ input,select{{{{padding:8px;font-size:14px;border-radius:4px;border:none;}}}}
 <button id='loadMore'>Carica altri</button>
 
 <div id='playerOverlay'>
-  <div class="overlayTitle" id="overlayTitle"></div>
+  <span id="overlayTitle"></span>
   <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
 </div>
 
@@ -252,6 +265,18 @@ function play(item){{
   let link=item.type==='movie'?item.link:item.link+"S"+seasonSelect.value+"E"+episodeSelect.value;
   overlayTitle.textContent=item.title;
   iframe.src=link;
+  const overlayTitle = document.getElementById("overlayTitle");
+overlayTitle.textContent = item.title;
+overlayTitle.style.display = "block";
+
+// al tap sul player, toggle titolo
+overlay.onclick = (e) => {
+  if (e.target.tagName !== "IFRAME") {
+    overlayTitle.style.display = 
+      overlayTitle.style.display === "none" ? "block" : "none";
+  }
+};
+
   overlay.style.display='flex';
 }}
 
