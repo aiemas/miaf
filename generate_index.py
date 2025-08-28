@@ -171,7 +171,177 @@ function sanitizeUrl(url){{
    return url;
 }}
 
-// ... qui tutto il resto del JS rimane identico, con tutte le {{ e }} dove ci sono le parentesi JS ...
+function showLatest(){{
+    let scrollPos = 0;
+    function scroll() {{
+        scrollPos += 1;
+        if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
+        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+    }}
+    setInterval(scroll, 30);
+}}
+
+let titleTimeout;
+function showPlayerTitle(title) {{
+    playerTitle.textContent = title;
+    playerTitle.style.opacity = 1;
+    clearTimeout(titleTimeout);
+    titleTimeout = setTimeout(()=> {{
+        playerTitle.style.opacity = 0;
+    }}, 3000);
+}}
+
+overlay.onclick = () => {{
+    if(playerTitle.style.opacity == 0 && iframe.src){{
+        playerTitle.style.opacity = 1;
+        clearTimeout(titleTimeout);
+        titleTimeout = setTimeout(()=> {{ playerTitle.style.opacity = 0; }}, 3000);
+    }}
+}};
+
+function openInfo(item){{
+    infoCard.style.display='block';
+    infoTitle.textContent = item.title;
+    infoGenres.textContent = "Generi: " + item.genres.join(", ");
+    infoVote.textContent = "★ " + item.vote;
+    infoOverview.textContent = item.overview || "";
+    infoYear.textContent = item.year ? "Anno: " + item.year : "";
+    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
+    infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
+
+    seasonSelect.style.display = 'none';
+    episodeSelect.style.display = 'none';
+
+    if(item.type==='tv'){{
+        seasonSelect.style.display = 'inline';
+        episodeSelect.style.display = 'inline';
+        seasonSelect.innerHTML = "";
+        for(let s=1;s<=item.seasons;s++){{
+            let o = document.createElement('option');
+            o.value = s;
+            o.textContent = "Stagione " + s;
+            seasonSelect.appendChild(o);
+        }}
+        seasonSelect.onchange = updateEpisodes;
+        updateEpisodes();
+    }}
+
+    playBtn.onclick = ()=>openPlayer(item);
+
+    function updateEpisodes(){{
+        let season = parseInt(seasonSelect.value);
+        let epCount = item.episodes[season] || 1;
+        episodeSelect.innerHTML = "";
+        for(let e=1;e<=epCount;e++){{
+            let o = document.createElement('option');
+            o.value = e;
+            o.textContent = "Episodio " + e;
+            episodeSelect.appendChild(o);
+        }}
+    }}
+}}
+
+function openPlayer(item){{
+    infoCard.style.display = 'none';
+    overlay.style.display='flex';
+    let link = sanitizeUrl(item.link);
+    if(item.type==='tv'){{
+        let season = parseInt(seasonSelect.value) || 1;
+        let episode = parseInt(episodeSelect.value) || 1;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
+    }} else {{
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
+    }}
+    iframe.src = link;
+    showPlayerTitle(item.title);
+
+    if (overlay.requestFullscreen) {{
+        overlay.requestFullscreen();
+    }} else if (overlay.webkitRequestFullscreen) {{
+        overlay.webkitRequestFullscreen();
+    }} else if (overlay.msRequestFullscreen) {{
+        overlay.msRequestFullscreen();
+    }}
+
+    overlay.dataset.prevCardVisible = 'true';
+    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
+}}
+
+function closePlayer(fromPop){{
+    overlay.style.display='none';
+    iframe.src='';
+    playerTitle.textContent="";
+    playerTitle.style.opacity = 0;
+
+    if (document.fullscreenElement) {{
+        document.exitFullscreen();
+    }} else if (document.webkitFullscreenElement) {{
+        document.webkitExitFullscreen();
+    }} else if (document.msFullscreenElement) {{
+        document.msExitFullscreen();
+    }}
+
+    if(overlay.dataset.prevCardVisible === 'true') {{
+        infoCard.style.display = 'block';
+    }}
+
+    if (!fromPop && history.state && history.state.playerOpen) {{
+        try {{ history.back(); }} catch(e) {{}}
+    }}
+}}
+
+window.addEventListener("popstate", function(e){{
+    if (overlay.style.display === 'flex') {{
+        closePlayer(true);
+    }}
+}});
+
+let currentType='movie', currentList=[], shown=0;
+function render(reset=false){{
+    if(reset){{ grid.innerHTML=''; shown=0; }}
+    let count=0;
+    let s = document.getElementById('searchBox').value.toLowerCase();
+    let g = document.getElementById('genreSelect').value;
+    while(shown<currentList.length && count<40){{
+        let m = currentList[shown++];
+        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{
+            const card = document.createElement('div');
+            card.className='card';
+            card.innerHTML = `
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
+                <p style="margin:2px 0;font-size:12px;color:#ccc;">
+                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
+                </p>
+            `;
+            card.onclick = () => openInfo(m);
+            grid.appendChild(card);
+            count++;
+        }}
+    }}
+}}
+
+function populateGenres(){{
+    const set=new Set();
+    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
+}}
+
+function updateType(t){{
+    currentType=t;
+    currentList=allData.filter(x=>x.type===t);
+    populateGenres();
+    render(true);
+}}
+
+document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
+document.getElementById('genreSelect').onchange=()=>render(true);
+document.getElementById('searchBox').oninput=()=>render(true);
+document.getElementById('loadMore').onclick=()=>render(false);
+
+updateType('movie');
+showLatest();
 </script>
 </body>
 </html>
