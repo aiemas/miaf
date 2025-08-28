@@ -217,8 +217,7 @@ overlay.onclick = () => {
 };
 
 function openInfo(item){ 
-    infoCard.style
-    display='block';
+    infoCard.style.display='block';
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -365,11 +364,7 @@ showLatest();
 </body>
 </html>
 """
-    # ... fine build_html ...
-return html
-  def build_html(entries, latest_entries):
-    html = f"""..."""
-    return html  # <-- fine della funzione
+    return html
 
 
 def main():
