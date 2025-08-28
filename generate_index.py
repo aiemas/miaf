@@ -366,7 +366,7 @@ showLatest();
 </html>
 """
     # ... fine build_html ...
-    return html
+return html
 
 
 def main():
