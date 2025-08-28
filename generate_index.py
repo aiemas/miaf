@@ -367,7 +367,12 @@ showLatest();
 """
     # ... fine build_html ...
 return html
-  def main():
+  def build_html(entries, latest_entries):
+    html = f"""..."""
+    return html  # <-- fine della funzione
+
+
+def main():
     api_key = get_api_key()
     entries = []
     latest_entries = ""
