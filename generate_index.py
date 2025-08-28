@@ -14,7 +14,7 @@ Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
 - Card fullscreen con sfondo locandina in trasparenza
 - Play nasconde la card temporaneamente
 - Card uniformi con colori più gradevoli
-- Player overlay con titolo visibile a scomparsa
+- Overlay player con titolo a scomparsa
 """
 
 import os
@@ -84,7 +84,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
-#playerTitle{{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:8px 15px;border-radius:8px;font-size:18px;font-weight:bold;opacity:0;transition:opacity 1s ease-in-out;pointer-events:none;z-index:1100;}}
+#playerTitle{{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);padding:10px 20px;border-radius:8px;font-size:18px;font-weight:bold;opacity:0;transition:opacity 0.5s;}}
 #infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
 #infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
@@ -114,8 +114,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <button id='loadMore'>Carica altri</button>
 
 <div id='playerOverlay'>
-  <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
   <div id="playerTitle"></div>
+  <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
 </div>
 
 <div id='infoCard'>
@@ -157,38 +157,148 @@ const infoYear=document.getElementById('infoYear');
 const infoDuration=document.getElementById('infoDuration');
 const infoCast=document.getElementById('infoCast');
 
+function sanitizeUrl(url){{ 
+   if(!url) return "";
+   return url;
+}}
+
+function showLatest(){{ 
+    let scrollPos = 0;
+    function scroll(){{ 
+        scrollPos += 1;
+        if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
+        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+    }}
+    setInterval(scroll, 30);
+}}
+
+function openInfo(item){{ 
+    infoCard.style.display='block';
+    infoCard.style.backgroundImage="none";
+    infoCard.style.backgroundColor="rgba(0,0,0,0.85)";
+    infoTitle.textContent=item.title;
+    infoGenres.textContent="Generi: "+item.genres.join(", ");
+    infoVote.textContent="★ "+item.vote;
+    infoOverview.textContent=item.overview||"";
+    infoYear.textContent=item.year?"Anno: "+item.year:"";
+    infoDuration.textContent=item.duration?"Durata: "+item.duration+" min":"";
+    infoCast.textContent=item.cast&&item.cast.length?"Cast: "+item.cast.slice(0,5).join(", "):"";
+    seasonSelect.style.display='none';
+    episodeSelect.style.display='none';
+    if(item.type==='tv'){{ 
+        seasonSelect.style.display='inline';
+        episodeSelect.style.display='inline';
+        seasonSelect.innerHTML="";
+        for(let s=1;s<=item.seasons;s++){{ 
+            let o=document.createElement('option');
+            o.value=s;
+            o.textContent="Stagione "+s;
+            seasonSelect.appendChild(o);
+        }}
+        seasonSelect.onchange=updateEpisodes;
+        updateEpisodes();
+    }}
+    playBtn.onclick=()=>openPlayer(item);
+    function updateEpisodes(){{ 
+        let season=parseInt(seasonSelect.value);
+        let epCount=item.episodes[season]||1;
+        episodeSelect.innerHTML="";
+        for(let e=1;e<=epCount;e++){{ 
+            let o=document.createElement('option');
+            o.value=e;
+            o.textContent="Episodio "+e;
+            episodeSelect.appendChild(o);
+        }}
+    }}
+}}
+
+function closeInfo(){{ 
+    infoCard.style.display='none';
+}}
+
+function openPlayer(item){{ 
+    infoCard.style.display='none';
+    overlay.style.display='flex';
+    let link=sanitizeUrl(item.link);
+    if(item.type==='tv'){{ 
+        let season=parseInt(seasonSelect.value)||1;
+        let episode=parseInt(episodeSelect.value)||1;
+        link=`https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
+    }} else {{
+        link=`https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
+    }}
+    iframe.src=link;
+    playerTitle.textContent=item.title;
+    showPlayerTitle();
+    if(overlay.requestFullscreen){{overlay.requestFullscreen();}}
+    else if(overlay.webkitRequestFullscreen){{overlay.webkitRequestFullscreen();}}
+    else if(overlay.msRequestFullscreen){{overlay.msRequestFullscreen();}}
+    overlay.dataset.prevCardVisible='true';
+    try{{history.pushState({{playerOpen:true}},"");}}catch(e){{}}
+}}
+
+function closePlayer(fromPop){{ 
+    overlay.style.display='none';
+    iframe.src='';
+    if(document.fullscreenElement){{document.exitFullscreen();}}
+    else if(document.webkitFullscreenElement){{document.webkitExitFullscreen();}}
+    else if(document.msFullscreenElement){{document.msExitFullscreen();}}
+    if(overlay.dataset.prevCardVisible==='true'){{infoCard.style.display='block';}}
+    if(!fromPop && history.state && history.state.playerOpen){{try{{history.back();}}catch(e){{}}}}
+}}
+
+window.addEventListener("popstate",function(e){{ 
+    if(overlay.style.display==='flex'){{closePlayer(true);}}
+}});
+
 let hideTitleTimeout;
-function showPlayerTitle() {
-    if (!playerTitle.textContent) return;
-    playerTitle.style.opacity = "1";
+function showPlayerTitle(){{ 
+    if(!playerTitle.textContent) return;
+    playerTitle.style.opacity="1";
     clearTimeout(hideTitleTimeout);
-    hideTitleTimeout = setTimeout(() => {
-        playerTitle.style.opacity = "0";
-    }, 3000);
-}
-overlay.addEventListener("mousemove", showPlayerTitle);
-overlay.addEventListener("touchstart", showPlayerTitle);
-
-function sanitizeUrl(url){{if(!url)return "";return url;}}
-
-function showLatest(){{let scrollPos=0;function scroll(){{scrollPos+=1;if(scrollPos>latestDiv.scrollWidth-latestDiv.clientWidth)scrollPos=0;latestDiv.scrollTo({{left:scrollPos,behavior:'smooth'}});}}setInterval(scroll,30);}}
-
-function openInfo(item){{infoCard.style.display='block';infoTitle.textContent=item.title;infoGenres.textContent="Generi: "+item.genres.join(", ");infoVote.textContent="★ "+item.vote;infoOverview.textContent=item.overview||"";infoYear.textContent=item.year?"Anno: "+item.year:"";infoDuration.textContent=item.duration?"Durata: "+item.duration+" min":"";infoCast.textContent=item.cast&&item.cast.length?"Cast: "+item.cast.slice(0,5).join(", "):"";seasonSelect.style.display='none';episodeSelect.style.display='none';if(item.type==='tv'){{seasonSelect.style.display='inline';episodeSelect.style.display='inline';seasonSelect.innerHTML="";for(let s=1;s<=item.seasons;s++){{let o=document.createElement('option');o.value=s;o.textContent="Stagione "+s;seasonSelect.appendChild(o);}}seasonSelect.onchange=updateEpisodes;updateEpisodes();}}playBtn.onclick=()=>openPlayer(item);function updateEpisodes(){{let season=parseInt(seasonSelect.value);let epCount=item.episodes[season]||1;episodeSelect.innerHTML="";for(let e=1;e<=epCount;e++){{let o=document.createElement('option');o.value=e;o.textContent="Episodio "+e;episodeSelect.appendChild(o);}}}}}}
-
-function closeInfo(){{infoCard.style.display='none';}}
-
-function openPlayer(item){{infoCard.style.display='none';overlay.style.display='flex';let link=sanitizeUrl(item.link);if(item.type==='tv'){{let season=parseInt(seasonSelect.value)||1;let episode=parseInt(episodeSelect.value)||1;link=`https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;}}else{{link=`https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;}}iframe.src=link;playerTitle.textContent=item.title;showPlayerTitle();if(overlay.requestFullscreen){{overlay.requestFullscreen();}}else if(overlay.webkitRequestFullscreen){{overlay.webkitRequestFullscreen();}}else if(overlay.msRequestFullscreen){{overlay.msRequestFullscreen();}}overlay.dataset.prevCardVisible='true';try{{history.pushState({{playerOpen:true}},"");}}catch(e){{}}}}
-
-function closePlayer(fromPop){{overlay.style.display='none';iframe.src='';playerTitle.textContent="";playerTitle.style.opacity="0";if(document.fullscreenElement){{document.exitFullscreen();}}else if(document.webkitFullscreenElement){{document.webkitExitFullscreen();}}else if(document.msFullscreenElement){{document.msExitFullscreen();}}if(overlay.dataset.prevCardVisible==='true'){{infoCard.style.display='block';}}if(!fromPop&&history.state&&history.state.playerOpen){{try{{history.back();}}catch(e){{}}}}}}
-
-window.addEventListener("popstate",function(e){{if(overlay.style.display==='flex'){{closePlayer(true);}}}});
+    hideTitleTimeout=setTimeout(()=>{{playerTitle.style.opacity="0";}},3000);
+}}
+overlay.addEventListener("mousemove",showPlayerTitle);
+overlay.addEventListener("touchstart",showPlayerTitle);
 
 let currentType='movie',currentList=[],shown=0;
-function render(reset=false){{if(reset){{grid.innerHTML='';shown=0;}}let count=0;let s=document.getElementById('searchBox').value.toLowerCase();let g=document.getElementById('genreSelect').value;while(shown<currentList.length&&count<40){{let m=currentList[shown++];if((g==='all'||m.genres.includes(g))&&m.title.toLowerCase().includes(s)){{const card=document.createElement('div');card.className='card';card.innerHTML=`<img class='poster' src='${{m.poster}}' alt='${{m.title}}'><div class='badge'>${{m.vote}}</div><p style="margin:2px 0;font-size:12px;color:#ccc;">${{m.duration?m.duration+' min • ':''}}${{m.year?m.year:''}}</p>`;card.onclick=()=>openInfo(m);grid.appendChild(card);count++;}}}}}}
+function render(reset=false){{ 
+    if(reset){{grid.innerHTML='';shown=0;}}
+    let count=0;
+    let s=document.getElementById('searchBox').value.toLowerCase();
+    let g=document.getElementById('genreSelect').value;
+    while(shown<currentList.length && count<40){{ 
+        let m=currentList[shown++];
+        if((g==='all'||m.genres.includes(g))&&m.title.toLowerCase().includes(s)){{ 
+            const card=document.createElement('div');card.className='card';
+            card.innerHTML=`
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
+                <p style="margin:2px 0;font-size:12px;color:#ccc;">
+                    ${{m.duration ? m.duration+' min • ' : ''}}${{m.year ? m.year : ''}}
+                </p>
+            `;
+            card.onclick=()=>openInfo(m);
+            grid.appendChild(card);
+            count++;
+        }}
+    }}
+}}
 
-function populateGenres(){{const set=new Set();currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));const sel=document.getElementById('genreSelect');sel.innerHTML='<option value="all">Tutti i generi</option>';[...set].sort().forEach(g=>{{const o=document.createElement('option');o.value=o.textContent=g;sel.appendChild(o);}});}}
+function populateGenres(){{ 
+    const set=new Set();
+    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    const sel=document.getElementById('genreSelect');
+    sel.innerHTML='<option value="all">Tutti i generi</option>';
+    [...set].sort().forEach(g=>{{const o=document.createElement('option');o.value=o.textContent=g;sel.appendChild(o);}});
+}}
 
-function updateType(t){{currentType=t;currentList=allData.filter(x=>x.type===t);populateGenres();render(true);}}
+function updateType(t){{ 
+    currentType=t;
+    currentList=allData.filter(x=>x.type===t);
+    populateGenres();
+    render(true);
+}}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
@@ -204,57 +314,50 @@ showLatest();
     return html
 
 def main():
-    api_key = get_api_key()
-    entries = []
-    latest_entries = ""
-
-    for type_, url in SRC_URLS.items():
-        data = fetch_list(url)
-        ids = extract_ids(data)
-
-        for idx, tmdb_id in enumerate(ids):
+    api_key=get_api_key()
+    entries=[]
+    latest_entries=""
+    for type_,url in SRC_URLS.items():
+        data=fetch_list(url)
+        ids=extract_ids(data)
+        for idx,tmdb_id in enumerate(ids):
             try:
-                info = tmdb_get(api_key, type_, tmdb_id)
+                info=tmdb_get(api_key,type_,tmdb_id)
             except:
-                info = None
-            if not info:
-                continue
-
-            title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
-            poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
-            genres = [g["name"] for g in info.get("genres", [])]
-            vote = info.get("vote_average", 0)
-            overview = info.get("overview", "")
-            link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
-            seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
-            episodes = {str(s["season_number"]): s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
-            duration = info.get("runtime", 0) if type_=="movie" else 0
-            year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
-            cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
-
+                info=None
+            if not info: continue
+            title=info.get("title") or info.get("name") or f"ID {tmdb_id}"
+            poster=TMDB_IMAGE_BASE+info["poster_path"] if info.get("poster_path") else ""
+            genres=[g["name"] for g in info.get("genres",[])]
+            vote=info.get("vote_average",0)
+            overview=info.get("overview","")
+            link=VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
+            seasons=info.get("number_of_seasons",1) if type_=="tv" else 0
+            episodes={{str(s["season_number"]):s.get("episode_count",1) for s in info.get("seasons",[]) if s.get("season_number")}} if type_=="tv" else {{}}
+            duration=info.get("runtime",0) if type_=="movie" else 0
+            year=(info.get("release_date") or info.get("first_air_date") or "")[:4]
+            cast=[c["name"] for c in info.get("credits",{{}}).get("cast",[])] if info.get("credits") else []
             entries.append({{
-                "id": tmdb_id,
-                "title": title,
-                "poster": poster,
-                "genres": genres,
-                "vote": vote,
-                "overview": overview,
-                "link": link,
-                "type": type_,
-                "seasons": seasons,
-                "episodes": episodes,
-                "duration": duration or 0,
-                "year": year or "",
-                "cast": cast
+                "id":tmdb_id,
+                "title":title,
+                "poster":poster,
+                "genres":genres,
+                "vote":vote,
+                "overview":overview,
+                "link":link,
+                "type":type_,
+                "seasons":seasons,
+                "episodes":episodes,
+                "duration":duration or 0,
+                "year":year or "",
+                "cast":cast
             }})
-
-            if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
-
-    html = build_html(entries, latest_entries)
-    with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
+            if idx<10:
+                latest_entries+=f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
+    html=build_html(entries,latest_entries)
+    with open(OUTPUT_HTML,"w",encoding="utf-8") as f:
         f.write(html)
     print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
