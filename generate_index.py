@@ -2,18 +2,7 @@
 """
 generate_index.py
 
-Genera una pagina HTML con locandine da TMDb partendo dalla lista di Vix.
-- Film e Serie TV (due tendine: Movies / Series)
-- Ultime novità in alto (primi 10 della lista Vix)
-- Ricerca per titolo
-- Filtro per genere
-- Clic su locandina apre scheda info con play
-- Lazy load: mostra 40 titoli per volta
-- Serie: tendine per stagione ed episodio
-- Scroll automatico ultime novità
-- Card fullscreen con sfondo locandina in trasparenza
-- Play nasconde la card temporaneamente
-- Card uniformi con colori più gradevoli
+Aggiunta gestione Preferiti con stellina e filtro nei generi.
 """
 
 import os
@@ -80,6 +69,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
+.favorite-btn{{position:absolute;top:8px;left:8px;font-size:20px;color:#fff;cursor:pointer;text-shadow:0 0 4px #000;}}
+.favorite-btn.active{{color:gold;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
@@ -92,24 +83,6 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #latest::-webkit-scrollbar {{display: none;}}
 #latest {{-ms-overflow-style: none;scrollbar-width: none;}}
 #latest .poster{{width:100px;flex-shrink:0;}}
-.btn-play {{
-  padding: 5px 10px;
-  background: orange;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}}
-.btn-close {{
-  padding: 5px 10px;
-  background: #e50914;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-}}
 </style>
 </head>
 <body>
@@ -121,7 +94,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <h1>Movies & Series</h1>
 <div class='controls'>
 <select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
-<select id='genreSelect'><option value='all'>Tutti i generi</option></select>
+<select id='genreSelect'><option value='all'>Tutti i generi</option><option value='favorites'>★ Preferiti</option></select>
 <input type='text' id='searchBox' placeholder='Cerca...'>
 </div>
 <div id='moviesGrid' class='grid'></div>
@@ -151,6 +124,18 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <script>
 const allData = {entries};
+let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+
+function toggleFavorite(id){{
+  if(favorites.includes(id)){{
+    favorites = favorites.filter(f=>f!==id);
+  }} else {{
+    favorites.push(id);
+  }}
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  render(true);
+}}
+
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
@@ -171,7 +156,7 @@ const infoCast = document.getElementById('infoCast');
 
 function sanitizeUrl(url){{ 
    if(!url) return "";
-    return url;
+   return url;
 }}
 
 function showLatest(){{ 
@@ -292,10 +277,12 @@ function render(reset=false){{
     let g = document.getElementById('genreSelect').value;
     while(shown<currentList.length && count<40){{ 
         let m = currentList[shown++];
-        if((g==='all' || m.genres.includes(g)) && m.title.toLowerCase().includes(s)){{ 
+        let isFav = favorites.includes(m.id);
+        if((g==='all' || m.genres.includes(g) || (g==='favorites' && isFav)) && m.title.toLowerCase().includes(s)){{ 
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
+                <span class="favorite-btn ${{isFav ? 'active' : ''}}" onclick="event.stopPropagation(); toggleFavorite('${{m.id}}')">★</span>
                 <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
                 <div class='badge'>${{m.vote}}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
@@ -312,7 +299,8 @@ function render(reset=false){{
 function populateGenres(){{ 
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
-    const sel=document.getElementById('genreSelect'); sel.innerHTML='<option value="all">Tutti i generi</option>';
+    const sel=document.getElementById('genreSelect'); 
+    sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
     [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
 }}
 
