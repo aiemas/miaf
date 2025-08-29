@@ -172,7 +172,8 @@ function showLatest(){{
     function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrolllatestDiv.scrollTo({ left: scrollPos, behavior: 'smooth' });
+        latestDiv.scroll
+        latestDiv.scrollTo({ left: scrollPos, behavior: 'smooth' });
     }}
     setInterval(scroll, 30);
 }}
