@@ -6,13 +6,13 @@ Aggiunta gestione Preferiti con stellina e filtro multi-genere.
 - Stellina sulle locandine: solo visuale (non cliccabile)
 - Stellina cliccabile dentro la card info
 - Possibilità di selezionare più generi
-- Gestione storico titoli salvati localmente
+- Storico titoli integrato (all_titles.json)
 """
 
 import os
 import sys
-import requests
 import json
+import requests
 
 # --- Config ---
 SRC_URLS = {
@@ -190,8 +190,7 @@ function openInfo(item){{
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
     infoYear.textContent = item.year ? "Anno: " + item.year : "";
-    infoDuration.textContent = item.duration ? "Durata: "
-    + item.duration + " min" : "";
+    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
 
     favoriteInCard.classList.toggle("active", favorites.includes(item.id));
@@ -233,6 +232,7 @@ function openInfo(item){{
 }}
 
 function openPlayer(item){{
+    overlay.dataset.prevCardVisible = infoCard.style.display === 'block' ? 'true' : 'false';
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = item.link;
@@ -258,6 +258,7 @@ function closePlayer(){{
     if(overlay.dataset.prevCardVisible === 'true') infoCard.style.display = 'block';
 }}
 
+// 🔹 Gestione tasto indietro
 window.addEventListener("popstate", function(e){{
     if (overlay.style.display === 'flex') closePlayer();
 }});
@@ -332,12 +333,12 @@ def main():
     entries = []
     latest_entries = ""
 
-    # Carica storico precedente
-    try:
+    # 🔹 Carico storico titoli
+    if os.path.exists(HISTORIC_FILE):
         with open(HISTORIC_FILE, "r", encoding="utf-8") as f:
-            historic = json.load(f)
-    except:
-        historic = {}
+            historic_data = json.load(f)
+    else:
+        historic_data = {}
 
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
@@ -363,7 +364,7 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
-            entry = {
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -377,24 +378,27 @@ def main():
                 "duration": duration or 0,
                 "year": year or "",
                 "cast": cast
+            })
+
+            # aggiorno storico
+            historic_data[tmdb_id] = {
+                "title": title,
+                "type": type_,
+                "poster": poster
             }
-
-            # Aggiorna storico
-            historic[tmdb_id] = entry
-
-            entries.append(entry)
 
             if idx < 10:
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
-    # Salva storico aggiornato
+    # salvo storico titoli
     with open(HISTORIC_FILE, "w", encoding="utf-8") as f:
-        json.dump(historic, f, ensure_ascii=False, indent=2)
+        json.dump(historic_data, f, ensure_ascii=False, indent=2)
 
-    html = build_html(list(historic.values()), latest_entries)
+    html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili. Storico totale: {len(historic)}")
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
+    print(f"Storico titoli aggiornato in {HISTORIC_FILE} ({len(historic_data)} titoli totali)")
 
 if __name__ == "__main__":
     main()
