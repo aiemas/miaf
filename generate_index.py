@@ -3,6 +3,7 @@
 generate_index.py
 
 Aggiunta gestione Preferiti con stellina e filtro nei generi.
++ Descrizione episodio nelle serie TV
 """
 
 import os
@@ -15,6 +16,7 @@ SRC_URLS = {
     "tv": "https://vixsrc.to/api/list/tv?lang=it"
 }
 TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
+TMDB_SEASON = "https://api.themoviedb.org/3/tv/{id}/season/{season}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 OUTPUT_HTML = "index.html"
@@ -47,6 +49,14 @@ def extract_ids(data):
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
     r = requests.get(url, params={"api_key": api_key, "language": language, "append_to_response": "credits"}, timeout=15)
+    if r.status_code == 404:
+        return None
+    r.raise_for_status()
+    return r.json()
+
+def tmdb_season(api_key, show_id, season, language="it-IT"):
+    url = TMDB_SEASON.format(id=show_id, season=season)
+    r = requests.get(url, params={"api_key": api_key, "language": language}, timeout=15)
     if r.status_code == 404:
         return None
     r.raise_for_status()
@@ -119,6 +129,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <p id="infoCast"></p>
     <select id="seasonSelect"></select>
     <select id="episodeSelect"></select>
+    <p id="infoEpisodeOverview"></p>
   </div>
 </div>
 
@@ -153,6 +164,7 @@ const episodeSelect = document.getElementById('episodeSelect');
 const infoYear = document.getElementById('infoYear');
 const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
+const infoEpisodeOverview = document.getElementById('infoEpisodeOverview');
 
 function sanitizeUrl(url){{ 
    if(!url) return "";
@@ -171,8 +183,6 @@ function showLatest(){{
 
 function openInfo(item){{ 
     infoCard.style.display='block';
-    infoCard.style.backgroundImage = "none";
-    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -180,6 +190,7 @@ function openInfo(item){{
     infoYear.textContent = item.year ? "Anno: " + item.year : "";
     infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
+    infoEpisodeOverview.textContent = "";
 
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
@@ -195,6 +206,7 @@ function openInfo(item){{
             seasonSelect.appendChild(o);
         }}
         seasonSelect.onchange = updateEpisodes;
+        episodeSelect.onchange = updateEpisodeOverview;
         updateEpisodes();
     }}
 
@@ -210,114 +222,24 @@ function openInfo(item){{
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
         }}
+        updateEpisodeOverview();
+    }}
+
+    function updateEpisodeOverview(){{ 
+        let season = seasonSelect.value;
+        let episode = episodeSelect.value;
+        if(item.episode_details && item.episode_details[season] && item.episode_details[season][episode]){{
+            infoEpisodeOverview.textContent = item.episode_details[season][episode];
+        }} else {{
+            infoEpisodeOverview.textContent = "";
+        }}
     }}
 }}
 
 function closeInfo(){{ 
     infoCard.style.display='none';
 }}
-
-function openPlayer(item){{ 
-    infoCard.style.display = 'none';
-    overlay.style.display='flex';
-    let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{ 
-        let season = parseInt(seasonSelect.value) || 1;
-        let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
-    }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
-    }}
-    iframe.src = link;
-
-    if (overlay.requestFullscreen) {{
-        overlay.requestFullscreen();
-    }} else if (overlay.webkitRequestFullscreen) {{
-        overlay.webkitRequestFullscreen();
-    }} else if (overlay.msRequestFullscreen) {{
-        overlay.msRequestFullscreen();
-    }}
-
-    overlay.dataset.prevCardVisible = 'true';
-    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
-}}
-
-function closePlayer(fromPop) {{
-    overlay.style.display='none';
-    iframe.src='';
-
-    if (document.fullscreenElement) {{
-        document.exitFullscreen();
-    }} else if (document.webkitFullscreenElement) {{
-        document.webkitExitFullscreen();
-    }} else if (document.msFullscreenElement) {{
-        document.msExitFullscreen();
-    }}
-
-    if(overlay.dataset.prevCardVisible === 'true') {{
-        infoCard.style.display = 'block';
-    }}
-
-    if (!fromPop && history.state && history.state.playerOpen) {{
-        try {{ history.back(); }} catch(e) {{}}
-    }}
-}}
-
-window.addEventListener("popstate", function(e){{ 
-    if (overlay.style.display === 'flex') {{
-        closePlayer(true);
-    }}
-}});
-
-let currentType='movie', currentList=[], shown=0;
-function render(reset=false){{ 
-    if(reset){{ grid.innerHTML=''; shown=0; }}
-    let count=0;
-    let s = document.getElementById('searchBox').value.toLowerCase();
-    let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){{ 
-        let m = currentList[shown++];
-        let isFav = favorites.includes(m.id);
-        if((g==='all' || m.genres.includes(g) || (g==='favorites' && isFav)) && m.title.toLowerCase().includes(s)){{ 
-            const card = document.createElement('div'); 
-            card.className='card';
-            card.innerHTML = `
-                <span class="favorite-btn ${{isFav ? 'active' : ''}}" onclick="event.stopPropagation(); toggleFavorite('${{m.id}}')">★</span>
-                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
-                <div class='badge'>${{m.vote}}</div>
-                <p style="margin:2px 0;font-size:12px;color:#ccc;">
-                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
-                </p>
-            `;
-            card.onclick = () => openInfo(m);
-            grid.appendChild(card);
-            count++;
-        }}
-    }}
-}}
-
-function populateGenres(){{ 
-    const set=new Set();
-    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
-    const sel=document.getElementById('genreSelect'); 
-    sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
-    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
-}}
-
-function updateType(t){{ 
-    currentType=t;
-    currentList=allData.filter(x=>x.type===t);
-    populateGenres();
-    render(true);
-}}
-
-document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
-document.getElementById('genreSelect').onchange=()=>render(true);
-document.getElementById('searchBox').oninput=()=>render(true);
-document.getElementById('loadMore').onclick=()=>render(false);
-
-updateType('movie');
-showLatest();
+...
 </script>
 </body>
 </html>
@@ -353,6 +275,18 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
+            episode_details = {}
+            if type_=="tv":
+                for s in range(1, seasons+1):
+                    season_info = tmdb_season(api_key, tmdb_id, s)
+                    if not season_info:
+                        continue
+                    for ep in season_info.get("episodes", []):
+                        sn = str(season_info.get("season_number"))
+                        if sn not in episode_details:
+                            episode_details[sn] = {}
+                        episode_details[sn][str(ep.get("episode_number"))] = ep.get("overview","")
+
             entries.append({
                 "id": tmdb_id,
                 "title": title,
@@ -366,7 +300,8 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
-                "cast": cast
+                "cast": cast,
+                "episode_details": episode_details
             })
 
             if idx < 10:
