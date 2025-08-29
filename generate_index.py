@@ -6,11 +6,13 @@ Aggiunta gestione Preferiti con stellina e filtro multi-genere.
 - Stellina sulle locandine: solo visuale (non cliccabile)
 - Stellina cliccabile dentro la card info
 - Possibilità di selezionare più generi
+- Gestione storico titoli salvati localmente
 """
 
 import os
 import sys
 import requests
+import json
 
 # --- Config ---
 SRC_URLS = {
@@ -21,6 +23,7 @@ TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 OUTPUT_HTML = "index.html"
+HISTORIC_FILE = "all_titles.json"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
 def get_api_key():
@@ -165,11 +168,7 @@ const infoYear=document.getElementById('infoYear');
 const infoDuration=document.getElementById('infoDuration');
 const infoCast=document.getElementById('infoCast');
 
-/* Quando chiudi la scheda info vai alla griglia */
-closeCardBtn.onclick = () => {{
-  infoCard.style.display='none';
-  history.pushState({{page:"grid"}}, "", "#grid");
-}};
+closeCardBtn.onclick = () => infoCard.style.display='none';
 
 function showLatest(){{
     let scrollPos = 0;
@@ -181,9 +180,7 @@ function showLatest(){{
     setInterval(scroll, 30);
 }}
 
-/* openInfo e openPlayer ricevono un flag `push` per evitare di pushare stato quando
-   stiamo solo applicando lo stato causato da popstate */
-function openInfo(item, push=true) {{
+function openInfo(item){{
     currentItem = item;
     infoCard.style.display='block';
     infoCard.style.backgroundImage = "none";
@@ -193,7 +190,8 @@ function openInfo(item, push=true) {{
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
     infoYear.textContent = item.year ? "Anno: " + item.year : "";
-    infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
+    infoDuration.textContent = item.duration ? "Durata: "
+    + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
 
     favoriteInCard.classList.toggle("active", favorites.includes(item.id));
@@ -221,10 +219,6 @@ function openInfo(item, push=true) {{
 
     playBtn.onclick = () => openPlayer(item);
 
-    if(push) {{
-        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
-    }}
-
     function updateEpisodes() {{
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
@@ -238,7 +232,7 @@ function openInfo(item, push=true) {{
     }}
 }}
 
-function openPlayer(item, push=true) {{
+function openPlayer(item){{
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = item.link;
@@ -253,62 +247,24 @@ function openPlayer(item, push=true) {{
     if (overlay.requestFullscreen) overlay.requestFullscreen();
     else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
-
-    if(push) {{
-        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
-    }}
 }}
 
-function closePlayer(push=true) {{
+function closePlayer(){{
     overlay.style.display='none';
     iframe.src='';
     if (document.fullscreenElement) document.exitFullscreen();
     else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
     else if (document.msFullscreenElement) document.msExitFullscreen();
-
-    if(currentItem) {{
-        infoCard.style.display = 'block';
-        if(push) {{
-            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
-        }}
-    }}
+    if(overlay.dataset.prevCardVisible === 'true') infoCard.style.display = 'block';
 }}
 
-/* Gestione della navigazione indietro/avanti */
-window.addEventListener("popstate", function(e) {{
-    const state = e.state;
-
-    if(!state || state.page==="grid" || state.page==="home") {{
-        overlay.style.display='none';
-        iframe.src='';
-        infoCard.style.display='none';
-        return;
-    }}
-
-    const itemId = state.itemId;
-    const item = allData.find(x => String(x.id) === String(itemId));
-    if(!item) {{
-        // se non trovi l'item, chiudi tutto
-        overlay.style.display='none';
-        iframe.src='';
-        infoCard.style.display='none';
-        return;
-    }}
-
-    if(state.page === "player") {{
-        openPlayer(item, false); // non pushare lo stato mentre rispondi a popstate
-    }} else if(state.page === "info") {{
-        openInfo(item, false);
-    }} else {{
-        overlay.style.display='none';
-        iframe.src='';
-        infoCard.style.display='none';
-    }}
+window.addEventListener("popstate", function(e){{
+    if (overlay.style.display === 'flex') closePlayer();
 }});
 
 let currentType='movie', currentList=[], shown=0;
 
-function render(reset=false) {{
+function render(reset=false){{
     if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
@@ -358,14 +314,10 @@ function updateType(t){{
     render(true);
 }}
 
-/* Eventi UI */
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
-
-/* stato iniziale nella history */
-history.replaceState({{page:"grid"}}, "", "#grid");
 
 updateType('movie');
 showLatest();
@@ -379,6 +331,13 @@ def main():
     api_key = get_api_key()
     entries = []
     latest_entries = ""
+
+    # Carica storico precedente
+    try:
+        with open(HISTORIC_FILE, "r", encoding="utf-8") as f:
+            historic = json.load(f)
+    except:
+        historic = {}
 
     for type_, url in SRC_URLS.items():
         data = fetch_list(url)
@@ -404,7 +363,7 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
-            entries.append({
+            entry = {
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -418,15 +377,24 @@ def main():
                 "duration": duration or 0,
                 "year": year or "",
                 "cast": cast
-            })
+            }
+
+            # Aggiorna storico
+            historic[tmdb_id] = entry
+
+            entries.append(entry)
 
             if idx < 10:
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
-    html = build_html(entries, latest_entries)
+    # Salva storico aggiornato
+    with open(HISTORIC_FILE, "w", encoding="utf-8") as f:
+        json.dump(historic, f, ensure_ascii=False, indent=2)
+
+    html = build_html(list(historic.values()), latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili. Storico totale: {len(historic)}")
 
 if __name__ == "__main__":
     main()
