@@ -137,8 +137,8 @@ const allData = {entries};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 let currentItem = null;
 
-function toggleFavorite(id){{
-  if(favorites.includes(id)){{
+function toggleFavorite(id) {{
+  if(favorites.includes(id)) {{
     favorites = favorites.filter(f=>f!==id);
   }} else {{
     favorites.push(id);
@@ -172,8 +172,7 @@ function showLatest(){{
     function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scroll
-        latestDiv.scrollTo({ left: scrollPos, behavior: 'smooth' });
+        latestDiv.scrollTo({{ left: scrollPos, behavior: 'smooth' }});
     }}
     setInterval(scroll, 30);
 }}
@@ -200,11 +199,11 @@ function openInfo(item){{
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
 
-    if(item.type==='tv'){{
+    if(item.type==='tv') {{
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){{
+        for(let s=1;s<=item.seasons;s++) {{
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
@@ -216,11 +215,11 @@ function openInfo(item){{
 
     playBtn.onclick = () => openPlayer(item);
 
-    function updateEpisodes(){{
+    function updateEpisodes() {{
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){{
+        for(let e=1;e<=epCount;e++) {{
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
@@ -233,7 +232,7 @@ function openPlayer(item){{
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = item.link;
-    if(item.type==='tv'){{
+    if(item.type==='tv') {{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
@@ -266,11 +265,11 @@ function render(reset=false){{
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let gSel = Array.from(document.getElementById('genreSelect').selectedOptions).map(o=>o.value);
-    while(shown<currentList.length && count<40){{
+    while(shown<currentList.length && count<40) {{
         let m = currentList[shown++];
         let isFav = favorites.includes(m.id);
-        let genreMatch = gSel.length===0 || gSel.includes('all') || gSel.some(g => m.genres.includes(g));
-        if(genreMatch && m.title.toLowerCase().includes(s)){{
+        let genreMatch = gSel.length===0 || gSel.includes('all') || gSel.includes('favorites') && isFav || gSel.some(g => m.genres.includes(g));
+        if(genreMatch && m.title.toLowerCase().includes(s)) {{
             const card = document.createElement('div');
             card.className='card';
             card.innerHTML = `
