@@ -268,7 +268,11 @@ function render(reset=false){{
     while(shown<currentList.length && count<40) {{
         let m = currentList[shown++];
         let isFav = favorites.includes(m.id);
-        let genreMatch = gSel.length===0 || gSel.includes('all') || gSel.includes('favorites') && isFav || gSel.some(g => m.genres.includes(g));
+        let genreMatch = 
+    gSel.length===0 
+    || gSel.includes('all') 
+    || (gSel.includes('favorites') && isFav) 
+    || gSel.every(g => m.genres.includes(g));
         if(genreMatch && m.title.toLowerCase().includes(s)) {{
             const card = document.createElement('div');
             card.className='card';
