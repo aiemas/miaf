@@ -3,6 +3,8 @@
 generate_index.py
 
 Aggiunta gestione Preferiti con stellina e filtro nei generi.
+- Stellina sulle locandine: solo visuale (non cliccabile)
+- Stellina cliccabile dentro la card info
 """
 
 import os
@@ -69,8 +71,14 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
-.favorite-btn{{position:absolute;top:8px;left:8px;font-size:20px;color:#fff;cursor:pointer;text-shadow:0 0 4px #000;}}
+/* Stellina (stile comune) */
+.favorite-btn{{font-size:20px;color:#fff;text-shadow:0 0 4px #000;}}
 .favorite-btn.active{{color:gold;}}
+/* Stellina sulle locandine (solo visiva, non cliccabile) */
+.card .favorite-btn{{position:absolute;top:8px;left:8px;pointer-events:none;}}
+/* Stellina nella card (cliccabile, inline) */
+#favoriteInCard.favorite-btn{{position:static;cursor:pointer;margin-left:auto;font-size:22px;}}
+
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
@@ -110,6 +118,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn" class="btn-play">Play</button>
       <button id="closeCardBtn" class="btn-close">×</button>
+      <!-- Stellina cliccabile SOLO nella card -->
       <span id="favoriteInCard" class="favorite-btn">★</span>
     </div>
     <p id="infoGenres"></p>
@@ -126,16 +135,18 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <script>
 const allData = {entries};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+let currentItem = null; // per aggiornare la stellina nella card dopo il toggle
 
-function toggleFavorite(id){
-  if(favorites.includes(id)){
+function toggleFavorite(id){{
+  if(favorites.includes(id)){{
     favorites = favorites.filter(f=>f!==id);
-  } else {
+  }} else {{
     favorites.push(id);
-  }
+  }}
   localStorage.setItem("favorites", JSON.stringify(favorites));
+  // aggiorna griglia
   render(true);
-}
+}}
 
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
@@ -156,23 +167,26 @@ const infoYear = document.getElementById('infoYear');
 const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
 
-function sanitizeUrl(url){ 
+function sanitizeUrl(url){{ 
    if(!url) return "";
    return url;
-}
+}}
 
-function showLatest(){ 
+function showLatest(){{ 
     let scrollPos = 0;
-    function scroll() {
+    function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({left: scrollPos, behavior: 'smooth'});
-    }
+        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+    }}
     setInterval(scroll, 30);
-}
+}}
 
-function openInfo(item){ 
+function openInfo(item){{ 
+    currentItem = item;
     infoCard.style.display='block';
+    infoCard.style.backgroundImage = "none";
+    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -181,122 +195,143 @@ function openInfo(item){
     infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
 
-    // Gestione stellina nella card
+    // Stellina nella card (cliccabile)
     favoriteInCard.classList.toggle("active", favorites.includes(item.id));
-    favoriteInCard.onclick = () => toggleFavorite(item.id);
+    favoriteInCard.onclick = () => {{
+      toggleFavorite(item.id);
+      favoriteInCard.classList.toggle("active", favorites.includes(item.id));
+    }};
 
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
-    if(item.type==='tv'){ 
+    if(item.type==='tv'){{ 
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){ 
+        for(let s=1;s<=item.seasons;s++){{ 
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
-        }
+        }}
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
-    }
+    }}
 
     playBtn.onclick = ()=>openPlayer(item);
 
-    function updateEpisodes(){ 
+    function updateEpisodes(){{ 
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){ 
+        for(let e=1;e<=epCount;e++){{ 
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function closeInfo(){ 
+function closeInfo(){{ 
     infoCard.style.display='none';
-}
+}}
 
-function openPlayer(item){ 
+function openPlayer(item){{ 
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){ 
+    if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${item.id}/${season}/{episode}?lang=it&sottotitoli=off&autoplay=1`;
-    } else {
-        link = `https://vixsrc.to/movie/${item.id}/?lang=it&sottotitoli=off&autoplay=1`;
-    }
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
+    }} else {{
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
+    }}
     iframe.src = link;
 
-    if (overlay.requestFullscreen) {
+    if (overlay.requestFullscreen) {{
         overlay.requestFullscreen();
-    } else if (overlay.webkitRequestFullscreen) {
+    }} else if (overlay.webkitRequestFullscreen) {{
         overlay.webkitRequestFullscreen();
-    } else if (overlay.msRequestFullscreen) {
+    }} else if (overlay.msRequestFullscreen) {{
         overlay.msRequestFullscreen();
-    }
-}
+    }}
 
-function closePlayer(fromPop) {
+    overlay.dataset.prevCardVisible = 'true';
+    try {{ history.pushState({{playerOpen:true}}, ""); }} catch(e) {{}}
+}}
+
+function closePlayer(fromPop) {{
     overlay.style.display='none';
     iframe.src='';
 
-    if (document.fullscreenElement) {
+    if (document.fullscreenElement) {{
         document.exitFullscreen();
-    } else if (document.webkitFullscreenElement) {
+    }} else if (document.webkitFullscreenElement) {{
         document.webkitExitFullscreen();
-    } else if (document.msFullscreenElement) {
+    }} else if (document.msFullscreenElement) {{
         document.msExitFullscreen();
-    }
-}
+    }}
+
+    if(overlay.dataset.prevCardVisible === 'true') {{
+        infoCard.style.display = 'block';
+    }}
+
+    if (!fromPop && history.state && history.state.playerOpen) {{
+        try {{ history.back(); }} catch(e) {{}}
+    }}
+}}
+
+window.addEventListener("popstate", function(e){{ 
+    if (overlay.style.display === 'flex') {{
+        closePlayer(true);
+    }}
+}});
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){ 
-    if(reset){ grid.innerHTML=''; shown=0; }
+function render(reset=false){{ 
+    if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let g = document.getElementById('genreSelect').value;
-    while(shown<currentList.length && count<40){ 
+    while(shown<currentList.length && count<40){{ 
         let m = currentList[shown++];
         let isFav = favorites.includes(m.id);
-        if((g==='all' || m.genres.includes(g) || (g==='favorites' && isFav)) && m.title.toLowerCase().includes(s)){ 
+        if((g==='all' || m.genres.includes(g) || (g==='favorites' && isFav)) && m.title.toLowerCase().includes(s)){{ 
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
-                <img class='poster' src='${m.poster}' alt='${m.title}'>
-                <div class='badge'>${m.vote}</div>
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
-                    ${m.duration ? m.duration + ' min • ' : ''}${m.year ? m.year : ''}
+                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
-                <span class="favorite-btn ${isFav ? 'active' : ''}" style="pointer-events:none;">★</span>
+                <!-- Stellina sulla locandina: solo visiva -->
+                <span class="favorite-btn ${{isFav ? 'active' : ''}}" style="pointer-events:none;">★</span>
             `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
             count++;
-        }
-    }
-}
+        }}
+    }}
+}}
 
-function populateGenres(){ 
+function populateGenres(){{ 
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect'); 
     sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
-    [...set].sort().forEach(g=>{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); });
-}
+    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
+}}
 
-function updateType(t){ 
+function updateType(t){{ 
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
-}
+}}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
