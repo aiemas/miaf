@@ -6,7 +6,7 @@ Aggiunta gestione Preferiti con stellina e filtro multi-genere.
 - Stellina sulle locandine: solo visuale (non cliccabile)
 - Stellina cliccabile dentro la card info
 - Possibilità di selezionare più generi
-- Correzione back button: ora chiude correttamente player e info senza accumulare stati
+- Correzione back button: chiude il player prima di tornare alla card o griglia
 """
 
 import os
@@ -168,7 +168,7 @@ const infoCast=document.getElementById('infoCast');
 
 closeCardBtn.onclick = () => {{
   infoCard.style.display='none';
-  history.replaceState({{page:"grid"}}, "", "#grid");
+  history.pushState({{page:"grid"}}, "", "#grid");
 }};
 
 function showLatest(){{
@@ -220,7 +220,7 @@ function openInfo(item, push=true) {{
     playBtn.onclick = () => openPlayer(item);
 
     if(push) {{
-        history.replaceState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
     }}
 
     function updateEpisodes() {{
@@ -253,7 +253,7 @@ function openPlayer(item, push=true) {{
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
 
     if(push) {{
-        history.replaceState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
     }}
 }}
 
@@ -267,7 +267,7 @@ function closePlayer(push=true) {{
     if(currentItem) {{
         infoCard.style.display = 'block';
         if(push) {{
-            history.replaceState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
+            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
         }}
     }}
 }}
@@ -417,7 +417,7 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
-                "cast": cast
+            "cast": cast
             })
 
             if idx < 10:
