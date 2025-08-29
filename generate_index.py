@@ -2,7 +2,10 @@
 """
 generate_index.py
 
-Aggiunta gestione Preferiti con stellina e filtro multi-genere.
+Gestione Preferiti con stellina e filtro multigenere.
+- Stellina sulle locandine: solo visiva
+- Stellina cliccabile nella card
+- Possibilità di selezionare più generi
 """
 
 import os
@@ -64,13 +67,16 @@ body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;paddin
 h1{{color:#fff;text-align:center;margin-bottom:20px;}}
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
+select[multiple]{{height:100px;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}}
 .card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
 .card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
-.favorite-btn{{position:absolute;top:8px;left:8px;font-size:20px;color:#fff;cursor:pointer;text-shadow:0 0 4px #000;}}
+.favorite-btn{{font-size:20px;color:#fff;text-shadow:0 0 4px #000;}}
 .favorite-btn.active{{color:gold;}}
+.card .favorite-btn{{position:absolute;top:8px;left:8px;pointer-events:none;}}
+#favoriteInCard.favorite-btn{{position:static;cursor:pointer;margin-left:auto;font-size:22px;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
@@ -108,8 +114,9 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
     <h2 id="infoTitle"></h2>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
-      <button id="playBtn" class="btn-play">Play</button>
-      <button id="closeCardBtn" class="btn-close">×</button>
+      <button id="playBtn" class="btn-play">Riproduci</button>
+      <button id="closeCardBtn" class="btn-close">Chiudi</button>
+      <span id="favoriteInCard" class="favorite-btn">★</span>
     </div>
     <p id="infoGenres"></p>
     <p id="infoVote"></p>
@@ -125,15 +132,16 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <script>
 const allData = {entries};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+let currentItem = null;
 
 function toggleFavorite(id){{
-    if(favorites.includes(id)){{
-        favorites = favorites.filter(f=>f!==id);
-    }} else {{
-        favorites.push(id);
-    }}
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-    render(true);
+  if(favorites.includes(id)){{
+    favorites = favorites.filter(f=>f!==id);
+  }} else {{
+    favorites.push(id);
+  }}
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  render(true);
 }}
 
 const grid=document.getElementById('moviesGrid');
@@ -147,19 +155,21 @@ const infoOverview = document.getElementById('infoOverview');
 const playBtn = document.getElementById('playBtn');
 const closeCardBtn = document.getElementById('closeCardBtn');
 const latestDiv = document.getElementById('latest');
+const favoriteInCard = document.getElementById('favoriteInCard');
 closeCardBtn.onclick = () => infoCard.style.display = 'none';
 const seasonSelect = document.getElementById('seasonSelect');
 const episodeSelect = document.getElementById('episodeSelect');
 const infoYear = document.getElementById('infoYear');
 const infoDuration = document.getElementById('infoDuration');
 const infoCast = document.getElementById('infoCast');
+const genreSelect = document.getElementById('genreSelect');
 
-function sanitizeUrl(url){{
+function sanitizeUrl(url){{ 
    if(!url) return "";
    return url;
 }}
 
-function showLatest(){{
+function showLatest(){{ 
     let scrollPos = 0;
     function scroll() {{
         scrollPos += 1;
@@ -169,7 +179,8 @@ function showLatest(){{
     setInterval(scroll, 30);
 }}
 
-function openInfo(item){{
+function openInfo(item){{ 
+    currentItem = item;
     infoCard.style.display='block';
     infoCard.style.backgroundImage = "none";
     infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
@@ -181,14 +192,20 @@ function openInfo(item){{
     infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
 
+    favoriteInCard.classList.toggle("active", favorites.includes(item.id));
+    favoriteInCard.onclick = () => {{
+      toggleFavorite(item.id);
+      favoriteInCard.classList.toggle("active", favorites.includes(item.id));
+    }};
+
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
     
-    if(item.type==='tv'){{
+    if(item.type==='tv'){{ 
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){{
+        for(let s=1;s<=item.seasons;s++){{ 
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
@@ -200,27 +217,24 @@ function openInfo(item){{
 
     playBtn.onclick = ()=>openPlayer(item);
 
-    function updateEpisodes(){{
+    function updateEpisodes(){{ 
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){{
-            let o = document.createElement('optiono.value = e;
+        for(let e=1;e<=epCount;e++){{ 
+            let o = document.createElement('option');
+            o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
         }}
     }}
 }}
 
-function closeInfo(){{
-    infoCard.style.display='none';
-}}
-
-function openPlayer(item){{
+function openPlayer(item){{ 
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = sanitizeUrl(item.link);
-    if(item.type==='tv'){{
+    if(item.type==='tv'){{ 
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
@@ -262,31 +276,34 @@ function closePlayer(fromPop) {{
     }}
 }}
 
-window.addEventListener("popstate", function(e){{
+window.addEventListener("popstate", function(e){{ 
     if (overlay.style.display === 'flex') {{
         closePlayer(true);
     }}
 }});
 
 let currentType='movie', currentList=[], shown=0;
-function render(reset=false){{
+function render(reset=false){{ 
     if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
-    let g = Array.from(document.getElementById('genreSelect').selectedOptions).map(o => o.value);
-    while(shown<currentList.length && count<40){{
+    // Ottieni generi selezionati come array
+    let selectedGenres = Array.from(genreSelect.selectedOptions).map(o=>o.value);
+    while(shown<currentList.length && count<40){{ 
         let m = currentList[shown++];
         let isFav = favorites.includes(m.id);
-        if((g.length===0 || g.includes('all') || m.genres.some(gen => g.includes(gen)) || (g.includes('favorites') && isFav)) && m.title.toLowerCase().includes(s)){{
+        // Controllo multigenere: mostra se almeno uno dei generi selezionati è presente
+        let genreMatch = selectedGenres.length===0 || selectedGenres.includes("all") || selectedGenres.some(g=>m.genres.includes(g)) || (selectedGenres.includes("favorites") && isFav);
+        if(genreMatch && m.title.toLowerCase().includes(s)){{ 
             const card = document.createElement('div'); 
             card.className='card';
             card.innerHTML = `
-                <span class="favorite-btn ${{isFav ? 'active' : ''}}" onclick="event.stopPropagation(); toggleFavorite('${{m.id}}')">★</span>
                 <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
                 <div class='badge'>${{m.vote}}</div>
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
                     ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
+                <span class="favorite-btn ${{isFav ? 'active' : ''}}" style="pointer-events:none;">★</span>
             `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
@@ -295,15 +312,14 @@ function render(reset=false){{
     }}
 }}
 
-function populateGenres(){{
+function populateGenres(){{ 
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
-    const sel=document.getElementById('genreSelect'); 
-    sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
-    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; sel.appendChild(o); }});
+    genreSelect.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
+    [...set].sort().forEach(g=>{{ const o=document.createElement('option'); o.value=o.textContent=g; genreSelect.appendChild(o); }});
 }}
 
-function updateType(t){{
+function updateType(t){{ 
     currentType=t;
     currentList=allData.filter(x=>x.type===t);
     populateGenres();
@@ -311,7 +327,7 @@ function updateType(t){{
 }}
 
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
-document.getElementById('genreSelect').onchange=()=>render(true);
+genreSelect.onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 
@@ -369,7 +385,7 @@ def main():
             }})
 
             if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
