@@ -165,7 +165,11 @@ const infoYear=document.getElementById('infoYear');
 const infoDuration=document.getElementById('infoDuration');
 const infoCast=document.getElementById('infoCast');
 
-closeCardBtn.onclick = () => infoCard.style.display='none';
+/* Quando chiudi la scheda info vai alla griglia */
+closeCardBtn.onclick = () => {{
+  infoCard.style.display='none';
+  history.pushState({{page:"grid"}}, "", "#grid");
+}};
 
 function showLatest(){{
     let scrollPos = 0;
@@ -177,7 +181,9 @@ function showLatest(){{
     setInterval(scroll, 30);
 }}
 
-function openInfo(item){{
+/* openInfo e openPlayer ricevono un flag `push` per evitare di pushare stato quando
+   stiamo solo applicando lo stato causato da popstate */
+function openInfo(item, push=true) {{
     currentItem = item;
     infoCard.style.display='block';
     infoCard.style.backgroundImage = "none";
@@ -215,6 +221,10 @@ function openInfo(item){{
 
     playBtn.onclick = () => openPlayer(item);
 
+    if(push) {{
+        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+    }}
+
     function updateEpisodes() {{
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
@@ -228,7 +238,7 @@ function openInfo(item){{
     }}
 }}
 
-function openPlayer(item){{
+function openPlayer(item, push=true) {{
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = item.link;
@@ -243,24 +253,62 @@ function openPlayer(item){{
     if (overlay.requestFullscreen) overlay.requestFullscreen();
     else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
+
+    if(push) {{
+        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+    }}
 }}
 
-function closePlayer(){{
+function closePlayer(push=true) {{
     overlay.style.display='none';
     iframe.src='';
     if (document.fullscreenElement) document.exitFullscreen();
     else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
     else if (document.msFullscreenElement) document.msExitFullscreen();
-    if(overlay.dataset.prevCardVisible === 'true') infoCard.style.display = 'block';
+
+    if(currentItem) {{
+        infoCard.style.display = 'block';
+        if(push) {{
+            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
+        }}
+    }}
 }}
 
-window.addEventListener("popstate", function(e){{
-    if (overlay.style.display === 'flex') closePlayer();
+/* Gestione della navigazione indietro/avanti */
+window.addEventListener("popstate", function(e) {{
+    const state = e.state;
+
+    if(!state || state.page==="grid" || state.page==="home") {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
+        return;
+    }}
+
+    const itemId = state.itemId;
+    const item = allData.find(x => String(x.id) === String(itemId));
+    if(!item) {{
+        // se non trovi l'item, chiudi tutto
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
+        return;
+    }}
+
+    if(state.page === "player") {{
+        openPlayer(item, false); // non pushare lo stato mentre rispondi a popstate
+    }} else if(state.page === "info") {{
+        openInfo(item, false);
+    }} else {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
+    }}
 }});
 
 let currentType='movie', currentList=[], shown=0;
 
-function render(reset=false){{
+function render(reset=false) {{
     if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
@@ -310,10 +358,14 @@ function updateType(t){{
     render(true);
 }}
 
+/* Eventi UI */
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
+
+/* stato iniziale nella history */
+history.replaceState({{page:"grid"}}, "", "#grid");
 
 updateType('movie');
 showLatest();
