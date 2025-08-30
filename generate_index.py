@@ -13,6 +13,7 @@ Aggiunta gestione Preferiti con stellina e filtro multi-genere.
 import os
 import sys
 import requests
+import json
 
 # --- Config ---
 SRC_URLS = {
@@ -61,7 +62,8 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     r.raise_for_status()
     return r.json()
 
-def build_html(entries, latest_entries):
+def build_html(entries_json, latest_entries):
+    # entries_json è una stringa JSON già serializzata
     html = f"""<!doctype html>
 <html lang='it'>
 <head>
@@ -135,7 +137,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <script>
-const allData = {entries};
+const allData = {entries_json};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 let currentItem = null;
 
@@ -273,13 +275,37 @@ function closePlayer(push=true) {{
     }}
 }}
 
+/* Gestione popstate corretta */
 window.addEventListener("popstate", function(e) {{
     const state = e.state;
+
     if(!state || state.page==="grid" || state.page==="home") {{
         overlay.style.display='none';
         iframe.src='';
         infoCard.style.display='none';
         return;
+    }}
+
+    const itemId = state.itemId;
+    const item = allData.find(x => String(x.id) === String(itemId));
+    if(!item) {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
+        return;
+    }}
+
+    if(state.page === "player") {{
+        openPlayer(item, false);
+    }} else if(state.page === "info") {{
+        if(overlay.style.display==='flex') {{
+            closePlayer(false); // prima chiudi il player se è aperto
+        }}
+        openInfo(item, false);
+    }} else {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
     }}
 }});
 
@@ -362,7 +388,7 @@ def main():
         for idx, tmdb_id in enumerate(ids):
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
-            except:
+            except Exception:
                 info = None
             if not info:
                 continue
@@ -379,7 +405,7 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
-            entries.append({{
+            entries.append({
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -393,14 +419,17 @@ def main():
                 "duration": duration or 0,
                 "year": year or "",
                 "cast": cast
-            }})
+            })
 
             if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
-    html = build_html(entries, latest_entries)
+    # Serializziamo in JSON valido per inserirlo nello script JS
+    entries_json = json.dumps(entries, ensure_ascii=False)
+    html = build_html(entries_json, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
+    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
 
-if __name__=="__main__":
+if __name__ == "__main__":
     main()
