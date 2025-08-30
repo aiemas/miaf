@@ -270,39 +270,46 @@ function closePlayer() {{
     }}
 }}
 
+/* Gestione popstate corretta */
 window.addEventListener("popstate", function(e) {{
     const state = e.state;
 
-    if(!state || state.page === "grid" || state.page === "home") {{
-        overlay.style.display = 'none';
-        iframe.src = '';
-        infoCard.style.display = 'none';
+    // Se non c'è stato o siamo nella griglia/home
+    if(!state || state.page==="grid" || state.page==="home") {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
         return;
     }}
 
     const itemId = state.itemId;
     const item = allData.find(x => String(x.id) === String(itemId));
     if(!item) {{
-        overlay.style.display = 'none';
-        iframe.src = '';
-        infoCard.style.display = 'none';
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
         return;
     }}
 
     if(state.page === "player") {{
-        openPlayer(item);
+        // Se clicco back dal player, torno alla scheda info senza pusha
+        openInfo(item, false);
+        overlay.style.display='none';
+        iframe.src='';
     }} else if(state.page === "info") {{
-        if(overlay.style.display === 'flex') {{
-            closePlayer(); // ritorna sempre alla card senza accumulare storico
-        }} else {{
-            openInfo(item);
+        // Se era aperta una scheda info e c'era il player aperto, chiudi player
+        if(overlay.style.display==='flex') {{
+            overlay.style.display='none';
+            iframe.src='';
         }}
+        openInfo(item, false);
     }} else {{
-        overlay.style.display = 'none';
-        iframe.src = '';
-        infoCard.style.display = 'none';
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
     }}
 }});
+
 
 let currentType = 'movie', currentList = [], shown = 0;
 
