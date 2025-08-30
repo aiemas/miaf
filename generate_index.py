@@ -2,6 +2,12 @@
 """
 generate_index.py
 
+Aggiunta gestione Preferiti con stellina e filtro multi-genere.
+- Stellina sulle locandine: solo visuale (non cliccabile)
+- Stellina cliccabile dentro la card info
+- Possibilità di selezionare più generi
+- Correzione back button: chiude il player prima di tornare alla card o griglia
+"""
 
 import os
 import sys
