@@ -3,23 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Demo Movies</title>
+<title>Mini Netflix Demo</title>
 <style>
-body { font-family: Arial, sans-serif; background:#141414; color:#fff; margin:0; padding:20px; }
-h1 { text-align:center; }
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; }
-.card { cursor:pointer; border-radius:12px; overflow:hidden; border:2px solid #444; background:#1f1f1f; transition: transform 0.2s; }
+body { font-family: 'Segoe UI', Arial, sans-serif; background:#141414; color:#fff; margin:0; padding:20px; }
+h1 { text-align:center; margin-bottom:20px; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:16px; }
+.card { cursor:pointer; border-radius:12px; overflow:hidden; border:2px solid #444; background:#1f1f1f; transition: transform 0.25s, border-color 0.25s; }
 .card:hover { transform: scale(1.05); border-color:#e50914; }
 .poster { width:100%; display:block; }
-#playerOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:1000; }
-#playerOverlay iframe { width:100%; height:100%; border:none; }
-#detailPage { display:none; padding:20px; background:#141414; }
-button { cursor:pointer; }
+#playerOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); display:none; align-items:center; justify-content:center; z-index:1000; }
+#playerOverlay iframe { width:90%; height:90%; border:none; border-radius:10px; }
+#detailPage { display:none; padding:20px; background:#141414; position:relative; max-width:900px; margin:auto; }
+button { cursor:pointer; border:none; border-radius:6px; padding:8px 12px; background:#e50914; color:#fff; font-weight:bold; transition: background 0.2s; }
+button:hover { background:#f6121d; }
+select { padding:6px; border-radius:6px; border:none; background:#222; color:#fff; margin:5px 5px 5px 0; }
+#backToGrid { position:absolute; top:10px; left:10px; }
 </style>
 </head>
 <body>
 
-<h1>Movies & Series</h1>
+<h1>Mini Netflix Demo</h1>
 <div id="moviesGrid" class="grid"></div>
 
 <div id="playerOverlay">
@@ -45,15 +48,15 @@ detailPage.id = 'detailPage';
 detailPage.innerHTML = `
   <button id="backToGrid">← Torna alla griglia</button>
   <h2 id="detailTitle"></h2>
-  <img id="detailPoster" style="max-width:300px;display:block;margin:10px 0;">
+  <img id="detailPoster" style="max-width:300px;display:block;margin:10px 0;border-radius:8px;">
   <p id="detailGenres"></p>
   <p id="detailVote"></p>
   <p id="detailOverview"></p>
   <p id="detailYear"></p>
   <p id="detailDuration"></p>
   <p id="detailCast"></p>
-  <select id="detailSeason" style="display:none;margin:5px;"></select>
-  <select id="detailEpisode" style="display:none;margin:5px;"></select>
+  <select id="detailSeason" style="display:none;"></select>
+  <select id="detailEpisode" style="display:none;"></select>
   <button id="detailPlayBtn">Riproduci</button>
 `;
 document.body.appendChild(detailPage);
@@ -158,7 +161,7 @@ function render(){
   allData.forEach(item=>{
     let card=document.createElement('div');
     card.className='card';
-    card.innerHTML=`<img class='poster' src='${item.poster}'><p>${item.title}</p>`;
+    card.innerHTML=`<img class='poster' src='${item.poster}'><p style="text-align:center;margin:5px 0;">${item.title}</p>`;
     card.onclick = ()=>openDetail(item);
     grid.appendChild(card);
   });
