@@ -2,8 +2,11 @@
 """
 generate_index.py
 
-Aggiunta gestione Preferiti con stellina e filtro nei generi.
-+ Descrizione episodio nelle serie TV
+Aggiunta gestione Preferiti con stellina e filtro multi-genere.
+- Stellina sulle locandine: solo visuale (non cliccabile)
+- Stellina cliccabile dentro la card info
+- Possibilità di selezionare più generi
+- Correzione back button: chiude il player prima di tornare alla card o griglia
 """
 
 import os
@@ -16,7 +19,6 @@ SRC_URLS = {
     "tv": "https://vixsrc.to/api/list/tv?lang=it"
 }
 TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
-TMDB_SEASON = "https://api.themoviedb.org/3/tv/{id}/season/{season}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 OUTPUT_HTML = "index.html"
@@ -48,15 +50,11 @@ def extract_ids(data):
 
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
-    r = requests.get(url, params={"api_key": api_key, "language": language, "append_to_response": "credits"}, timeout=15)
-    if r.status_code == 404:
-        return None
-    r.raise_for_status()
-    return r.json()
-
-def tmdb_season(api_key, show_id, season, language="it-IT"):
-    url = TMDB_SEASON.format(id=show_id, season=season)
-    r = requests.get(url, params={"api_key": api_key, "language": language}, timeout=15)
+    r = requests.get(
+        url,
+        params={"api_key": api_key, "language": language, "append_to_response": "credits"},
+        timeout=15
+    )
     if r.status_code == 404:
         return None
     r.raise_for_status()
@@ -72,15 +70,17 @@ def build_html(entries, latest_entries):
 <style>
 body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
 h1{{color:#fff;text-align:center;margin-bottom:20px;}}
-.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;}}
+.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
-.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}}
+.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}}
 .card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
 .card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
-.favorite-btn{{position:absolute;top:8px;left:8px;font-size:20px;color:#fff;cursor:pointer;text-shadow:0 0 4px #000;}}
+.favorite-btn{{font-size:20px;color:#fff;text-shadow:0 0 4px #000;}}
 .favorite-btn.active{{color:gold;}}
+.card .favorite-btn{{position:absolute;top:8px;left:8px;pointer-events:none;}}
+#favoriteInCard.favorite-btn{{position:static;cursor:pointer;margin-left:auto;font-size:22px;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;}}
@@ -104,7 +104,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <h1>Movies & Series</h1>
 <div class='controls'>
 <select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
-<select id='genreSelect'><option value='all'>Tutti i generi</option><option value='favorites'>★ Preferiti</option></select>
+<select id='genreSelect' multiple size=5></select>
 <input type='text' id='searchBox' placeholder='Cerca...'>
 </div>
 <div id='moviesGrid' class='grid'></div>
@@ -120,6 +120,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn" class="btn-play">Riproduci</button>
       <button id="closeCardBtn" class="btn-close">Chiudi</button>
+      <span id="favoriteInCard" class="favorite-btn">★</span>
     </div>
     <p id="infoGenres"></p>
     <p id="infoVote"></p>
@@ -129,16 +130,16 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <p id="infoCast"></p>
     <select id="seasonSelect"></select>
     <select id="episodeSelect"></select>
-    <p id="infoEpisodeOverview"></p>
   </div>
 </div>
 
 <script>
 const allData = {entries};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+let currentItem = null;
 
-function toggleFavorite(id){{
-  if(favorites.includes(id)){{
+function toggleFavorite(id) {{
+  if(favorites.includes(id)) {{
     favorites = favorites.filter(f=>f!==id);
   }} else {{
     favorites.push(id);
@@ -150,39 +151,41 @@ function toggleFavorite(id){{
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
-const infoCard = document.getElementById('infoCard');
-const infoTitle = document.getElementById('infoTitle');
-const infoGenres = document.getElementById('infoGenres');
-const infoVote = document.getElementById('infoVote');
-const infoOverview = document.getElementById('infoOverview');
-const playBtn = document.getElementById('playBtn');
-const closeCardBtn = document.getElementById('closeCardBtn');
-const latestDiv = document.getElementById('latest');
-closeCardBtn.onclick = () => infoCard.style.display = 'none';
-const seasonSelect = document.getElementById('seasonSelect');
-const episodeSelect = document.getElementById('episodeSelect');
-const infoYear = document.getElementById('infoYear');
-const infoDuration = document.getElementById('infoDuration');
-const infoCast = document.getElementById('infoCast');
-const infoEpisodeOverview = document.getElementById('infoEpisodeOverview');
+const infoCard=document.getElementById('infoCard');
+const infoTitle=document.getElementById('infoTitle');
+const infoGenres=document.getElementById('infoGenres');
+const infoVote=document.getElementById('infoVote');
+const infoOverview=document.getElementById('infoOverview');
+const playBtn=document.getElementById('playBtn');
+const closeCardBtn=document.getElementById('closeCardBtn');
+const latestDiv=document.getElementById('latest');
+const favoriteInCard=document.getElementById('favoriteInCard');
+const seasonSelect=document.getElementById('seasonSelect');
+const episodeSelect=document.getElementById('episodeSelect');
+const infoYear=document.getElementById('infoYear');
+const infoDuration=document.getElementById('infoDuration');
+const infoCast=document.getElementById('infoCast');
 
-function sanitizeUrl(url){{ 
-   if(!url) return "";
-   return url;
-}}
+closeCardBtn.onclick = () => {{
+  infoCard.style.display='none';
+  history.pushState({{page:"grid"}}, "", "#grid");
+}};
 
-function showLatest(){{ 
+function showLatest(){{
     let scrollPos = 0;
     function scroll() {{
         scrollPos += 1;
         if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({{left: scrollPos, behavior: 'smooth'}});
+        latestDiv.scrollTo({{ left: scrollPos, behavior: 'smooth' }});
     }}
     setInterval(scroll, 30);
 }}
 
-function openInfo(item){{ 
+function openInfo(item, push=true) {{
+    currentItem = item;
     infoCard.style.display='block';
+    infoCard.style.backgroundImage = "none";
+    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + item.genres.join(", ");
     infoVote.textContent = "★ " + item.vote;
@@ -190,56 +193,182 @@ function openInfo(item){{
     infoYear.textContent = item.year ? "Anno: " + item.year : "";
     infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
-    infoEpisodeOverview.textContent = "";
+
+    favoriteInCard.classList.toggle("active", favorites.includes(item.id));
+    favoriteInCard.onclick = () => {{
+        toggleFavorite(item.id);
+        favoriteInCard.classList.toggle("active", favorites.includes(item.id));
+    }};
 
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
-    
-    if(item.type==='tv'){{ 
+
+    if(item.type==='tv') {{
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s=1;s<=item.seasons;s++){{ 
+        for(let s=1;s<=item.seasons;s++) {{
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
             seasonSelect.appendChild(o);
         }}
         seasonSelect.onchange = updateEpisodes;
-        episodeSelect.onchange = updateEpisodeOverview;
         updateEpisodes();
     }}
 
-    playBtn.onclick = ()=>openPlayer(item);
+    playBtn.onclick = () => openPlayer(item);
 
-    function updateEpisodes(){{ 
+    if(push) {{
+        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+    }}
+
+    function updateEpisodes() {{
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e=1;e<=epCount;e++){{ 
+        for(let e=1;e<=epCount;e++) {{
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
             episodeSelect.appendChild(o);
         }}
-        updateEpisodeOverview();
     }}
+}}
 
-    function updateEpisodeOverview(){{ 
-        let season = seasonSelect.value;
-        let episode = episodeSelect.value;
-        if(item.episode_details && item.episode_details[season] && item.episode_details[season][episode]){{
-            infoEpisodeOverview.textContent = item.episode_details[season][episode];
-        }} else {{
-            infoEpisodeOverview.textContent = "";
+function openPlayer(item, push=true) {{
+    infoCard.style.display = 'none';
+    overlay.style.display='flex';
+    let link = item.link;
+    if(item.type==='tv') {{
+        let season = parseInt(seasonSelect.value) || 1;
+        let episode = parseInt(episodeSelect.value) || 1;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
+    }} else {{
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
+    }}
+    iframe.src = link;
+    if (overlay.requestFullscreen) overlay.requestFullscreen();
+    else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
+    else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
+
+    if(push) {{
+        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+    }}
+}}
+
+function closePlayer(push=true) {{
+    overlay.style.display='none';
+    iframe.src='';
+    if (document.fullscreenElement) document.exitFullscreen();
+    else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
+    else if (document.msFullscreenElement) document.msExitFullscreen();
+
+    if(currentItem) {{
+        infoCard.style.display = 'block';
+        if(push) {{
+            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
         }}
     }}
 }}
 
-function closeInfo(){{ 
-    infoCard.style.display='none';
+/* Gestione popstate corretta */
+window.addEventListener("popstate", function(e) {{
+    const state = e.state;
+
+    if(!state || state.page==="grid" || state.page==="home") {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
+        return;
+    }}
+
+    const itemId = state.itemId;
+    const item = allData.find(x => String(x.id) === String(itemId));
+    if(!item) {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
+        return;
+    }}
+
+    if(state.page === "player") {{
+        openPlayer(item, false);
+    }} else if(state.page === "info") {{
+        if(overlay.style.display==='flex') {{
+            closePlayer(false); // prima chiudi il player se è aperto
+        }}
+        openInfo(item, false);
+    }} else {{
+        overlay.style.display='none';
+        iframe.src='';
+        infoCard.style.display='none';
+    }}
+}});
+
+let currentType='movie', currentList=[], shown=0;
+
+function render(reset=false) {{
+    if(reset){{ grid.innerHTML=''; shown=0; }}
+    let count=0;
+    let s = document.getElementById('searchBox').value.toLowerCase();
+    let gSel = Array.from(document.getElementById('genreSelect').selectedOptions).map(o=>o.value);
+    while(shown<currentList.length && count<40) {{
+        let m = currentList[shown++];
+        let isFav = favorites.includes(m.id);
+        let genreMatch = 
+    gSel.length===0 
+    || gSel.includes('all') 
+    || (gSel.includes('favorites') && isFav) 
+    || gSel.every(g => m.genres.includes(g));
+        if(genreMatch && m.title.toLowerCase().includes(s)) {{
+            const card = document.createElement('div');
+            card.className='card';
+            card.innerHTML = `
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
+                <p style="margin:2px 0;font-size:12px;color:#ccc;">
+                    ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
+                </p>
+                <span class="favorite-btn ${{isFav ? 'active' : ''}}" style="pointer-events:none;">★</span>
+            `;
+            card.onclick = () => openInfo(m);
+            grid.appendChild(card);
+            count++;
+        }}
+    }}
 }}
-...
+
+function populateGenres(){{
+    const set=new Set();
+    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    const sel=document.getElementById('genreSelect');
+    sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
+    [...set].sort().forEach(g=>{{
+        const o=document.createElement('option');
+        o.value=o.textContent=g;
+        sel.appendChild(o);
+    }});
+}}
+
+function updateType(t){{
+    currentType=t;
+    currentList=allData.filter(x=>x.type===t);
+    populateGenres();
+    render(true);
+}}
+
+/* Eventi UI */
+document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
+document.getElementById('genreSelect').onchange=()=>render(true);
+document.getElementById('searchBox').oninput=()=>render(true);
+document.getElementById('loadMore').onclick=()=>render(false);
+
+/* stato iniziale nella history */
+history.replaceState({{page:"grid"}}, "", "#grid");
+
+updateType('movie');
+showLatest();
 </script>
 </body>
 </html>
@@ -275,18 +404,6 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
-            episode_details = {}
-            if type_=="tv":
-                for s in range(1, seasons+1):
-                    season_info = tmdb_season(api_key, tmdb_id, s)
-                    if not season_info:
-                        continue
-                    for ep in season_info.get("episodes", []):
-                        sn = str(season_info.get("season_number"))
-                        if sn not in episode_details:
-                            episode_details[sn] = {}
-                        episode_details[sn][str(ep.get("episode_number"))] = ep.get("overview","")
-
             entries.append({
                 "id": tmdb_id,
                 "title": title,
@@ -300,8 +417,7 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
-                "cast": cast,
-                "episode_details": episode_details
+            "cast": cast
             })
 
             if idx < 10:
