@@ -1,32 +1,49 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demo Movies</title>
+<style>
+body { font-family: Arial, sans-serif; background:#141414; color:#fff; margin:0; padding:20px; }
+h1 { text-align:center; }
+.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:12px; }
+.card { cursor:pointer; border-radius:12px; overflow:hidden; border:2px solid #444; background:#1f1f1f; transition: transform 0.2s; }
+.card:hover { transform: scale(1.05); border-color:#e50914; }
+.poster { width:100%; display:block; }
+#playerOverlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); display:none; align-items:center; justify-content:center; z-index:1000; }
+#playerOverlay iframe { width:100%; height:100%; border:none; }
+#detailPage { display:none; padding:20px; background:#141414; }
+button { cursor:pointer; }
+</style>
+</head>
+<body>
+
+<h1>Movies & Series</h1>
+<div id="moviesGrid" class="grid"></div>
+
+<div id="playerOverlay">
+  <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+</div>
+
 <script>
-const allData = {entries};
-let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+// dati fittizi
+const allData = [
+  {id:1,title:"Film 1",poster:"https://via.placeholder.com/150x220?text=Film+1",genres:["Azione"],vote:8.2,overview:"Trama del Film 1",year:"2023",duration:120,cast:["Attore A","Attore B"],type:"movie",link:"https://example.com/movie1"},
+  {id:2,title:"Serie 1",poster:"https://via.placeholder.com/150x220?text=Serie+1",genres:["Commedia"],vote:7.5,overview:"Trama della Serie 1",year:"2022",duration:45,cast:["Attore C","Attore D"],type:"tv",seasons:3,episodes:{1:10,2:8,3:12},link:""}
+];
 let currentItem = null;
 
-function toggleFavorite(id) {{
-  if(favorites.includes(id)) {{
-    favorites = favorites.filter(f=>f!==id);
-  }} else {{
-    favorites.push(id);
-  }}
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-  render(true);
-}}
-
+// griglia
 const grid = document.getElementById('moviesGrid');
 const overlay = document.getElementById('playerOverlay');
 const iframe = overlay.querySelector('iframe');
-const latestDiv = document.getElementById('latest');
 
-/* Sezione dettaglio full-page */
+// dettaglio full-page
 let detailPage = document.createElement('div');
 detailPage.id = 'detailPage';
-detailPage.style.display = 'none';
-detailPage.style.padding = '20px';
-detailPage.style.background = '#141414';
-detailPage.style.color = '#fff';
 detailPage.innerHTML = `
-  <button id="backToGrid" style="margin-bottom:10px;padding:6px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;">← Torna alla griglia</button>
+  <button id="backToGrid">← Torna alla griglia</button>
   <h2 id="detailTitle"></h2>
   <img id="detailPoster" style="max-width:300px;display:block;margin:10px 0;">
   <p id="detailGenres"></p>
@@ -37,8 +54,7 @@ detailPage.innerHTML = `
   <p id="detailCast"></p>
   <select id="detailSeason" style="display:none;margin:5px;"></select>
   <select id="detailEpisode" style="display:none;margin:5px;"></select>
-  <button id="detailPlayBtn" style="padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;">Riproduci</button>
-  <span id="detailFavorite" class="favorite-btn" style="font-size:22px;margin-left:10px;cursor:pointer;">★</span>
+  <button id="detailPlayBtn">Riproduci</button>
 `;
 document.body.appendChild(detailPage);
 
@@ -53,195 +69,102 @@ const detailCast = document.getElementById('detailCast');
 const detailSeason = document.getElementById('detailSeason');
 const detailEpisode = document.getElementById('detailEpisode');
 const detailPlayBtn = document.getElementById('detailPlayBtn');
-const detailFavorite = document.getElementById('detailFavorite');
 const backToGrid = document.getElementById('backToGrid');
 
-backToGrid.onclick = () => {{
-  history.pushState({{page:"grid"}}, "", "#grid");
-  detailPage.style.display = 'none';
-  grid.style.display = 'grid';
-}};
-
-function openDetail(item, push=true) {{
+function openDetail(item,push=true){
   currentItem = item;
   grid.style.display = 'none';
   detailPage.style.display = 'block';
-  
   detailTitle.textContent = item.title;
   detailPoster.src = item.poster;
-  detailGenres.textContent = "Generi: " + item.genres.join(", ");
-  detailVote.textContent = "★ " + item.vote;
-  detailOverview.textContent = item.overview || "";
-  detailYear.textContent = item.year ? "Anno: " + item.year : "";
-  detailDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
-  detailCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
-
-  detailFavorite.classList.toggle("active", favorites.includes(item.id));
-  detailFavorite.onclick = () => {{
-    toggleFavorite(item.id);
-    detailFavorite.classList.toggle("active", favorites.includes(item.id));
-  }};
-
-  detailSeason.style.display = 'none';
-  detailEpisode.style.display = 'none';
-  if(item.type==='tv') {{
-    detailSeason.style.display = 'inline';
-    detailEpisode.style.display = 'inline';
-    detailSeason.innerHTML = "";
-    for(let s=1;s<=item.seasons;s++) {{
+  detailGenres.textContent = "Generi: "+item.genres.join(", ");
+  detailVote.textContent = "★ "+item.vote;
+  detailOverview.textContent = item.overview;
+  detailYear.textContent = "Anno: "+item.year;
+  detailDuration.textContent = "Durata: "+item.duration+" min";
+  detailCast.textContent = "Cast: "+item.cast.join(", ");
+  
+  detailSeason.style.display='none';
+  detailEpisode.style.display='none';
+  if(item.type==='tv'){
+    detailSeason.style.display='inline';
+    detailEpisode.style.display='inline';
+    detailSeason.innerHTML='';
+    for(let s=1;s<=item.seasons;s++){
       let o = document.createElement('option');
-      o.value = s;
-      o.textContent = "Stagione " + s;
+      o.value=s; o.textContent="Stagione "+s;
       detailSeason.appendChild(o);
-    }}
-    detailSeason.onchange = updateEpisodes;
+    }
     updateEpisodes();
-  }}
+    detailSeason.onchange=updateEpisodes;
+    function updateEpisodes(){
+      let season=parseInt(detailSeason.value);
+      let epCount = item.episodes[season];
+      detailEpisode.innerHTML='';
+      for(let e=1;e<=epCount;e++){
+        let o = document.createElement('option');
+        o.value=e; o.textContent="Episodio "+e;
+        detailEpisode.appendChild(o);
+      }
+    }
+  }
 
   detailPlayBtn.onclick = () => openPlayer(item);
 
-  function updateEpisodes() {{
-    let season = parseInt(detailSeason.value);
-    let epCount = item.episodes[season] || 1;
-    detailEpisode.innerHTML = "";
-    for(let e=1;e<=epCount;e++) {{
-      let o = document.createElement('option');
-      o.value = e;
-      o.textContent = "Episodio " + e;
-      detailEpisode.appendChild(o);
-    }}
-  }}
+  if(push) history.pushState({page:"detail",itemId:item.id},"","#detail-"+item.id);
+}
 
-  if(push) {{
-    history.pushState({{page:"detail", itemId:item.id}}, "", "#detail-"+item.id);
-  }}
-}}
-
-function openPlayer(item, push=true) {{
+function openPlayer(item,push=true){
   let link = item.link;
-  if(item.type==='tv') {{
-    let season = parseInt(detailSeason.value) || 1;
-    let episode = parseInt(detailEpisode.value) || 1;
-    link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
-  }} else {{
-    link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
-  }}
+  if(item.type==='tv'){
+    let season = parseInt(detailSeason.value)||1;
+    let episode = parseInt(detailEpisode.value)||1;
+    link = `https://example.com/tv/${item.id}/${season}/${episode}`;
+  }
   overlay.style.display='flex';
   iframe.src = link;
-  if (overlay.requestFullscreen) overlay.requestFullscreen();
-  else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
-  else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
+  if(overlay.requestFullscreen) overlay.requestFullscreen();
+  if(push) history.pushState({page:"player",itemId:item.id},"","#player-"+item.id);
+}
 
-  if(push) {{
-    history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
-  }}
-}}
-
-function closePlayer() {{
+function closePlayer(){
   overlay.style.display='none';
   iframe.src='';
-}}
+}
 
-window.addEventListener("popstate", function(e) {{
-  const state = e.state;
-  if(!state || state.page==="grid" || state.page==="home") {{
+backToGrid.onclick = () => {
+  history.pushState({page:"grid"},"","#grid");
+  detailPage.style.display='none';
+  grid.style.display='grid';
+}
+
+window.addEventListener("popstate", function(e){
+  const state=e.state;
+  if(!state||state.page==="grid"){
     closePlayer();
-    detailPage.style.display = 'none';
-    grid.style.display = 'grid';
+    detailPage.style.display='none';
+    grid.style.display='grid';
     return;
-  }}
+  }
   const itemId = state.itemId;
-  const item = allData.find(x => String(x.id) === String(itemId));
-  if(!item) {{
-    closePlayer();
-    detailPage.style.display = 'none';
-    grid.style.display = 'grid';
-    return;
-  }}
-  if(state.page==="player") {{
-    openPlayer(item, false);
-  }} else if(state.page==="detail") {{
-    closePlayer();
-    openDetail(item, false);
-  }} else {{
-    closePlayer();
-    detailPage.style.display = 'none';
-    grid.style.display = 'grid';
-  }}
-}});
+  const item = allData.find(x=>x.id===itemId);
+  if(!item){ closePlayer(); detailPage.style.display='none'; grid.style.display='grid'; return; }
+  if(state.page==="player"){ openPlayer(item,false); }
+  else if(state.page==="detail"){ closePlayer(); openDetail(item,false); }
+});
 
-let currentType='movie', currentList=[], shown=0;
+function render(){
+  grid.innerHTML='';
+  allData.forEach(item=>{
+    let card=document.createElement('div');
+    card.className='card';
+    card.innerHTML=`<img class='poster' src='${item.poster}'><p>${item.title}</p>`;
+    card.onclick = ()=>openDetail(item);
+    grid.appendChild(card);
+  });
+}
 
-function render(reset=false) {{
-  if(reset){{ grid.innerHTML=''; shown=0; }}
-  let count=0;
-  let s = document.getElementById('searchBox').value.toLowerCase();
-  let gSel = Array.from(document.getElementById('genreSelect').selectedOptions).map(o=>o.value);
-  while(shown<currentList.length && count<40) {{
-    let m = currentList[shown++];
-    let isFav = favorites.includes(m.id);
-    let genreMatch = 
-      gSel.length===0 
-      || gSel.includes('all') 
-      || (gSel.includes('favorites') && isFav) 
-      || gSel.every(g => m.genres.includes(g));
-    if(genreMatch && m.title.toLowerCase().includes(s)) {{
-      const card = document.createElement('div');
-      card.className='card';
-      card.innerHTML = `
-        <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
-        <div class='badge'>${{m.vote}}</div>
-        <p style="margin:2px 0;font-size:12px;color:#ccc;">
-          ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
-        </p>
-        <span class="favorite-btn ${{isFav ? 'active' : ''}}" style="pointer-events:none;">★</span>
-      `;
-      card.onclick = () => openDetail(m);
-      grid.appendChild(card);
-      count++;
-    }}
-  }}
-}}
-
-function populateGenres(){{
-  const set=new Set();
-  currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
-  const sel=document.getElementById('genreSelect');
-  sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
-  [...set].sort().forEach(g=>{{
-    const o=document.createElement('option');
-    o.value=o.textContent=g;
-    sel.appendChild(o);
-  }});
-}}
-
-function updateType(t){{
-  currentType=t;
-  currentList=allData.filter(x=>x.type===t);
-  populateGenres();
-  render(true);
-}}
-
-/* Eventi UI */
-document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
-document.getElementById('genreSelect').onchange=()=>render(true);
-document.getElementById('searchBox').oninput=()=>render(true);
-document.getElementById('loadMore').onclick=()=>render(false);
-
-/* stato iniziale nella history */
-history.replaceState({{page:"grid"}}, "", "#grid");
-
-updateType('movie');
-
-/* scroll latest */
-function showLatest(){{
-  let scrollPos = 0;
-  function scroll() {{
-    scrollPos += 1;
-    if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-    latestDiv.scrollTo({{ left: scrollPos, behavior: 'smooth' }});
-  }}
-  setInterval(scroll, 30);
-}}
-showLatest();
+render();
 </script>
+</body>
+</html>
