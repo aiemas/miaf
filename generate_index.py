@@ -171,7 +171,7 @@ const infoCast=document.getElementById('infoCast');
 
 closeCardBtn.onclick = () => {{
   infoCard.style.display='none';
-  history.replaceState({{page:"grid"}}, "", "#grid");
+  history.pushState({{page:"grid"}}, "", "#grid");
 }};
 
 function showLatest(){{
@@ -223,7 +223,7 @@ function openInfo(item, push=true) {{
     playBtn.onclick = () => openPlayer(item);
 
     if(push) {{
-        history.replaceState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
     }}
 
     function updateEpisodes() {{
@@ -256,7 +256,7 @@ function openPlayer(item, push=true) {{
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
 
     if(push) {{
-        history.replaceState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
     }}
 }}
 
@@ -270,12 +270,12 @@ function closePlayer(push=true) {{
     if(currentItem) {{
         infoCard.style.display = 'block';
         if(push) {{
-            history.replaceState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
+            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
         }}
     }}
 }}
 
-/* Gestione popstate corretta */
+/* Popstate corretto: back dal player torna a info card */
 window.addEventListener("popstate", function(e) {{
     const state = e.state;
 
@@ -296,14 +296,14 @@ window.addEventListener("popstate", function(e) {{
     }}
 
     if(state.page === "player") {{
-        // Se siamo sul player e clicco indietro, chiudo solo il player e mostro la card
-        closePlayer(false); 
-        if(currentItem) {{
-            infoCard.style.display='block';
+        if(overlay.style.display==='flex') {{
+            closePlayer(false); // torna a info card
+        }} else {{
+            openPlayer(item, false);
         }}
     }} else if(state.page === "info") {{
         if(overlay.style.display==='flex') {{
-            closePlayer(false); // prima chiudi il player se aperto
+            closePlayer(false);
         }}
         openInfo(item, false);
     }} else {{
@@ -371,11 +371,12 @@ document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 
-/* stato iniziale nella history */
+/* Stato iniziale nella history */
 history.replaceState({{page:"grid"}}, "", "#grid");
 
 updateType('movie');
 showLatest();
+
 </script>
 </body>
 </html>
