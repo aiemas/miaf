@@ -223,7 +223,13 @@ function openInfo(item, push=true) {{
     playBtn.onclick = () => openPlayer(item);
 
     if(push) {{
-        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+        // Solo push se non siamo già in una info card
+        if(!history.state || history.state.page!=="info") {{
+            history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+        }} else {{
+            // sostituisci lo stato attuale invece di aggiungerne uno nuovo
+            history.replaceState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+        }}
     }}
 
     function updateEpisodes() {{
@@ -256,11 +262,12 @@ function openPlayer(item, push=true) {{
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
 
     if(push) {{
-        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+        // Non fare pushState, user torna semplicemente alla info card
+        // history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
     }}
 }}
 
-function closePlayer(push=true) {{
+function closePlayer(push=false) {{
     overlay.style.display='none';
     iframe.src='';
     if (document.fullscreenElement) document.exitFullscreen();
@@ -269,13 +276,11 @@ function closePlayer(push=true) {{
 
     if(currentItem) {{
         infoCard.style.display = 'block';
-        if(push) {{
-            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
-        }}
+        // non pushare nessuno stato nuovo
     }}
 }}
 
-/* Popstate corretto: back dal player torna a info card */
+/* Gestione popstate corretta */
 window.addEventListener("popstate", function(e) {{
     const state = e.state;
 
@@ -296,14 +301,11 @@ window.addEventListener("popstate", function(e) {{
     }}
 
     if(state.page === "player") {{
-        if(overlay.style.display==='flex') {{
-            closePlayer(false); // torna a info card
-        }} else {{
-            openPlayer(item, false);
-        }}
+        // invece di aprire il player, apri solo la info card
+        openInfo(item, false);
     }} else if(state.page === "info") {{
         if(overlay.style.display==='flex') {{
-            closePlayer(false);
+            closePlayer(false); // prima chiudi il player se è aperto
         }}
         openInfo(item, false);
     }} else {{
