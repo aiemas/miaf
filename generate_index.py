@@ -2,13 +2,6 @@
 """
 generate_index.py
 
-Aggiunta gestione Preferiti con stellina e filtro multi-genere.
-- Stellina sulle locandine: solo visuale (non cliccabile)
-- Stellina cliccabile dentro la card info
-- Possibilità di selezionare più generi
-- Correzione back button: chiude il player prima di tornare alla card o griglia
-  (modifica richiesta: replaceState al posto di pushState)
-"""
 
 import os
 import sys
@@ -62,8 +55,6 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     return r.json()
 
 def build_html(entries, latest_entries):
-    # NOTE: build_html è una f-string; dentro il blocco JS tutte le parentesi
-    # devono essere doppie {{ }} per non essere interpretate da Python.
     html = f"""<!doctype html>
 <html lang='it'>
 <head>
@@ -239,8 +230,7 @@ function openInfo(item, push=true) {{
     }}
 }}
 
-function openPlayer(item) {{
-    // non pushare nuovo stato, il back tornerà automaticamente alla card
+function openPlayer(item, push=true) {{
     infoCard.style.display = 'none';
     overlay.style.display='flex';
     let link = item.link;
@@ -255,17 +245,25 @@ function openPlayer(item) {{
     if (overlay.requestFullscreen) overlay.requestFullscreen();
     else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
+
+    if(push) {{
+        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+    }}
 }}
 
-function closePlayer() {{
+function closePlayer(push=true) {{
     overlay.style.display='none';
     iframe.src='';
     if (document.fullscreenElement) document.exitFullscreen();
     else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
     else if (document.msFullscreenElement) document.msExitFullscreen();
 
-    // riapre la scheda info
-    if(currentItem) infoCard.style.display='block';
+    if(currentItem) {{
+        infoCard.style.display = 'block';
+        if(push) {{
+            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
+        }}
+    }}
 }}
 
 /* Gestione popstate corretta */
@@ -288,9 +286,12 @@ window.addEventListener("popstate", function(e) {{
         return;
     }}
 
-    if(state.page === "info") {{
-        overlay.style.display='none';
-        iframe.src='';
+    if(state.page === "player") {{
+        openPlayer(item, false);
+    }} else if(state.page === "info") {{
+        if(overlay.style.display==='flex') {{
+            closePlayer(false); // prima chiudi il player se è aperto
+        }}
         openInfo(item, false);
     }} else {{
         overlay.style.display='none';
@@ -362,7 +363,6 @@ history.replaceState({{page:"grid"}}, "", "#grid");
 
 updateType('movie');
 showLatest();
-
 </script>
 </body>
 </html>
@@ -411,7 +411,7 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
-                "cast": cast
+            "cast": cast
             })
 
             if idx < 10:
