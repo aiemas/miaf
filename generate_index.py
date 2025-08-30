@@ -296,10 +296,14 @@ window.addEventListener("popstate", function(e) {{
     }}
 
     if(state.page === "player") {{
-        openPlayer(item, false);
+        // Se siamo sul player e clicco indietro, chiudo solo il player e mostro la card
+        closePlayer(false); 
+        if(currentItem) {{
+            infoCard.style.display='block';
+        }}
     }} else if(state.page === "info") {{
         if(overlay.style.display==='flex') {{
-            closePlayer(false); // prima chiudi il player se è aperto
+            closePlayer(false); // prima chiudi il player se aperto
         }}
         openInfo(item, false);
     }} else {{
