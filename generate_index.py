@@ -7,6 +7,7 @@ Aggiunta gestione Preferiti con stellina e filtro multi-genere.
 - Stellina cliccabile dentro la card info
 - Possibilità di selezionare più generi
 - Correzione back button: chiude il player prima di tornare alla card o griglia
+- Modifica: niente più memoria multipla nella history (replaceState al posto di pushState)
 """
 
 import os
@@ -168,7 +169,7 @@ const infoCast=document.getElementById('infoCast');
 
 closeCardBtn.onclick = () => {{
   infoCard.style.display='none';
-  history.pushState({{page:"grid"}}, "", "#grid");
+  history.replaceState({{page:"grid"}}, "", "#grid");
 }};
 
 function showLatest(){{
@@ -220,7 +221,7 @@ function openInfo(item, push=true) {{
     playBtn.onclick = () => openPlayer(item);
 
     if(push) {{
-        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+        history.replaceState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
     }}
 
     function updateEpisodes() {{
@@ -253,7 +254,7 @@ function openPlayer(item, push=true) {{
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
 
     if(push) {{
-        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+        history.replaceState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
     }}
 }}
 
@@ -267,42 +268,18 @@ function closePlayer(push=true) {{
     if(currentItem) {{
         infoCard.style.display = 'block';
         if(push) {{
-            history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
+            history.replaceState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
         }}
     }}
 }}
 
-/* Gestione popstate corretta */
 window.addEventListener("popstate", function(e) {{
     const state = e.state;
-
     if(!state || state.page==="grid" || state.page==="home") {{
         overlay.style.display='none';
         iframe.src='';
         infoCard.style.display='none';
         return;
-    }}
-
-    const itemId = state.itemId;
-    const item = allData.find(x => String(x.id) === String(itemId));
-    if(!item) {{
-        overlay.style.display='none';
-        iframe.src='';
-        infoCard.style.display='none';
-        return;
-    }}
-
-    if(state.page === "player") {{
-        openPlayer(item, false);
-    }} else if(state.page === "info") {{
-        if(overlay.style.display==='flex') {{
-            closePlayer(false); // prima chiudi il player se è aperto
-        }}
-        openInfo(item, false);
-    }} else {{
-        overlay.style.display='none';
-        iframe.src='';
-        infoCard.style.display='none';
     }}
 }});
 
@@ -358,13 +335,11 @@ function updateType(t){{
     render(true);
 }}
 
-/* Eventi UI */
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
 document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 
-/* stato iniziale nella history */
 history.replaceState({{page:"grid"}}, "", "#grid");
 
 updateType('movie');
@@ -404,7 +379,7 @@ def main():
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
-            entries.append({
+            entries.append({{
                 "id": tmdb_id,
                 "title": title,
                 "poster": poster,
@@ -417,16 +392,15 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
-            "cast": cast
-            })
+                "cast": cast
+            }})
 
             if idx < 10:
-                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
+                latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\\n"
 
     html = build_html(entries, latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
 
-if __name__ == "__main__":
+if __name__=="__main__":
     main()
