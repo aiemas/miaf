@@ -142,39 +142,39 @@ let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 let currentItem = null;
 
 function toggleFavorite(id) {{
-    if(favorites.includes(id)) {{
-        favorites = favorites.filter(f => f !== id);
-    }} else {{
-        favorites.push(id);
-    }}
-    localStorage.setItem("favorites", JSON.stringify(favorites));
-    render(true);
+  if(favorites.includes(id)) {{
+    favorites = favorites.filter(f=>f!==id);
+  }} else {{
+    favorites.push(id);
+  }}
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  render(true);
 }}
 
-const grid = document.getElementById('moviesGrid');
-const overlay = document.getElementById('playerOverlay');
-const iframe = overlay.querySelector('iframe');
-const infoCard = document.getElementById('infoCard');
-const infoTitle = document.getElementById('infoTitle');
-const infoGenres = document.getElementById('infoGenres');
-const infoVote = document.getElementById('infoVote');
-const infoOverview = document.getElementById('infoOverview');
-const playBtn = document.getElementById('playBtn');
-const closeCardBtn = document.getElementById('closeCardBtn');
-const latestDiv = document.getElementById('latest');
-const favoriteInCard = document.getElementById('favoriteInCard');
-const seasonSelect = document.getElementById('seasonSelect');
-const episodeSelect = document.getElementById('episodeSelect');
-const infoYear = document.getElementById('infoYear');
-const infoDuration = document.getElementById('infoDuration');
-const infoCast = document.getElementById('infoCast');
+const grid=document.getElementById('moviesGrid');
+const overlay=document.getElementById('playerOverlay');
+const iframe=overlay.querySelector('iframe');
+const infoCard=document.getElementById('infoCard');
+const infoTitle=document.getElementById('infoTitle');
+const infoGenres=document.getElementById('infoGenres');
+const infoVote=document.getElementById('infoVote');
+const infoOverview=document.getElementById('infoOverview');
+const playBtn=document.getElementById('playBtn');
+const closeCardBtn=document.getElementById('closeCardBtn');
+const latestDiv=document.getElementById('latest');
+const favoriteInCard=document.getElementById('favoriteInCard');
+const seasonSelect=document.getElementById('seasonSelect');
+const episodeSelect=document.getElementById('episodeSelect');
+const infoYear=document.getElementById('infoYear');
+const infoDuration=document.getElementById('infoDuration');
+const infoCast=document.getElementById('infoCast');
 
 closeCardBtn.onclick = () => {{
-    infoCard.style.display = 'none';
-    history.replaceState({{page:"grid"}}, "", "#grid");
+  infoCard.style.display='none';
+  history.pushState({{page:"grid"}}, "", "#grid");
 }};
 
-function showLatest() {{
+function showLatest(){{
     let scrollPos = 0;
     function scroll() {{
         scrollPos += 1;
@@ -184,9 +184,9 @@ function showLatest() {{
     setInterval(scroll, 30);
 }}
 
-function openInfo(item) {{
+function openInfo(item, push=true) {{
     currentItem = item;
-    infoCard.style.display = 'block';
+    infoCard.style.display='block';
     infoCard.style.backgroundImage = "none";
     infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoTitle.textContent = item.title;
@@ -206,11 +206,11 @@ function openInfo(item) {{
     seasonSelect.style.display = 'none';
     episodeSelect.style.display = 'none';
 
-    if(item.type === 'tv') {{
+    if(item.type==='tv') {{
         seasonSelect.style.display = 'inline';
         episodeSelect.style.display = 'inline';
         seasonSelect.innerHTML = "";
-        for(let s = 1; s <= item.seasons; s++) {{
+        for(let s=1;s<=item.seasons;s++) {{
             let o = document.createElement('option');
             o.value = s;
             o.textContent = "Stagione " + s;
@@ -222,14 +222,15 @@ function openInfo(item) {{
 
     playBtn.onclick = () => openPlayer(item);
 
-    // Non pusha più la history delle card
-    history.replaceState({{page:"info", itemId:item.id}}, "", "#info-" + item.id);
+    if(push) {{
+        history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
+    }}
 
     function updateEpisodes() {{
         let season = parseInt(seasonSelect.value);
         let epCount = item.episodes[season] || 1;
         episodeSelect.innerHTML = "";
-        for(let e = 1; e <= epCount; e++) {{
+        for(let e=1;e<=epCount;e++) {{
             let o = document.createElement('option');
             o.value = e;
             o.textContent = "Episodio " + e;
@@ -239,10 +240,11 @@ function openInfo(item) {{
 }}
 
 function openPlayer(item) {{
+    // non pushare nuovo stato, il back tornerà automaticamente alla card
     infoCard.style.display = 'none';
-    overlay.style.display = 'flex';
+    overlay.style.display='flex';
     let link = item.link;
-    if(item.type === 'tv') {{
+    if(item.type==='tv') {{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1`;
@@ -253,28 +255,23 @@ function openPlayer(item) {{
     if (overlay.requestFullscreen) overlay.requestFullscreen();
     else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
-
-    // Stato del player sostituito, così il back torna sempre alla card corrente
-    history.replaceState({{page:"player", itemId:item.id}}, "", "#player-" + item.id);
 }}
 
 function closePlayer() {{
-    overlay.style.display = 'none';
-    iframe.src = '';
+    overlay.style.display='none';
+    iframe.src='';
     if (document.fullscreenElement) document.exitFullscreen();
     else if (document.webkitFullscreenElement) document.webkitExitFullscreen();
     else if (document.msFullscreenElement) document.msExitFullscreen();
 
-    if(currentItem) {{
-        openInfo(currentItem);
-    }}
+    // riapre la scheda info
+    if(currentItem) infoCard.style.display='block';
 }}
 
 /* Gestione popstate corretta */
 window.addEventListener("popstate", function(e) {{
     const state = e.state;
 
-    // Se non c'è stato o siamo nella griglia/home
     if(!state || state.page==="grid" || state.page==="home") {{
         overlay.style.display='none';
         iframe.src='';
@@ -291,17 +288,9 @@ window.addEventListener("popstate", function(e) {{
         return;
     }}
 
-    if(state.page === "player") {{
-        // Se clicco back dal player, torno alla scheda info senza pusha
-        openInfo(item, false);
+    if(state.page === "info") {{
         overlay.style.display='none';
         iframe.src='';
-    }} else if(state.page === "info") {{
-        // Se era aperta una scheda info e c'era il player aperto, chiudi player
-        if(overlay.style.display==='flex') {{
-            overlay.style.display='none';
-            iframe.src='';
-        }}
         openInfo(item, false);
     }} else {{
         overlay.style.display='none';
@@ -310,25 +299,24 @@ window.addEventListener("popstate", function(e) {{
     }}
 }});
 
-
-let currentType = 'movie', currentList = [], shown = 0;
+let currentType='movie', currentList=[], shown=0;
 
 function render(reset=false) {{
-    if(reset) {{ grid.innerHTML = ''; shown = 0; }}
-    let count = 0;
+    if(reset){{ grid.innerHTML=''; shown=0; }}
+    let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
-    let gSel = Array.from(document.getElementById('genreSelect').selectedOptions).map(o => o.value);
-    while(shown < currentList.length && count < 40) {{
+    let gSel = Array.from(document.getElementById('genreSelect').selectedOptions).map(o=>o.value);
+    while(shown<currentList.length && count<40) {{
         let m = currentList[shown++];
         let isFav = favorites.includes(m.id);
-        let genreMatch =
-            gSel.length === 0 ||
-            gSel.includes('all') ||
-            (gSel.includes('favorites') && isFav) ||
-            gSel.every(g => m.genres.includes(g));
+        let genreMatch = 
+    gSel.length===0 
+    || gSel.includes('all') 
+    || (gSel.includes('favorites') && isFav) 
+    || gSel.every(g => m.genres.includes(g));
         if(genreMatch && m.title.toLowerCase().includes(s)) {{
             const card = document.createElement('div');
-            card.className = 'card';
+            card.className='card';
             card.innerHTML = `
                 <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
                 <div class='badge'>${{m.vote}}</div>
@@ -344,30 +332,32 @@ function render(reset=false) {{
     }}
 }}
 
-function populateGenres() {{
-    const set = new Set();
-    currentList.forEach(m => m.genres.forEach(g => set.add(g)));
-    const sel = document.getElementById('genreSelect');
-    sel.innerHTML = '<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
-    [...set].sort().forEach(g => {{
-        const o = document.createElement('option');
-        o.value = o.textContent = g;
+function populateGenres(){{
+    const set=new Set();
+    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    const sel=document.getElementById('genreSelect');
+    sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
+    [...set].sort().forEach(g=>{{
+        const o=document.createElement('option');
+        o.value=o.textContent=g;
         sel.appendChild(o);
     }});
 }}
 
-function updateType(t) {{
-    currentType = t;
-    currentList = allData.filter(x => x.type === t);
+function updateType(t){{
+    currentType=t;
+    currentList=allData.filter(x=>x.type===t);
     populateGenres();
     render(true);
 }}
 
-document.getElementById('typeSelect').onchange = e => updateType(e.target.value);
-document.getElementById('genreSelect').onchange = () => render(true);
-document.getElementById('searchBox').oninput = () => render(true);
-document.getElementById('loadMore').onclick = () => render(false);
+/* Eventi UI */
+document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
+document.getElementById('genreSelect').onchange=()=>render(true);
+document.getElementById('searchBox').oninput=()=>render(true);
+document.getElementById('loadMore').onclick=()=>render(false);
 
+/* stato iniziale nella history */
 history.replaceState({{page:"grid"}}, "", "#grid");
 
 updateType('movie');
