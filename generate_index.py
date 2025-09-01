@@ -2,12 +2,15 @@
 """
 generate_index.py
 
-Aggiunta gestione Preferiti con stellina e filtro multi-genere.
+Aggiunta gestione Preferiti spostati nella tendina principale e Visti recentemente.
+- Preferiti e Visti recentemente in typeSelect (insieme a Film/Serie TV)
+- Gestione recenti tramite localStorage (max 20)
 - Stellina sulle locandine: solo visuale (non cliccabile)
 - Stellina cliccabile dentro la card info
 - Possibilità di selezionare più generi
 - Correzione back button: chiude il player prima di tornare alla card o griglia
 """
+
 
 import os
 import sys
@@ -24,6 +27,7 @@ VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 OUTPUT_HTML = "index.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
 
+
 def get_api_key():
     key = os.getenv("TMDB_API_KEY")
     if not key:
@@ -31,10 +35,12 @@ def get_api_key():
         sys.exit(1)
     return key
 
+
 def fetch_list(url):
     r = requests.get(url, headers=HEADERS, timeout=20)
     r.raise_for_status()
     return r.json()
+
 
 def extract_ids(data):
     ids = []
@@ -48,6 +54,7 @@ def extract_ids(data):
                 break
     return ids
 
+
 def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
     r = requests.get(
@@ -59,6 +66,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
         return None
     r.raise_for_status()
     return r.json()
+
 
 def build_html(entries, latest_entries):
     html = f"""<!doctype html>
@@ -103,7 +111,12 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <h1>Movies & Series</h1>
 <div class='controls'>
-<select id='typeSelect'><option value='movie'>Film</option><option value='tv'>Serie TV</option></select>
+<select id='typeSelect'>
+  <option value='movie'>Film</option>
+  <option value='tv'>Serie TV</option>
+  <option value='favorites'>★ Preferiti</option>
+  <option value='recent'>👁 Visti di recente</option>
+</select>
 <select id='genreSelect' multiple size=5></select>
 <input type='text' id='searchBox' placeholder='Cerca...'>
 </div>
@@ -136,6 +149,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 <script>
 const allData = {entries};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+let recentList = JSON.parse(localStorage.getItem("recent") || "[]");
 let currentItem = null;
 
 function toggleFavorite(id) {{
@@ -146,6 +160,13 @@ function toggleFavorite(id) {{
   }}
   localStorage.setItem("favorites", JSON.stringify(favorites));
   render(true);
+}}
+
+function addToRecent(id) {{
+  recentList = recentList.filter(x => x !== id);
+  recentList.unshift(id);
+  if(recentList.length > 20) recentList.pop();
+  localStorage.setItem("recent", JSON.stringify(recentList));
 }}
 
 const grid=document.getElementById('moviesGrid');
@@ -165,10 +186,11 @@ const episodeSelect=document.getElementById('episodeSelect');
 const infoYear=document.getElementById('infoYear');
 const infoDuration=document.getElementById('infoDuration');
 const infoCast=document.getElementById('infoCast');
+const genreSelect=document.getElementById('genreSelect');
 
 closeCardBtn.onclick = () => {{
   infoCard.style.display='none';
-  history.pushState({{page:"grid"}}, "", "#grid");
+  history.replaceState({{page:"grid"}}, "", "#grid");
 }};
 
 function showLatest(){{
@@ -187,7 +209,7 @@ function openInfo(item, push=true) {{
     infoCard.style.backgroundImage = "none";
     infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
     infoTitle.textContent = item.title;
-    infoGenres.textContent = "Generi: " + item.genres.join(", ");
+    infoGenres.textContent = "Generi: " + (item.genres && item.genres.length ? item.genres.join(", ") : "");
     infoVote.textContent = "★ " + item.vote;
     infoOverview.textContent = item.overview || "";
     infoYear.textContent = item.year ? "Anno: " + item.year : "";
@@ -248,6 +270,8 @@ function openPlayer(item, push=true) {{
         link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1`;
     }}
     iframe.src = link;
+    addToRecent(item.id);
+
     if (overlay.requestFullscreen) overlay.requestFullscreen();
     else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
     else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
@@ -272,9 +296,13 @@ function closePlayer(push=true) {{
     }}
 }}
 
-/* Gestione popstate corretta */
 window.addEventListener("popstate", function(e) {{
     const state = e.state;
+
+    if(state && state.page === "info" && overlay.style.display !== 'flex' && infoCard.style.display === 'none') {{
+        history.back();
+        return;
+    }}
 
     if(!state || state.page==="grid" || state.page==="home") {{
         overlay.style.display='none';
@@ -296,7 +324,7 @@ window.addEventListener("popstate", function(e) {{
         openPlayer(item, false);
     }} else if(state.page === "info") {{
         if(overlay.style.display==='flex') {{
-            closePlayer(false); // prima chiudi il player se è aperto
+            closePlayer(false);
         }}
         openInfo(item, false);
     }} else {{
@@ -316,11 +344,7 @@ function render(reset=false) {{
     while(shown<currentList.length && count<40) {{
         let m = currentList[shown++];
         let isFav = favorites.includes(m.id);
-        let genreMatch = 
-    gSel.length===0 
-    || gSel.includes('all') 
-    || (gSel.includes('favorites') && isFav) 
-    || gSel.every(g => m.genres.includes(g));
+        let genreMatch = gSel.length===0 || gSel.includes('all') || gSel.every(g => m.genres.includes(g));
         if(genreMatch && m.title.toLowerCase().includes(s)) {{
             const card = document.createElement('div');
             card.className='card';
@@ -343,7 +367,7 @@ function populateGenres(){{
     const set=new Set();
     currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
     const sel=document.getElementById('genreSelect');
-    sel.innerHTML='<option value="all">Tutti i generi</option><option value="favorites">★ Preferiti</option>';
+    sel.innerHTML='<option value="all">Tutti i generi</option>';
     [...set].sort().forEach(g=>{{
         const o=document.createElement('option');
         o.value=o.textContent=g;
@@ -353,8 +377,17 @@ function populateGenres(){{
 
 function updateType(t){{
     currentType=t;
-    currentList=allData.filter(x=>x.type===t);
-    populateGenres();
+    if(t==="movie" || t==="tv"){{
+        currentList=allData.filter(x=>x.type===t);
+        genreSelect.style.display='inline';
+        populateGenres();
+    }} else if(t==="favorites"){{
+        currentList=allData.filter(x=>favorites.includes(x.id));
+        genreSelect.style.display='none';
+    }} else if(t==="recent"){{
+        currentList=allData.filter(x=>recentList.includes(x.id));
+        genreSelect.style.display='none';
+    }}
     render(true);
 }}
 
@@ -374,6 +407,7 @@ showLatest();
 </html>
 """
     return html
+
 
 def main():
     api_key = get_api_key()
@@ -400,12 +434,16 @@ def main():
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_=="movie" else ""
             seasons = info.get("number_of_seasons", 1) if type_=="tv" else 0
             episodes = {str(s["season_number"]): s.get("episode_count", 1) for s in info.get("seasons", []) if s.get("season_number")} if type_=="tv" else {}
-            duration = info.get("runtime", 0) if type_=="movie" else 0
+
             year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
+
+            runtime_list = info.get("episode_run_time") or []
+            duration = info.get("runtime") or (runtime_list[0] if runtime_list else None)
+
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
 
             entries.append({
-                "id": tmdb_id,
+                "id": str(tmdb_id),
                 "title": title,
                 "poster": poster,
                 "genres": genres,
@@ -417,7 +455,7 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
-            "cast": cast
+                "cast": cast
             })
 
             if idx < 10:
@@ -427,6 +465,7 @@ def main():
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
     print(f"Generato {OUTPUT_HTML} con {len(entries)} elementi e ultime novità scrollabili")
+
 
 if __name__ == "__main__":
     main()
