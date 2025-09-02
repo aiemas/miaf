@@ -9,6 +9,7 @@ Aggiunta gestione Preferiti spostati nella tendina principale e Visti recentemen
 - Stellina cliccabile dentro la card info
 - Possibilità di selezionare più generi
 - Correzione back button: chiude il player prima di tornare alla card o griglia
+- Titolo nel player comparibile al tocco dello schermo
 """
 
 
@@ -91,7 +92,8 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 #favoriteInCard.favorite-btn{{position:static;cursor:pointer;margin-left:auto;font-size:22px;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
-#playerOverlay iframe{{width:100%;height:100%;border:none;}}
+#playerOverlay iframe{{width:100%;height:100%;border:none;position:relative;z-index:1;}}
+#playerTitle{{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:8px 12px;border-radius:8px;font-size:18px;display:none;z-index:10;}}
 #infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
 #infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
@@ -125,6 +127,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <div id='playerOverlay'>
   <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+  <div id="playerTitle"></div>
 </div>
 
 <div id='infoCard'>
@@ -152,26 +155,10 @@ let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 let recentList = JSON.parse(localStorage.getItem("recent") || "[]");
 let currentItem = null;
 
-function toggleFavorite(id) {{
-  if(favorites.includes(id)) {{
-    favorites = favorites.filter(f=>f!==id);
-  }} else {{
-    favorites.push(id);
-  }}
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-  render(true);
-}}
-
-function addToRecent(id) {{
-  recentList = recentList.filter(x => x !== id);
-  recentList.unshift(id);
-  if(recentList.length > 20) recentList.pop();
-  localStorage.setItem("recent", JSON.stringify(recentList));
-}}
-
 const grid=document.getElementById('moviesGrid');
 const overlay=document.getElementById('playerOverlay');
 const iframe=overlay.querySelector('iframe');
+const playerTitle=document.getElementById('playerTitle');
 const infoCard=document.getElementById('infoCard');
 const infoTitle=document.getElementById('infoTitle');
 const infoGenres=document.getElementById('infoGenres');
@@ -192,6 +179,13 @@ closeCardBtn.onclick = () => {{
   infoCard.style.display='none';
   history.replaceState({{page:"grid"}}, "", "#grid");
 }};
+
+overlay.addEventListener('click', () => {{
+    if(!currentItem) return;
+    playerTitle.textContent = currentItem.title || "";
+    playerTitle.style.display = 'block';
+    setTimeout(() => {{ playerTitle.style.display = 'none'; }}, 2000);
+}});
 
 function showLatest(){{
     let scrollPos = 0;
@@ -294,6 +288,23 @@ function closePlayer(push=true) {{
             history.pushState({{page:"info", itemId:currentItem.id}}, "", "#info-"+currentItem.id);
         }}
     }}
+}}
+
+function toggleFavorite(id) {{
+  if(favorites.includes(id)) {{
+    favorites = favorites.filter(f=>f!==id);
+  }} else {{
+    favorites.push(id);
+  }}
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  render(true);
+}}
+
+function addToRecent(id) {{
+  recentList = recentList.filter(x => x !== id);
+  recentList.unshift(id);
+  if(recentList.length > 20) recentList.pop();
+  localStorage.setItem("recent", JSON.stringify(recentList));
 }}
 
 window.addEventListener("popstate", function(e) {{
