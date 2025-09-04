@@ -23,7 +23,7 @@ SRC_URLS = {
     "tv": "https://vixsrc.to/api/list/tv?lang=it"
 }
 TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
-TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w300"
+TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w780"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 OUTPUT_HTML = "index.html"
 HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
@@ -89,14 +89,27 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .favorite-btn{{font-size:20px;color:#fff;text-shadow:0 0 4px #000;}}
 .favorite-btn.active{{color:gold;}}
 .card .favorite-btn{{position:absolute;top:8px;left:8px;pointer-events:none;}}
-#favoriteInCard.favorite-btn{{position:static;cursor:pointer;margin-left:auto;font-size:22px;}}
+#favoriteInCard.favorite-btn{{position:static;cursor:pointer;font-size:22px;}}
 #loadMore{{display:block;margin:20px auto;padding:10px 20px;font-size:16px;background:#e50914;color:#fff;border:none;border-radius:8px;cursor:pointer;}}
 #playerOverlay{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);display:none;align-items:center;justify-content:center;z-index:1000;flex-direction:column;}}
 #playerOverlay iframe{{width:100%;height:100%;border:none;position:relative;z-index:1;}}
 #playerTitle{{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.7);color:#fff;padding:8px 12px;border-radius:8px;font-size:18px;display:none;z-index:10;}}
-#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(34,34,34,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
+#infoCard{{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(20,20,20,20,0.85);display:none;z-index:1001;backdrop-filter:blur(8px);color:#fff;padding:20px;overflow:auto;}}
 #infoCard h2{{margin-top:0;color:#e50914;display:inline-block;}}
-#infoCard button#playBtn{{margin-left:10px;padding:8px 12px;background:#e50914;border:none;color:#fff;border-radius:5px;cursor:pointer;vertical-align:middle;}}
+#infoCard button#playBtn,
+#infoCard button#closeCardBtn,
+#infoCard button#favoriteInCard {{
+    width: 120px;       /* stessa larghezza */
+    height: 38px;       /* stessa altezza */
+    padding: 8px 0;     /* verticale interna */
+    background: #141414;
+    border: none;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    vertical-align: middle;
+    text-align: center;
+}}
 #infoCard p{{margin:5px 0;}}
 #infoCard select{{margin:5px 5px 5px 0;padding:6px;}}
 #latest{{display:flex;overflow-x:auto;gap:10px;margin-bottom:20px;padding-bottom:10px;scroll-behavior: smooth;}}
@@ -131,12 +144,12 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <div id='infoCard'>
-  <div style="position:relative;background:#222;border-radius:10px;padding:20px;max-width:800px;width:90%;">
+  <div style="position:relative;background:transparent;border-radius:10px;padding:20px;max-width:800px;width:90%;">
     <h2 id="infoTitle"></h2>
     <div style="display:flex;align-items:center;gap:10px;margin:10px 0;">
       <button id="playBtn" class="btn-play">Riproduci</button>
       <button id="closeCardBtn" class="btn-close">Chiudi</button>
-      <span id="favoriteInCard" class="favorite-btn">★</span>
+      <button id="favoriteInCard" class="favorite-btn">+ Preferiti</button>
     </div>
     <p id="infoGenres"></p>
     <p id="infoVote"></p>
@@ -177,6 +190,7 @@ const genreSelect=document.getElementById('genreSelect');
 
 closeCardBtn.onclick = () => {{
   infoCard.style.display='none';
+  document.body.style.overflow = ''; //
   history.replaceState({{page:"grid"}}, "", "#grid");
 }};
 
@@ -200,8 +214,9 @@ function showLatest(){{
 function openInfo(item, push=true) {{
     currentItem = item;
     infoCard.style.display='block';
+    document.body.style.overflow = 'hidden'; //
     infoCard.style.backgroundImage = "none";
-    infoCard.style.backgroundColor = "rgba(0,0,0,0.85)";
+    infoCard.style.backgroundColor = "rgba(20,20,20,0.95)";
     infoTitle.textContent = item.title;
     infoGenres.textContent = "Generi: " + (item.genres && item.genres.length ? item.genres.join(", ") : "");
     infoVote.textContent = "★ " + item.vote;

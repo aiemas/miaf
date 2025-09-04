@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dettaglio Film</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  color: #fff;
+  background-color: #141414;
+}
+.hero {
+  position: relative;
+  height: 70vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: flex-end;
+  padding: 40px;
+  box-sizing: border-box;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  left:0; top:0; right:0; bottom:0;
+  background: linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.2));
+}
+.hero-content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+}
+.hero h1 {
+  margin: 0;
+  font-size: 48px;
+  color: #e50914;
+}
+.meta {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #ddd;
+}
+.container {
+  padding: 40px;
+  max-width: 1000px;
+  margin: auto;
+}
+iframe {
+  width: 100%;
+  max-width: 800px;
+  height: 450px;
+  border-radius: 8px;
+  margin-top: 30px;
+  border: none;
+}
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background: #e50914;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+button:hover { background: #b00610; }
+</style>
+</head>
+<body>
+
+<div id="content"></div>
+
+<script>
+// Recupera parametri dalla query string
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+
+// Dati demo (con immagini reali da TMDb)
+const fakeDB = {
+  "1": {
+    title: "Inception",
+    year: 2010,
+    duration: "148 min",
+    cast: "Leonardo DiCaprio, Joseph Gordon-Levitt, Ellen Page",
+    overview: "Un ladro che ruba segreti attraverso l'uso della tecnologia dei sogni viene incaricato di impiantare un'idea nella mente di un CEO.",
+    backdrop: "https://image.tmdb.org/t/p/original/s3TBrRGB1iav7gFOCNx3H31MoES.jpg",
+    trailer: "https://www.youtube.com/embed/YoHD9XEInc0"
+  },
+  "2": {
+    title: "Interstellar",
+    year: 2014,
+    duration: "169 min",
+    cast: "Matthew McConaughey, Anne Hathaway, Jessica Chastain",
+    overview: "Un gruppo di esploratori parte attraverso un wormhole nello spazio per garantire la sopravvivenza dell'umanità.",
+    backdrop: "https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg",
+    trailer: "https://www.youtube.com/embed/zSWdZVtXT7E"
+  }
+};
+
+const item = fakeDB[id] || fakeDB["1"]; // fallback
+
+document.getElementById("content").innerHTML = `
+  <div class="hero" style="background-image:url('${item.backdrop}')">
+    <div class="hero-content">
+      <h1>${item.title}</h1>
+      <div class="meta">
+        <span><strong>Anno:</strong> ${item.year}</span> • 
+        <span><strong>Durata:</strong> ${item.duration}</span>
+      </div>
+      <div class="meta"><strong>Cast:</strong> ${item.cast}</div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2>Trama</h2>
+    <p>${item.overview}</p>
+    <iframe src="${item.trailer}" allowfullscreen></iframe>
+    <br>
+    <button onclick="window.history.back()">← Torna indietro</button>
+  </div>
+`;
+</script>
+</body>
+</html>
