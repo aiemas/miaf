@@ -1,40 +1,105 @@
-<!doctype html>
-<html lang='it'>
+<!DOCTYPE html>
+<html lang="it">
 <head>
-<meta charset='utf-8'>
-<meta name='viewport' content='width=device-width,initial-scale=1'>
-<title>Movies & Series</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prova tendine stile</title>
 <style>
-body{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}
-h1{color:#fff;text-align:center;margin-bottom:20px;}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
-.card{position:relative;cursor:pointer;}
-.poster{width:100%;border-radius:8px;display:block;}
-#latest{display:flex;overflow-x:auto;gap:10px;}
+body {
+    background: #141414;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    padding: 40px;
+    text-align: center;
+}
+
+/* Wrapper per la freccia custom */
+.select-wrapper {
+    position: relative;
+    display: inline-block;
+    margin: 10px;
+}
+
+/* Stile select */
+select {
+    padding: 10px 35px 10px 15px;
+    border-radius: 25px;
+    border: 2px solid #e50914;
+    background: #1f1f1f;
+    color: #fff;
+    font-size: 16px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    transition: all 0.3s ease;
+    width: 200px;
+}
+
+/* Focus e hover */
+select:focus {
+    border-color: #ff3333;
+    box-shadow: 0 0 8px #e50914;
+}
+
+select:hover {
+    transform: scale(1.03);
+}
+
+/* Freccia custom */
+.select-wrapper::after {
+    content: '▼';
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 14px;
+    color: #fff;
+}
+
+/* Tendina multipla (generi) */
+#genreSelect[multiple] {
+    height: auto;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Scrollbar personalizzata per Webkit */
+#genreSelect[multiple]::-webkit-scrollbar {
+    width: 6px;
+}
+#genreSelect[multiple]::-webkit-scrollbar-thumb {
+    background-color: #e50914;
+    border-radius: 3px;
+}
 </style>
 </head>
 <body>
-<h1>Ultime Novità</h1>
-<div id='latest'>
-<div class='card'><img class='poster' src='https://via.placeholder.com/300x450' alt='Film di esempio'></div><div class='card'><img class='poster' src='https://via.placeholder.com/300x450' alt='Serie di esempio'></div>
+
+<h1>Prova Tendine Personalizzate</h1>
+
+<div class="select-wrapper">
+  <select id="typeSelect">
+    <option value="movie">Film</option>
+    <option value="tv">Serie TV</option>
+    <option value="favorites">★ Preferiti</option>
+    <option value="recent">👁 Visti di recente</option>
+  </select>
 </div>
 
-<h1>Movies & Series</h1>
-<div id='moviesGrid' class='grid'></div>
+<div class="select-wrapper">
+  <select id="genreSelect" multiple size="5">
+    <option>Avventura</option>
+    <option>Commedia</option>
+    <option>Azione</option>
+    <option>Fantascienza</option>
+    <option>Horror</option>
+    <option>Documentario</option>
+  </select>
+</div>
 
-<script>
-const allData = [{"id": "1", "title": "Film di esempio", "poster": "https://via.placeholder.com/300x450", "genres": ["Azione", "Avventura"], "vote": 7.5, "overview": "Trama del film di esempio.", "type": "movie", "seasons": 0, "episodes": {}, "duration": 120, "year": "2023", "cast": ["Attore 1", "Attore 2"]}, {"id": "2", "title": "Serie di esempio", "poster": "https://via.placeholder.com/300x450", "genres": ["Commedia"], "vote": 8.2, "overview": "Trama della serie di esempio.", "type": "tv", "seasons": 2, "episodes": {"1": 5, "2": 6}, "duration": 0, "year": "2022", "cast": ["Attrice 1", "Attrice 2"]}];
-const grid = document.getElementById('moviesGrid');
-
-allData.forEach(m => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-        <img class='poster' src='${m.poster}' alt='${m.title}'>
-        <p>${m.title}</p>
-    `;
-    grid.appendChild(card);
-});
-</script>
 </body>
 </html>

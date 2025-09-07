@@ -17,17 +17,29 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
-    padding: 20px;
     box-sizing: border-box;
-    background:
-        linear-gradient(to bottom, rgba(0,0,0,0) 35%, rgba(0,0,0,1) 50%, rgba(0,0,0,1) 100%),
-        url('https://image.tmdb.org/t/p/w780/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg') center/cover no-repeat;
-    background-size: cover;
 }
+
+/* Riquadro poster/trailer */
+#mediaBox {
+    position: relative;
+    width: 100%;
+    height: 50vh;
+    overflow: hidden;
+    background:#000;
+}
+#mediaBox img, 
+#mediaBox iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border:0;
+}
+
+/* Testo */
 #infoText {
-    margin-top: 40vh;
-    background: rgba(0,0,0,0);
+    padding: 20px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0));
 }
 h1 {
     margin-top: 0;
@@ -56,63 +68,19 @@ p {
 .button:hover {
     background: #333;
 }
-#related {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding-bottom: 10px;
-}
-#related::-webkit-scrollbar { display: none; }
-.related-item {
-    flex: 0 0 auto;
-    width: 120px;
-    border-radius: 6px;
-}
-.related-item img {
-    width: 100%;
-    border-radius: 6px;
-}
-
-/* Overlay trailer */
-#trailerOverlay {
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background: rgba(0,0,0,0.9);
-    align-items:center;
-    justify-content:center;
-    z-index:1000;
-    flex-direction:column;
-}
-#trailerOverlay iframe {
-    width:90%;
-    max-width:800px;
-    height:450px;
-    border:none;
-    border-radius:8px;
-}
-#closeTrailer {
-    margin-bottom:10px;
-    padding:8px 16px;
-    font-size:16px;
-    border:none;
-    border-radius:6px;
-    cursor:pointer;
-    background:#e50914;
-    color:#fff;
-}
 </style>
 </head>
 <body>
 
 <div id="infoCard">
+    <!-- Riquadro poster/trailer in cima -->
+    <div id="mediaBox">
+        <img id="posterImg" src="https://image.tmdb.org/t/p/w780/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg" alt="Poster">
+    </div>
+
     <div id="infoText">
         <h1>Spider-Man: No Way Home</h1>
         <div id="buttons">
-            <button id="trailerBtn" class="button">Guarda Trailer</button>
             <button id="favoriteBtn" class="button">+ La mia lista</button>
             <button id="closeBtn" class="button">Chiudi</button>
         </div>
@@ -120,49 +88,26 @@ p {
         <p><strong>Durata:</strong> 148 min</p>
         <p><strong>Genere:</strong> Azione, Avventura, Fantascienza</p>
         <p><strong>Cast:</strong> Tom Holland, Zendaya, Benedict Cumberbatch, Jacob Batalon</p>
-        <p><strong>Descrizione:</strong> Peter Parker si trova alle prese con le conseguenze della sua identità segreta rivelata al mondo. Per rimediare, chiede aiuto al Dottor Strange, ma l'incantesimo va storto e scatena il multiverso.</p>
-
-        <h2>Film correlati</h2>
-        <div id="related">
-            <div class="related-item"><img src="https://image.tmdb.org/t/p/w780/2cPz1cmFqq0yNw5vQz1yZ6n5ouX.jpg" alt="Film 1"></div>
-            <div class="related-item"><img src="https://image.tmdb.org/t/p/w780/fVzXp3NwovUlLe7fvoRynCmBPNc.jpg" alt="Film 2"></div>
-            <div class="related-item"><img src="https://image.tmdb.org/t/p/w780/zf8cXz6t79S1V9A3oXc3uAZG0oj.jpg" alt="Film 3"></div>
-            <div class="related-item"><img src="https://image.tmdb.org/t/p/w780/1gokDeVg6uU6qlLDy9P5VExqJtA.jpg" alt="Film 4"></div>
-            <div class="related-item"><img src="https://image.tmdb.org/t/p/w780/3WZl03MJuhK2k8gP1imnmK8BRWR.jpg" alt="Film 5"></div>
-        </div>
+        <p><strong>Descrizione:</strong> Peter Parker si trova alle prese con le conseguenze della sua identità segreta rivelata al mondo. 
+           Per rimediare, chiede aiuto al Dottor Strange, ma l'incantesimo va storto e scatena il multiverso.</p>
     </div>
 </div>
 
-<!-- Overlay trailer -->
-<div id="trailerOverlay">
-    <button id="closeTrailer">Chiudi Trailer</button>
-    <iframe id="trailer" src="" allowfullscreen></iframe>
-</div>
-
 <script>
-var trailerBtn = document.getElementById('trailerBtn');
-var trailerOverlay = document.getElementById('trailerOverlay');
-var iframe = document.getElementById('trailer');
-var closeTrailer = document.getElementById('closeTrailer');
+var mediaBox = document.getElementById('mediaBox');
 
-trailerBtn.onclick = function() {{
-    // Trailer di prova con autoplay
-    iframe.src = "https://www.youtube.com/embed/JfVOs4VSpmA?autoplay=1&mute=0";
-    trailerOverlay.style.display = "flex";
-}};
+// Dopo 3 secondi sostituisce il poster con il trailer in autoplay
+setTimeout(function() {
+    mediaBox.innerHTML = '<iframe src="https://www.youtube.com/embed/JfVOs4VSpmA?autoplay=1&mute=1&rel=0&showinfo=0" allow="autoplay; fullscreen" allowfullscreen></iframe>';
+}, 3000);
 
-closeTrailer.onclick = function() {{
-    iframe.src = ""; // ferma il trailer
-    trailerOverlay.style.display = "none";
-}};
-
-document.getElementById('closeBtn').onclick = function() {{
+document.getElementById('closeBtn').onclick = function() {
     alert("Chiudi la card qui se vuoi integrarlo nel tuo script dinamico");
-}};
+};
 
-document.getElementById('favoriteBtn').onclick = function() {{
+document.getElementById('favoriteBtn').onclick = function() {
     alert("Aggiungi ai preferiti qui se vuoi integrarlo nel tuo script dinamico");
-}};
+};
 </script>
 
 </body>

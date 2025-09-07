@@ -152,7 +152,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     width: 100%; height: 100%;
     display: none;
     z-index: 1001;
-    background-size: contain;   /* mostra SEMPRE l'intero poster */
+    background-size: cover;   /* mostra SEMPRE l'intero poster */
     background-position: center;
     background-repeat: no-repeat;
     background-color: #141414;  /* riempie i bordi vuoti */
@@ -589,27 +589,7 @@ def main():
             overview = info.get("overview", "")
             link = VIX_LINK_MOVIE.format(tmdb_id) if type_ == "movie" else ""
             seasons = info.get("number_of_seasons", 1) if type_ == "tv" else 0
-            episodes = {str(s["season_number"]): s.get("episode_count", 1) 
-                        for s in info.get("seasons", []) if s.get("season_number")} if type_ == "tv" else {}
-
-            year = (info.get("release_date") or info.get("first_air_date") or "")[:4]
-
-            runtime_list = info.get("episode_run_time") or []
-            duration = info.get("runtime") or (runtime_list[0] if runtime_list else None)
-
-            cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
-
-            entries.append({
-                "id": str(tmdb_id),
-                "title": title,
-                "poster": poster,
-                "genres": genres,
-                "vote": vote,
-                "overview": overview,
-                "link": link,
-                "type": type_,
-                "seasons": seasons,
-                "episodes": episodes,
+            episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
                 "cast": cast
