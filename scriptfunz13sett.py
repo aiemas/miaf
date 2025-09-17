@@ -515,7 +515,20 @@ function render(reset=false) {{
         let m = listToShow[shown++];
         let isFav = favorites.includes(m.id);
         let genreMatch = gSel.length===0 || gSel.includes('all') || gSel.every(g => m.genres.includes(g));
-        if(genreMatch && m.title.toLowerCase().includes(s)) {{
+
+        if(genreMatch && (
+            m.title.toLowerCase().includes(s) ||
+            (m.cast && (
+                Array.isArray(m.cast)
+                    ? m.cast.some(actor => actor.toLowerCase().includes(s))
+                    : m.cast.toLowerCase().includes(s)
+            )) ||
+            (m.directors && (
+                Array.isArray(m.directors)
+                    ? m.directors.some(dir => dir.toLowerCase().includes(s))
+                    : m.directors.toLowerCase().includes(s)
+            ))
+        )) {{
             const card = document.createElement('div');
             card.className='card';
             card.innerHTML = `
@@ -624,6 +637,8 @@ def main():
             duration = info.get("runtime") or (runtime_list[0] if runtime_list else None)
 
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
+            directors = [c["name"] for c in info.get("credits", {}).get("crew", []) if c.get("job")=="Director"]
+
 
             entries.append({
                 "id": str(tmdb_id),
@@ -638,7 +653,8 @@ def main():
                 "episodes": episodes,
                 "duration": duration or 0,
                 "year": year or "",
-                "cast": cast
+                "cast": cast,
+                "directors": directors
             })
 
             # Solo prime 10 per latest
