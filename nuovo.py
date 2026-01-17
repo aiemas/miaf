@@ -27,46 +27,39 @@ TMDB_BASE = "https://api.themoviedb.org/3/{type}/{id}"
 TMDB_IMAGE_BASE = "https://image.tmdb.org/t/p/w780"
 VIX_LINK_MOVIE = "https://vixsrc.to/movie/{}/?"
 OUTPUT_HTML = "index2.html"
-HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; script/1.0)"}
+HEADERS = {"User-Agent": "Mozilla/.0 (compatible; script/1.0)"}
 
 ARCHIVE_FILE = "entries.json"
 
-def get_age_rating(api_key, type_, tmdb_id):
-    try:
-        if type_ == "movie":
-            url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/release_dates"
-            r = requests.get(url, params={"api_key": api_key}, timeout=10)
-            r.raise_for_status()
-            results = r.json().get("results", [])
-            for c in results:
-                if c.get("iso_3166_1") == "IT":
-                    for rel in c.get("release_dates", []):
-                        cert = rel.get("certification")
-                        if cert:
-                            return cert
-            # fallback
-            for c in results:
-                for rel in c.get("release_dates", []):
-                    cert = rel.get("certification")
-                    if cert:
+def get_pegi_eu(api_key, type_, tmdb_id):
+    if type_ == "movie":
+        url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/release_dates"
+        r = requests.get(url, params={"api_key": api_key}, timeout=1)
+        if r.status_code != 200:
+            return ""
+
+        data = r.json().get("results", [])
+        for country in data:
+            if country.get("iso_3166_1") == "IT":
+                for rel in country.get("release_dates", []):
+                    cert = rel.get("certification", "").strip()
+                    if cert.isdigit():
                         return cert
+        return ""
 
-        elif type_ == "tv":
-            url = f"https://api.themoviedb.org/3/tv/{tmdb_id}/content_ratings"
-            r = requests.get(url, params={"api_key": api_key}, timeout=10)
-            r.raise_for_status()
-            results = r.json().get("results", [])
-            for c in results:
-                if c.get("iso_3166_1") == "IT" and c.get("rating"):
-                    return c["rating"]
-            for c in results:
-                if c.get("rating"):
-                    return c["rating"]
+    else:  # TV
+        url = f"https://api.themoviedb.org/3/tv/{tmdb_id}/content_ratings"
+        r = requests.get(url, params={"api_key": api_key}, timeout=1)
+        if r.status_code != 200:
+            return ""
 
-    except:
-        pass
-
-    return "NR"
+        data = r.json().get("results", [])
+        for country in data:
+            if country.get("iso_3166_1") == "IT":
+                rating = country.get("rating", "").strip()
+                if rating.isdigit():
+                    return rating
+        return ""
 
 
 def load_archive():
@@ -115,7 +108,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     r = requests.get(
         url,
         params={"api_key": api_key, "language": language, "append_to_response": "credits"},
-        timeout=15
+        timeout=1
     )
     if r.status_code == 404:
         return None
@@ -141,32 +134,30 @@ def build_html(entries, latest_entries):
 <style>
 body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
 h1{{color:#fff;text-align:center;margin-bottom:20px;}}
-.age-badge {{
-  position: absolute;
-  bottom: 8px;
-  left: 8px;
-  background: rgba(0,0,0,0.8);
-  border: 1px solid #fff;
-  color: #fff;
-  font-size: 11px;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 6px;
-}}
-
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
 input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}}
 .card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
-.card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
+.card:hover{{transform:scale(1.0);border-color:#e0914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
-.badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
+.badge{{position:absolute;top:8px;right:8px;background:#e0914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
 .favorite-btn{{font-size:20px;color:#fff;text-shadow:0 0 4px #000;}}
 .favorite-btn.active{{color:gold;}}
+.pegi-badge{{
+  position:absolute;
+  bottom:6px;
+  left:6px;
+  background:#000;
+  color:#fff;
+  font-size:11px;
+  padding:3px 6px;
+  border-radius:px;
+  opacity:0.8;
+}}
 .card .favorite-btn{{position:absolute;top:8px;left:8px;pointer-events:none;}}
 .circular-chart {{
-  max-width: 50px;
-  max-height: 50px;
+  max-width: 0px;
+  max-height: 0px;
 }}
 .circle-bg {{
   fill: none;
@@ -591,9 +582,9 @@ function render(reset=false) {{
             const card = document.createElement('div');
             card.className='card';
             card.innerHTML = `
-               <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
-               <div class='badge'>${m.vote}</div>
-               ${{m.age ? `<div class="age-badge">${{m.age}}</div>` : ""}}
+                <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
+                <div class='badge'>${{m.vote}}</div>
+                ${{m.age ? `<span class="pegi-badge">PEGI ${{m.age}}</span>` : ""}}
                 <p style="margin:2px 0;font-size:12px;color:#ccc;">
                     ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
@@ -676,11 +667,12 @@ def main():
         for idx, tmdb_id in enumerate(ids):
             try:
                 info = tmdb_get(api_key, type_, tmdb_id)
-                age = get_age_rating(api_key, type_, tmdb_id)
             except:
                 info = None
             if not info:
                 continue
+
+            age = get_pegi_eu(api_key, type_, tmdb_id)
 
             title = info.get("title") or info.get("name") or f"ID {tmdb_id}"
             poster = TMDB_IMAGE_BASE + info["poster_path"] if info.get("poster_path") else ""
