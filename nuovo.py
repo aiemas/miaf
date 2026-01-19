@@ -77,6 +77,9 @@ def build_html(entries):
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>TV Media Center</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+
+
 <style>
 body {
   margin:0;
@@ -84,6 +87,38 @@ body {
   color:#fff;
   font-family:Arial,sans-serif;
 }
+
+.row-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 10px;
+}
+
+.browse-all {
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .25s, color .25s;
+}
+
+/* appare quando la riga è attiva (hover o focus TV) */
+.row:hover .browse-all,
+.row:focus-within .browse-all {
+  opacity: 1;
+}
+
+/* focus telecomando */
+.browse-all:focus {
+  outline: 2px solid #dc2626;
+  border-radius: 6px;
+  color: #fff;
+}
+
 
 .row {
   margin:20px 10px;
@@ -108,6 +143,19 @@ body {
   z-index:10;
   user-select:none;
 }
+
+.row h2 {
+  font-family: "Oswald", "Arial Narrow", Arial, sans-serif;
+}
+
+.row:first-of-type h2 {
+  font-size: 26px;
+  color: #fff;
+  text-shadow:
+    0 3px 10px rgba(0,0,0,0.9),
+    0 0 18px rgba(220,38,38,0.6);
+}
+
 
 .row:hover .row-arrow {
   opacity:1;
@@ -143,7 +191,71 @@ body {
   cursor:pointer;
 }
 
-.row h2 { margin:10px; }
+.genre-dropdown {
+  position: relative;
+}
+
+#genreBtn {
+  padding:8px 14px;
+  border-radius:10px;
+  border:none;
+  background:#1f2933;
+  color:#fff;
+  cursor:pointer;
+}
+
+.genre-menu {
+  position:absolute;
+  top:110%;
+  left:0;
+  background:#111;
+  border-radius:10px;
+  padding:10px;
+  max-height:260px;
+  overflow:auto;
+  display:none;
+  z-index:200;
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
+
+.genre-menu label {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  cursor:pointer;
+  padding:4px 0;
+}
+
+
+.row h2 {
+  margin: 10px 10px 6px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: #f5f5f5;
+  text-shadow:
+    0 2px 6px rgba(0,0,0,0.8),
+    0 0 12px rgba(220,38,38,0.35);
+  position: relative;
+}
+
+/* linea cinematografica sotto il titolo */
+.row h2::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 3px;
+  margin-top: 6px;
+  background: linear-gradient(
+    90deg,
+    #dc2626,
+    rgba(220,38,38,0.2)
+  );
+  border-radius: 3px;
+}
+
 
 .row-content {
   display:flex;
@@ -222,6 +334,7 @@ body {
 
 .play { background:#dc2626; color:#fff; }
 .fav { background:#2563eb; color:#fff; }
+.close { background:#374151; color:#fff; }
 
 select.episode {
   padding:8px;
@@ -240,9 +353,12 @@ select.episode {
     <option value="favorites">★ Preferiti</option>
     <option value="recent">🕘 Recenti</option>
   </select>
-  <select id="genreSelect">
-    <option value="">🎭 Tutti i generi</option>
-  </select>
+  <div class="genre-dropdown">
+   <button id="genreBtn">🎭 Generi ▼</button>
+   <div id="genreMenu" class="genre-menu"></div>
+  </div>
+
+
   <button id="randomPick">🎲 Cosa guardiamo stasera?</button>
 </div>
 
@@ -252,7 +368,6 @@ select.episode {
   <div id="infoBackdrop"></div>
   <div id="infoOverlay"></div>
   <div id="infoBox">
-    <div id="closeBtn">✕</div>
     <h1 id="infoTitle"></h1>
     <div id="infoMeta"></div>
     <p id="infoOverview"></p>
@@ -265,6 +380,7 @@ select.episode {
     <div class="actions">
       <button class="play" id="playBtn">▶ Guarda</button>
       <button class="fav" id="favBtn">★ Preferiti</button>
+      <button class="close" id="closeBtnBottom">✕ Chiudi</button>
     </div>
   </div>
 </div>
@@ -275,18 +391,30 @@ const DATA = __DATA__;
 const content = document.getElementById("content");
 const search = document.getElementById("searchBox");
 const typeSelect = document.getElementById("typeSelect");
-const genreSelect = document.getElementById("genreSelect");
+const genreBtn = document.getElementById("genreBtn");
+const genreMenu = document.getElementById("genreMenu");
+const randomPickBtn = document.getElementById("randomPick");
 
 let favorites = JSON.parse(localStorage.getItem("fav") || "[]");
 let recent = JSON.parse(localStorage.getItem("recent") || "[]");
 let currentItem = null;
 
 /* generi */
-[...new Set(DATA.flatMap(x=>x.genres||[]))].sort().forEach(g=>{
-  const o=document.createElement("option");
-  o.value=g; o.textContent=g;
-  genreSelect.appendChild(o);
+const GENRES = [...new Set(DATA.flatMap(x=>x.genres||[]))].sort();
+
+GENRES.forEach(g => {
+  const label = document.createElement("label");
+  label.innerHTML = `<input type="checkbox" value="${g}"> ${g}`;
+
+  const checkbox = label.querySelector("input");
+
+  // 🔥 QUANDO CLICCHI UN GENERE → RICOSTRUISCE LA GRIGLIA
+  checkbox.addEventListener("change", rebuild);
+
+  genreMenu.appendChild(label);
 });
+
+
 
 function poster(item) {
   return `
@@ -299,7 +427,14 @@ function addRow(title, items) {
   if(!items.length) return;
   content.innerHTML += `
     <div class="row">
-      <h2>${title}</h2>
+      <div class="row-title">
+  <h2>${title}</h2>
+  <button class="browse-all"
+    onclick="browseGenre('${title}')"
+    tabindex="0">
+    Sfoglia tutti →
+  </button>
+</div>
 
       <div class="row-arrow left" onclick="scrollRow(this,-1)">‹</div>
       <div class="row-arrow right" onclick="scrollRow(this,1)">›</div>
@@ -313,11 +448,34 @@ function addRow(title, items) {
 
 function buildHome(list) {
   content.innerHTML="";
-  addRow("🔥 Ultime uscite",[...list].sort((a,b)=>b.added.localeCompare(a.added)));
+  addRow(
+  "🎬 Ultime uscite",
+  [...list]
+    .filter(x => x.added)
+    .sort((a,b)=>b.added.localeCompare(a.added))
+);
+
   [...new Set(list.flatMap(x=>x.genres||[]))].forEach(g=>{
     addRow(g,list.filter(x=>x.genres?.includes(g)));
   });
 }
+
+genreBtn.onclick = () => {
+  genreMenu.style.display =
+    genreMenu.style.display === "block" ? "none" : "block";
+};
+
+document.addEventListener("click", e => {
+  if (!e.target.closest(".genre-dropdown")) {
+    genreMenu.style.display = "none";
+  }
+});
+
+function getSelectedGenres() {
+  return [...genreMenu.querySelectorAll("input:checked")]
+    .map(x => x.value);
+}
+
 
 function scrollRow(el, dir){
   const row = el.parentElement.querySelector(".row-content");
@@ -329,22 +487,79 @@ function buildGrid(list) {
   content.innerHTML=`<div class="grid">${list.map(poster).join("")}</div>`;
 }
 
-function rebuild() {
-  const q=search.value.toLowerCase();
-  const g=genreSelect.value;
-  const t=typeSelect.value;
+function browseGenre(genre) {
+  // reset ricerca
+  search.value = "";
 
-  let list=DATA;
-  if(t==="favorites") list=DATA.filter(x=>favorites.includes(x.id));
-  else if(t==="recent") list=DATA.filter(x=>recent.includes(x.id));
-  else list=DATA.filter(x=>x.type===t);
+  // reset dropdown generi
+  genreMenu.querySelectorAll("input").forEach(c => {
+    c.checked = (c.value === genre);
+  });
 
-  if(q) list=list.filter(x=>x.title.toLowerCase().includes(q));
-  if(g) list=list.filter(x=>x.genres?.includes(g));
-
-  if(q||g||t!=="movie") buildGrid(list);
-  else buildHome(list);
+  // forza vista griglia
+  buildGrid(
+    DATA.filter(x =>
+      x.type === typeSelect.value &&
+      x.genres?.includes(genre)
+    )
+  );
 }
+
+function rebuild() {
+  const q = search.value.toLowerCase();
+  const t = typeSelect.value;
+  const selectedGenres = getSelectedGenres();
+
+  let list = DATA;
+
+  if (t === "favorites") list = DATA.filter(x => favorites.includes(x.id));
+  else if (t === "recent") list = DATA.filter(x => recent.includes(x.id));
+  else list = DATA.filter(x => x.type === t);
+
+  if (q) list = list.filter(x => x.title.toLowerCase().includes(q));
+
+  if (selectedGenres.length) {
+    list = list.filter(item =>
+      selectedGenres.every(g => item.genres?.includes(g))
+    );
+  }
+
+  // 🔥 LOGICA CORRETTA
+  if (q || selectedGenres.length || t !== "movie") {
+    buildGrid(list);
+  } else {
+    buildHome(list);
+  }
+}
+
+
+function randomPick() {
+  const q = search.value.toLowerCase();
+  const selectedGenres = getSelectedGenres();
+  const t = typeSelect.value;
+
+  let list = DATA;
+
+  if (t === "favorites") list = DATA.filter(x => favorites.includes(x.id));
+  else if (t === "recent") list = DATA.filter(x => recent.includes(x.id));
+  else list = DATA.filter(x => x.type === t);
+
+  if (q) list = list.filter(x => x.title.toLowerCase().includes(q));
+  if (selectedGenres.length) {
+  list = list.filter(item =>
+    selectedGenres.every(g => item.genres?.includes(g))
+  );
+}
+
+  if (!list.length) {
+    alert("Nessun titolo disponibile con questi filtri 😅");
+    return;
+  }
+
+  const pick = list[Math.floor(Math.random() * list.length)];
+  openInfoById(pick.id);
+}
+
 
 function openInfoById(id){
   const item = DATA.find(x=>x.id===id);
@@ -387,12 +602,14 @@ function toggleFav(id){
   localStorage.setItem("fav",JSON.stringify(favorites));
 }
 
-document.getElementById("closeBtn").onclick=()=>infoCard.style.display="none";
+document.getElementById("closeBtnBottom").onclick = () => {
+  document.getElementById("infoCard").style.display = "none";
+};
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") infoCard.style.display="none"; });
 
 search.oninput=rebuild;
-genreSelect.onchange=rebuild;
 typeSelect.onchange=rebuild;
+randomPickBtn.onclick = randomPick;
 rebuild();
 </script>
 
@@ -407,7 +624,14 @@ rebuild();
 
 def main():
     api_key = get_api_key()
-    old = {e["id"]: e for e in load_archive()}
+
+    # 🔥 CARICA ARCHIVIO E SISTEMA added SE MANCA
+    old = {}
+    for e in load_archive():
+        if "added" not in e:
+            e["added"] = datetime.utcnow().isoformat()
+        old[e["id"]] = e
+
     new = []
 
     for t, url in SRC_URLS.items():
@@ -421,17 +645,21 @@ def main():
             if not poster_path:
                 continue  # salta titoli senza locandina
 
+            existing = old.get(tmdb_id)
+
             new.append({
                 "id": tmdb_id,
                 "title": info.get("title") or info.get("name") or "",
                 "poster": TMDB_IMAGE + poster_path,
-                "overview": info.get("overview",""),
+                "overview": info.get("overview", ""),
                 "type": t,
                 "genres": [g["name"] for g in info.get("genres", [])],
                 "link": f"https://vixsrc.to/{t}/{tmdb_id}/",
-                "added": datetime.utcnow().isoformat()
+                # 🔥 mantiene la data se già esiste
+                "added": existing["added"] if existing else datetime.utcnow().isoformat()
             })
 
+    # 🔁 MERGE DEFINITIVO
     for e in new:
         old[e["id"]] = e
 
@@ -442,6 +670,7 @@ def main():
         f.write(build_html(entries))
 
     print(f"✅ {OUTPUT_HTML} generato con {len(entries)} titoli")
+
 
 
 if __name__ == "__main__":
