@@ -50,7 +50,7 @@
   {
     "id": "975056",
     "title": "Francesca Cabrini",
-    "poster": "https://image.tmdb.org/t/p/w780/rBiHiN8W4BqMFrDozemzkof7GmF.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/uR7iQKPynetIxnbbWalF6OXbNcf.jpg",
     "overview": "L'immigrata italiana Francesca Cabrini arriva nella New York del 1889 e viene accolta da malattie, criminalità e bambini impoveriti. Cabrini parte per un'audace missione per convincere l'ostile sindaco a garantire alloggi e assistenza sanitaria ai più vulnerabili della società. Con un inglese stentato e una salute cagionevole, Cabrini usa la sua mente imprenditoriale per costruire un impero della speranza mai visto prima.",
     "type": "movie",
     "genres": [
@@ -964,7 +964,7 @@
   {
     "id": "238458",
     "title": "Cashero",
-    "poster": "https://image.tmdb.org/t/p/w780/2t9o1zbMAxNePGwpvZF9BVs5x5e.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/SB3HbQAqQGWJTV1J5U10aXNXdU.jpg",
     "overview": "Un uomo comune che eredita una forza sovrumana scopre che un male più grande vuole sottrargliela. L'altro problema? Quando usa il suo potere, il suo portafoglio si svuota.",
     "type": "tv",
     "genres": [
@@ -5702,7 +5702,7 @@
   {
     "id": "18174",
     "title": "An Inspector Calls",
-    "poster": "https://image.tmdb.org/t/p/w780/tWENUwa05Ex4Q0ClG9XdUcQza0i.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/j637ICfPZPVnhoGPlRw9xVf6IqL.jpg",
     "overview": "",
     "type": "movie",
     "genres": [
@@ -11438,7 +11438,7 @@
   {
     "id": "374052",
     "title": "The Love Witch",
-    "poster": "https://image.tmdb.org/t/p/w780/q6mZjCwGn9KCTrStTRM88pui0is.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/fVxkSy5pAhNkwwFcJNbQZwlD3pt.jpg",
     "overview": "Le cose finiscono sempre male per gli uomini che sono ammaliati dalla bella strega Elaine. Lei li attira con il suo corpo voluttuoso e riesce a far bere loro un misterioso intruglio. Tutti si innamorano alla follia e ogni amante perde la propria mascolinità, diventando fragile e sensibile. Ciò è però esattamente quello che Elaine, alla continua ricerca di un maschio vero, non vuole.",
     "type": "movie",
     "genres": [
@@ -15641,7 +15641,8 @@
     "type": "movie",
     "genres": [
       "Storia",
-      "Dramma"
+      "Dramma",
+      "Thriller"
     ],
     "link": "https://vixsrc.to/movie/1214931/",
     "added": "2026-01-18T13:40:29.349674"
@@ -26881,9 +26882,9 @@
   },
   {
     "id": "1535385",
-    "title": "Rebel Royals: An Unlikely Love Story",
+    "title": "Rebel Royals: Un'improbabile storia d'amore",
     "poster": "https://image.tmdb.org/t/p/w780/7vIkk6WNThpI89dyJMZ8IFrIz7n.jpg",
-    "overview": "",
+    "overview": "Questo documentario esclusivo segue Martha Louise e lo sciamano Durek Verrett dietro le quinte alla vigilia del loro controverso matrimonio in Norvegia.",
     "type": "movie",
     "genres": [
       "Documentario"
@@ -30664,8 +30665,8 @@
     "overview": "Quando la sua vita è sconvolta da una malattia non identificata, una donna mondana deve svelare il mistero che la circonda prima di perdere completamente la percezione di sé.",
     "type": "movie",
     "genres": [
-      "Dramma",
       "Thriller",
+      "Dramma",
       "Horror"
     ],
     "link": "https://vixsrc.to/movie/1285728/",
@@ -33749,7 +33750,7 @@
   {
     "id": "425274",
     "title": "L'illusione perfetta - Now You See Me: Now You Don't",
-    "poster": "https://image.tmdb.org/t/p/w780/a1xANzOxtnNpP2AE1PX2HLOgzzl.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/s1INqXaXGoU537yF3srp8Vxnkk8.jpg",
     "overview": "I maghi del crimine sono tornati! Al loro fianco, una nuova generazione di illusionisti riscrive le regole dello spettacolo con numeri mozzafiato, colpi di scena e sorprese che sfidano l’immaginazione. Un'esperienza visiva che sul grande schermo si trasforma in spettacolo puro.",
     "type": "movie",
     "genres": [
@@ -53670,7 +53671,7 @@
   {
     "id": "1081439",
     "title": "Un Natale indimenticabile",
-    "poster": "https://image.tmdb.org/t/p/w780/ppqUB5Ff9twtngqOpdqIgHzM6ry.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/iviFpnmCu0qs6VzH9H0WlhX4aja.jpg",
     "overview": "Beth diventa inconsapevolmente il soggetto della copertina di una rivista pluripremiata e si mette in viaggio per scoprire la vera identità del misterioso fotografo che le ha scattato la foto.",
     "type": "movie",
     "genres": [
@@ -58091,7 +58092,6 @@
     "genres": [
       "Crime",
       "Horror",
-      "Thriller",
       "Mistero"
     ],
     "link": "https://vixsrc.to/movie/1226578/",
@@ -62522,8 +62522,7 @@
       "Famiglia",
       "Fantasy",
       "Commedia",
-      "Avventura",
-      "Azione"
+      "Avventura"
     ],
     "link": "https://vixsrc.to/movie/950387/",
     "added": "2026-01-18T13:44:56.625392"
@@ -66467,7 +66466,6 @@
     "type": "movie",
     "genres": [
       "Azione",
-      "Avventura",
       "Thriller"
     ],
     "link": "https://vixsrc.to/movie/1669/",
@@ -68279,7 +68277,7 @@
   },
   {
     "id": "1282032",
-    "title": "Din Don: La Magia del Cinema",
+    "title": "Din Don: La Magia Del Cinema",
     "poster": "https://image.tmdb.org/t/p/w780/sNKB3cSJ0bZt8OceIYjJcAKxwzs.jpg",
     "overview": "A Pellizzano il paese è in subbuglio. Ci sarà il casting per le riprese del film horror \"Una notte da brivido\" del regista Rocco Siffredi. In molti aspirano ai famosi 15 minuti di celebrità, ma una delle attrici protagoniste è Clorinne, vecchia conoscenza di Don Donato, che ha un conto in sospeso con il prete e trama vendetta. Guai in vista.",
     "type": "movie",
@@ -68811,7 +68809,7 @@
   {
     "id": "9920",
     "title": "Ultraviolet",
-    "poster": "https://image.tmdb.org/t/p/w780/27OzQ2BBahQHYPiPEAXRXMbhnPQ.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/tqzWRChuQlnG02HquOanraOhKwf.jpg",
     "overview": "In un futuro ipertecnologico gli umani sono in lotta contro gli emofagi, una razza simil-vampirica generata da esperimenti top secret sfuggiti al controllo. In questo scenario, Violet, eroina degli emofagi dalle letali abilità di lotta, ha il compito di impossessarsi dell'arma definitiva che potrebbe cambiare le sorti del conflitto. Una volta scoperto che la tanto temuta arma altro non è che un piccolo umano, portatore di un virus che potrebbe annientare gli emofagi, la donna, sopraffatta dall'istinto materno, lo proteggerà anziché eliminarlo, tramutandosi così nel principale bersaglio di entrambe le fazioni.",
     "type": "movie",
     "genres": [
@@ -71570,8 +71568,8 @@
     "overview": "Questo scioccante documentario racconta l'ascesa di un nomade spensierato alla celebrità virale e la ripida spirale discendente che ha portato alla sua prigionia.",
     "type": "movie",
     "genres": [
-      "Documentario",
-      "Crime"
+      "Crime",
+      "Documentario"
     ],
     "link": "https://vixsrc.to/movie/1061117/",
     "added": "2026-01-18T13:45:47.737382"
@@ -73075,7 +73073,7 @@
   {
     "id": "3594",
     "title": "Number 23",
-    "poster": "https://image.tmdb.org/t/p/w780/xQYAHvRvTGwIcLka8G1md9iSzf.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/wDikA5P3zEGvVZ3Fn0uT8OXqqud.jpg",
     "overview": "La vita ordinaria di Walter Sparrow, modesto accalappiacani, è scossa da un libro regalatogli per il compleanno dalla moglie. Intitolato \"Il numero 23\", il romanzo diventa un'ossessione per l'uomo, che trova una serie di connessioni, tutte nel segno del famigerato numero, tra se stesso e il detective Fingerling, protagonista del libro. Le cose si faranno complicate per Walter quando, del tutto persuaso che il racconto parli di lui, comincerà a farsi condizionare dal narrato al punto da mettere in pericolo la propria vita e quella dei propri cari.",
     "type": "movie",
     "genres": [
@@ -80848,8 +80846,8 @@
     "overview": "In questo documentario contorto, un meccanico prova per la prima volta gli appuntamenti online e incontra una donna che porta l'ossessione romantica a un estremo mortale.",
     "type": "movie",
     "genres": [
-      "Documentario",
-      "Crime"
+      "Crime",
+      "Documentario"
     ],
     "link": "https://vixsrc.to/movie/1229958/",
     "added": "2026-01-18T13:46:41.419136"
@@ -84378,7 +84376,7 @@
   {
     "id": "797787",
     "title": "Man in Love",
-    "poster": "https://image.tmdb.org/t/p/w780/ikNpBMj6rlcFeyNuLjnNKm13QB.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/uGCv49xmS0AV2GehXkiTSAEg2QH.jpg",
     "overview": "",
     "type": "movie",
     "genres": [
@@ -100850,7 +100848,7 @@
   },
   {
     "id": "954139",
-    "title": "Din Don 4 - Il Paese dei Balocchi",
+    "title": "Din Don 4: Il Paese Dei Balocchi",
     "poster": "https://image.tmdb.org/t/p/w780/9eIxphQUnSj4klEubc7W8Nzedef.jpg",
     "overview": "Quarto capitolo della saga con Enzo Salvi e Maurizio Mattioli. Dopo sei mesi passati a meditare in alta montagna, Don Donato torna e Pellizzano per fare le valigie e partire per Roma dove, convinto dallo zio prete, tornerà a vestire gli abiti civili. Ma quello che trova è un paese completamente trasformato: sale Bingo, Casinò e belle accompagnatrici lo hanno invaso e Don Donato ha tre giorni per rimettere le cose a posto.",
     "type": "movie",
@@ -118093,7 +118091,7 @@
   },
   {
     "id": "602468",
-    "title": "Il Grande Salto",
+    "title": "Il grande salto",
     "poster": "https://image.tmdb.org/t/p/w780/bpbbDDCtIRFAaoMohlIRFqgXcAG.jpg",
     "overview": "I quarantenni Rufetto e Nello sono due rapinatori maldestri che, dopo aver scontato quattro anni di carcere per un colpo andato male, vivono in un quartiere della periferia romana.I due non demordono e progettano una rapina che potrebbe dare una svolta alle loro vite mediocri. Riprendere in mano l'attività e soprattutto portarla a buon fine, però, non è per niente facile: si convincono, così, che il destino non sia dalla loro parte…",
     "type": "movie",
@@ -129971,7 +129969,7 @@
   {
     "id": "755",
     "title": "Dal tramonto all'alba",
-    "poster": "https://image.tmdb.org/t/p/w780/ljvO9AbZbh5TI848EV7jYTWE2eb.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/q2sGGr4jpYnQ4my2OxTiUP8WJm3.jpg",
     "overview": "Dopo una sanguinosa rapina in una banca del Texas, i fratelli Seth e Richard prendono in ostaggio un predicatore disilluso che viaggia in camper con due figli e sconfinano nel Messico, dove approdano al “Titty Twister”, un locale frequentato da spogliarelliste, motociclisti e strani personaggi.",
     "type": "movie",
     "genres": [
@@ -133862,7 +133860,6 @@
     "genres": [
       "Horror",
       "Fantasy",
-      "Thriller",
       "Mistero"
     ],
     "link": "https://vixsrc.to/movie/542224/",
@@ -134537,7 +134534,8 @@
     "overview": "La liceale Reagan Willis ha solo un sogno: giocare a calcio come la sua eroina, Alex Morgan. La sua camera è una sorta di santuario dedicato ad Alex e ha persino un suo poster a grandezza naturale. In casa, però, Reagan vive nell'ombra del fratello Willis, un campione di football. Quando viene umiliata dalla rivale Claire, Reagan crede di non aver più speranze. Ma, dopo aver sbattuto accidentalmente la testa, il poster di Alex improvvisamente prende vita e nulla sarà come prima.",
     "type": "movie",
     "genres": [
-      "Famiglia"
+      "Famiglia",
+      "Fantasy"
     ],
     "link": "https://vixsrc.to/movie/528911/",
     "added": "2026-01-18T13:51:44.542042"
@@ -141883,7 +141881,7 @@
   {
     "id": "561",
     "title": "Constantine",
-    "poster": "https://image.tmdb.org/t/p/w780/oaWsGohG0HA9Ps6831OgZU2CJ3k.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/5HKF84aecm3WSrtxWGpDOWrbCXK.jpg",
     "overview": "John Constantine è un insolente detective del soprannaturale che è stato letteralmente all'inferno e poi tornato sulla terra. Quando Constantine inizia a collaborare con la poliziotta Angela Dodson per risolvere il misterioso suicidio della sorella gemella, le indagini li portano in un mondo di demoni ed angeli che esiste dietro la facciata della Los Angeles contemporanea. Coinvolti in una catastrofica serie di eventi soprannaturali, i due si legano l'un l'altra nella ricerca della pace ad ogni costo.",
     "type": "movie",
     "genres": [
@@ -144047,7 +144045,7 @@
   {
     "id": "19913",
     "title": "(500) giorni insieme",
-    "poster": "https://image.tmdb.org/t/p/w780/6BN6deyL1ReZMGYVYsmbFz2JKyV.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/qLVPGfSoxX8rfncsTUep951b8M7.jpg",
     "overview": "Tom Hansen vive a Los Angeles, è un giovane scrittore di cartoline presso una società di biglietti d’auguri che si esercita anche per diventare un architetto. Alla società di cartoline arriva Sole Finn, la nuova assistente del capo, e viene presentata a Tom: per lui è subito colpo di fulmine, ma i due punti di vista nettamente contrari sull’idea di rapporti privati si fanno subito vedere e saranno alla causa della loro rottura.",
     "type": "movie",
     "genres": [
@@ -149847,11 +149845,12 @@
     "id": "224372",
     "title": "A Knight of the Seven Kingdoms",
     "poster": "https://image.tmdb.org/t/p/w780/6igvNs5VJB4ryBLgjjXksDVs0Fm.jpg",
-    "overview": "",
+    "overview": "Un secolo prima degli eventi narrati in Game of Thrones, due improbabili eroi vagavano per Westeros: un giovane cavaliere ingenuo ma coraggioso, Ser Duncan l'Alto (alias Dunk) e il suo piccolo scudiero, Egg. Ambientato in un'epoca in cui la dinastia dei Targaryen detiene ancora il Trono di Spade e il ricordo dell'ultimo drago non è ancora svanito dalla memoria collettiva, grandi destini, nemici potenti e imprese pericolose attendono questi amici improbabili e incomparabili.",
     "type": "tv",
     "genres": [
       "Dramma",
-      "Sci-Fi & Fantasy"
+      "Sci-Fi & Fantasy",
+      "Action & Adventure"
     ],
     "link": "https://vixsrc.to/tv/224372/",
     "added": "2026-01-18T13:53:14.922783"
@@ -152020,7 +152019,7 @@
   {
     "id": "271885",
     "title": "Non stare a guardare",
-    "poster": "https://image.tmdb.org/t/p/w780/3YsZZRNT43u7O0LzgNtGXuePtwG.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/cAx7vFmy7gBCqGKU1v8lvrvpDBF.jpg",
     "overview": "Due donne progettano di porre fine a un matrimonio violento attraverso l'omicidio, ma una visita inattesa minaccia di mandare in frantumi il loro piano.",
     "type": "tv",
     "genres": [
@@ -155717,7 +155716,7 @@
   {
     "id": "122206",
     "title": "The Rational Life",
-    "poster": "https://image.tmdb.org/t/p/w780/o104R1VRMkX4Ks6r46JyQKoa7yw.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/Av1a4pvLS8yJcFRfGimZjS2YatO.jpg",
     "overview": "Shen Ruo Xin è una professionista trentenne che decide di prendere posizione contro le ingiuste aspettative della società. Sul posto di lavoro si ritrova attratta da due uomini diversi: uno è il suo giovane e fidato assistente, l'altro è il suo capo scapolo. Sapersi di essere considerata una 'donna di scarto' le pesa molto. Sceglierà di sposare l'uomo che la società ritiene appropriato, o ascolterà il suo cuore e troverà il coraggio di perseguire una storia d'amore con l'uomo più giovane?",
     "type": "tv",
     "genres": [
@@ -159024,7 +159023,7 @@
   {
     "id": "137870",
     "title": "Love Like the Galaxy",
-    "poster": "https://image.tmdb.org/t/p/w780/fDdKotvFUjctrQmY6DxIiPjhisp.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/kpokVycYbMQMIjNr9dHSqylOmUm.jpg",
     "overview": "La giovane Cheng Shao Shang è stata lasciata indietro perché i suoi genitori erano partiti per combattere in guerra. Per proteggersi dalla zia intrigante, doveva essere molto diligente mentre fingeva di essere l'opposto. Tuttavia, anni di allontanamento hanno reso difficile per loro diventare di nuovo una famiglia.\n\nSenza amore per tutta la sua vita, Cheng Shao Shang è sia pragmatica che insicura nella scelta del partner per il matrimonio. Incontra tre uomini: il figlio adottivo dell'imperatore Ling Bu Yi, il talentuoso Yuan Shen del monte Bailu e l'aristocratico Lou Yao, ognuno dei quali ha i suoi pro e contro. Sebbene la strada per amare sia accidentata, non si pente mai di ogni scelta che fa. Attraverso le sue interazioni con Ling Bu Yi, viene coinvolta involontariamente nel mistero che circonda la sua famiglia e la sua identità. I due crescono dalle loro esperienze e hanno lavorato insieme, sostenendo la rettitudine nei loro cuori per risolvere una crisi nazionale.",
     "type": "tv",
     "genres": [
@@ -159543,7 +159542,7 @@
   {
     "id": "209072",
     "title": "Follower in cerca d’amore",
-    "poster": "https://image.tmdb.org/t/p/w780/nWsdtT8a0MqVOVUhCenVdTS2gLq.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/dweAi4p3hMjmHGJGLxE2KZX6yDs.jpg",
     "overview": "Tre influencer di successo allenano ciascuno un seguace mentre restringono un campo di prospettive di appuntamenti, sperando di scambiare Mi piace digitali con amore nella vita reale.",
     "type": "tv",
     "genres": [
@@ -160170,7 +160169,7 @@
   {
     "id": "197235",
     "title": "Schegge dal passato",
-    "poster": "https://image.tmdb.org/t/p/w780/iaQxXd1WRs0J0sIXIseV2JqudRU.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/5ElJK6FzxqpCVIFblighIMwNNlQ.jpg",
     "overview": "Al risveglio dal coma, un'abile cacciatrice di teste si ritrova in una realtà alternativa in cui deve rivivere un terribile trauma infantile.",
     "type": "tv",
     "genres": [
@@ -164586,7 +164585,7 @@
     "id": "286170",
     "title": "Wylde Pak",
     "poster": "https://image.tmdb.org/t/p/w780/jnrR6NqTxyNHARpth1glmA37vAo.jpg",
-    "overview": "",
+    "overview": "Lily e Jack sono fratellastri che trascorrono insieme l'estate e devono imparare a gestire le nuove dinamiche familiari, aiutando allo stesso tempo la caotica attività di toelettatura degli animali domestici della famiglia Wylde Pak.",
     "type": "tv",
     "genres": [
       "Animazione",
@@ -164776,7 +164775,7 @@
   {
     "id": "231462",
     "title": "Low Life",
-    "poster": "https://image.tmdb.org/t/p/w780/kstCFljyrg05p7s5rBNopnNfGYu.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/MHx7VaeclEFLlV3OL0zV0la5oZ.jpg",
     "overview": "Sin da piccolo, nella Corea del dopoguerra, Oh Heedong è cresciuto con lo zio Gwanseok, che si è preso cura di lui e lo ha sfamato, ma lo ha anche introdotto nel mondo della criminalità. Gwanseok è disposto a tutto pur di accumulare denaro, non importa se ci riesca tramite azioni legali o meno. Un giorno, zio e nipote ricevono una richiesta particolare: sul fondale al largo della costa coreana, infatti, è stato scoperto un relitto che si dice nasconda un tesoro che vale una fortuna.",
     "type": "tv",
     "genres": [
@@ -165003,8 +165002,8 @@
     "overview": "Le vittime di truffe sentimentali cercano di riprendersi la propria vita con l'aiuto di Cecilie Fjellhøy, la vittima di \"The Tinder Swindler\", e dell'investigatrice privata Brianne Joseph.",
     "type": "tv",
     "genres": [
-      "Documentario",
-      "Crime"
+      "Crime",
+      "Documentario"
     ],
     "link": "https://vixsrc.to/tv/297791/",
     "added": "2026-01-18T13:54:46.317275"
@@ -165530,7 +165529,7 @@
   {
     "id": "248937",
     "title": "Hostage",
-    "poster": "https://image.tmdb.org/t/p/w780/r8nC8ZKOVWq8bqTF7AMLQI6NgM8.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/ghcxxmSLByYyFLAL8TNWmAel1Ym.jpg",
     "overview": "Quando il marito della prima ministra britannica è rapito e la presidente francese inizia a ricevere minacce, entrambe le leader devono affrontare una scelta impossibile.",
     "type": "tv",
     "genres": [
@@ -167006,7 +167005,7 @@
   {
     "id": "291256",
     "title": "Sara - La donna nell'ombra",
-    "poster": "https://image.tmdb.org/t/p/w780/lUClQsYwt4nUpKgfQrVUp2zXW5h.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/nqKP7dOzbtP2Pmvec0ntOJDM6mb.jpg",
     "overview": "La morte sospetta del figlio spinge un'ex agente segreta a tornare in azione e a indagare su una serie di crimini sempre più inquietanti.",
     "type": "tv",
     "genres": [
@@ -176130,10 +176129,10 @@
     "overview": "Accusato di omicidio in Cina, un medico inglese è scortato a Pechino con un volo speciale. Sull'aereo, la detective che lo accompagna deve gestire una serie di morti sospette. Scoprirà una cospirazione internazionale.",
     "type": "tv",
     "genres": [
+      "Action & Adventure",
       "Dramma",
-      "Mistero",
       "Crime",
-      "Action & Adventure"
+      "Mistero"
     ],
     "link": "https://vixsrc.to/tv/247704/",
     "added": "2026-01-18T13:55:54.775835"
@@ -177728,7 +177727,7 @@
   {
     "id": "55866",
     "title": "Candice Renoir",
-    "poster": "https://image.tmdb.org/t/p/w780/rRMnzom4uxM2MOzO84LODaUrNUg.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/1andtN7XdVmu25HqNQE1JpwLNYy.jpg",
     "overview": "Candice Renoir aveva messo in pausa la sua carriera per 10 anni. Quando torna da Singapore per riprendere il servizio in una città portuale nel sud della Francia, si sente un po' “arrugginita”. Nonostante l'evidente sfida alla sua unità e ad un cinico superiore che non le facilita il lavoro, è determinata a trasformare le sue cosiddette debolezze in punti di forza, risolvendo i casi più complessi con il suo buon senso, la sua acuta osservazione e la sua pratica natura condita da una frenetica routine quotidiana.\n\nSolo Candice può catturare un assassino perché conosce la composizione chimica di un prodotto per la pulizia dei vetri o determina l'ora di un omicidio dal tempo di cottura degli spiedini... Candice è solo ingenua all'esterno e nessuno può resisterle!",
     "type": "tv",
     "genres": [
@@ -182232,7 +182231,7 @@
   {
     "id": "81358",
     "title": "Mr Inbetween",
-    "poster": "https://image.tmdb.org/t/p/w780/cXviefgSi6KNhbbEjwOHqgpNQ0o.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/1FkONly4j7hxi6Pz5CmuhRN1Ops.jpg",
     "overview": "Mr Inbetween è una serie ispirata al film cult “The Magician”, che parla della vita di Ray Shoesmith. Destreggiarsi fra una relazione, le responsabilità genitoriali, le amicizie e un fratello malato, mentre si cerca di guadagnare da vivere sarebbe difficile per tutti, ma lo è ancora di più per Ray Shoesmith, un criminale assoldato. Ray si “prende cura delle persone” indebitandosi, cercando di allontanarle dalla droga e dalle armi e spesso anche occupandosi di loro in modo più permanente. Ray chiede solo rispetto e non sopporta quando qualcuno ignora il suo chiaro codice etico.",
     "type": "tv",
     "genres": [
@@ -183764,8 +183763,8 @@
     "overview": "In questa docuserie true crime, una coppia è accusata di aver inscenato un orribile rapimento in casa nel 2015 dopo che la donna sequestrata ricompare all'improvviso.",
     "type": "tv",
     "genres": [
-      "Documentario",
-      "Crime"
+      "Crime",
+      "Documentario"
     ],
     "link": "https://vixsrc.to/tv/242845/",
     "added": "2026-01-18T13:56:41.903592"
@@ -186325,6 +186324,7 @@
     "overview": "Il dottor Paolo Macchiarini è famoso nel mondo per i suoi rivoluzionari trapianti di trachea basati su cellule staminali. C'è solo un problema: i suoi pazienti continuano a morire.",
     "type": "tv",
     "genres": [
+      "Crime",
       "Documentario"
     ],
     "link": "https://vixsrc.to/tv/238959/",
@@ -202947,7 +202947,7 @@
   {
     "id": "1418",
     "title": "The Big Bang Theory",
-    "poster": "https://image.tmdb.org/t/p/w780/ooBGRQBdbGzBxAVfExiO8r7kloA.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/euKFiO5M125rpngFRBbSW83beeI.jpg",
     "overview": "Pasadena, California. Quattro giovani scienziati di diversi campi – il fisico sperimentale Leonard Hofstadter, il fisico teorico Sheldon Cooper, l'astrofisico Rajesh Koothrappali e l'ingegnere aerospaziale Howard Wolowitz – lavorano insieme al California Institute of Technology. Questi fanno amicizia con Penny, una bella ragazza di provincia col sogno di diventare attrice, venuta a vivere nell'appartamento di fronte a quello condiviso da Leonard e Sheldon.",
     "type": "tv",
     "genres": [
@@ -205061,9 +205061,7 @@
     "genres": [
       "Azione",
       "Thriller",
-      "Crime",
-      "Dramma",
-      "Mistero"
+      "Crime"
     ],
     "link": "https://vixsrc.to/movie/1306368/",
     "added": "2026-01-18T13:39:03.097773"
@@ -205525,5 +205523,545 @@
     ],
     "link": "https://vixsrc.to/tv/104572/",
     "added": "2026-01-19T05:28:36.984697"
+  },
+  {
+    "id": "1266",
+    "title": "La notte non aspetta",
+    "poster": "https://image.tmdb.org/t/p/w780/ocuCZEQnsdDDtAdTAoXQQDAydXN.jpg",
+    "overview": "Dopo la morte di sua moglie, la vita del poliziotto Tom Ludlow è entrata in crisi. A dargli uno scossone è uno scandalo all'interno del dipartimento di polizia di Los Angeles nel quale resta coinvolto, che lo vedrebbe implicato nell'omicidio di un collega. A Tom non resta che andare contro la cultura della polizia, quella in cui ha sempre creduto, per provare la sua innocenza.",
+    "type": "movie",
+    "genres": [
+      "Azione",
+      "Crime",
+      "Dramma",
+      "Thriller"
+    ],
+    "link": "https://vixsrc.to/movie/1266/",
+    "added": "2026-01-21T04:59:06.992277"
+  },
+  {
+    "id": "12890",
+    "title": "Smart People",
+    "poster": "https://image.tmdb.org/t/p/w780/igIl4RKxOEYvhQGKCvM6vCRMiVm.jpg",
+    "overview": "",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Dramma",
+      "Romance"
+    ],
+    "link": "https://vixsrc.to/movie/12890/",
+    "added": "2026-01-21T04:59:07.151512"
+  },
+  {
+    "id": "10503",
+    "title": "La felicità porta fortuna - Happy Go Lucky",
+    "poster": "https://image.tmdb.org/t/p/w780/mLcQOlynZke7YRipxmmBZZuHltx.jpg",
+    "overview": "Poppy è una maestra elementare trentenne di Londra che porta quotidianamente un sorriso a chi le sta intorno. La sua spontaneità, oltre ad un pizzico di sana pazzia, le permette di essere ben voluta da tutte le persone che la circondano, dal suo scorbutico insegnante di scuola guida alle fidate amiche con le quali trascorre le sue giornate.",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Dramma"
+    ],
+    "link": "https://vixsrc.to/movie/10503/",
+    "added": "2026-01-21T04:59:07.271832"
+  },
+  {
+    "id": "8905",
+    "title": "Le tre scimmie",
+    "poster": "https://image.tmdb.org/t/p/w780/raaJK3gyjGUx3zK2INUyZFwOch4.jpg",
+    "overview": "Una strada di notte. Un uomo viene investito da un'auto e abbandonato. Qualcuno però ha visto la targa dell'automezzo che è di proprietà di un uomo politico il quale, per evitare lo scandalo che troncherebbe la sua carriera, chiede al suo autista di autoaccusarsi dell'incidente. Resterà in carcere per poco tempo, sua moglie continuerà a ricevere il suo stipendio e, al momento del rilascio, ci sarà per lui un'ingente ricompensa. L'uomo accetta. Da quel momento sarà la moglie ad andare a riscuotere divenendo l'amante del politico e suscitando i sospetti del figlio adolescente. Quando il marito tornerà la tragedia incomberà sul nucleo familiare.",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Thriller"
+    ],
+    "link": "https://vixsrc.to/movie/8905/",
+    "added": "2026-01-21T04:59:07.393885"
+  },
+  {
+    "id": "12689",
+    "title": "La mia vita è un disastro",
+    "poster": "https://image.tmdb.org/t/p/w780/em1ef70eKSCWokbSfbTpI6euYdc.jpg",
+    "overview": "La storia si incentra su una quattordicenne che tiene un diario suglia alti e bassi dell'essere una teen ager, inclusi i problemi di baci.",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Dramma",
+      "Famiglia",
+      "Romance"
+    ],
+    "link": "https://vixsrc.to/movie/12689/",
+    "added": "2026-01-21T04:59:07.514064"
+  },
+  {
+    "id": "1451402",
+    "title": "Esprimi un desiderio",
+    "poster": "https://image.tmdb.org/t/p/w780/3JuOjgN9bTTRAC8jMQQUO6fMzGA.jpg",
+    "overview": "In seguito a una disavventura, Simone (Max Angioni) viene condannato ai lavori utili in una residenza per anziani, dove viene preso di mira da un gruppo di arzilli vecchietti capeggiati da Ettore (Diego Abatantuono). Lo scontro iniziale, però, diventa l’occasione per costruire insieme qualcosa di inaspettato, un senso di appartenenza che a tutti loro, in un modo o nell’altro, era mancato.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/1451402/",
+    "added": "2026-01-21T04:59:07.630602"
+  },
+  {
+    "id": "25988",
+    "title": "Piccolo dizionario amoroso",
+    "poster": "https://image.tmdb.org/t/p/w780/bszp3HdnaBE6ptfio37vB3JckuL.jpg",
+    "overview": "Tra ragione e sentimento la storia di una meticcia che fa da ponte tra due culture.1930, Sarawak, Borneo. John giovane ufficiale britannico, conosce Selima che, secondo la tradizione locale, ha il compito di insegnare al nuovo arrivato la lingua e le tradizioni locali. La ragazza diventa una sorta di dizionario amoroso da consultare nell'intimità. Attraverso lei John oltre a un linguaggio nuovo scopre ciò che non sapeva di stare cercando: l'amore.",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Romance"
+    ],
+    "link": "https://vixsrc.to/movie/25988/",
+    "added": "2026-01-21T04:59:07.748807"
+  },
+  {
+    "id": "11969",
+    "title": "Tombstone",
+    "poster": "https://image.tmdb.org/t/p/w780/nQj1HXyObIMpyFql11KtwOKgxxP.jpg",
+    "overview": "Wyatt Earp, ex sceriffo di Dodge City, si è trasferito con i fratelli Virgil e Morgan a Tombstone dove spadroneggia una banda di fuorilegge denominata \"I Cowboys\". Ben presto si uniscono ai tre anche Doc Hollyday, un pistolero, e la sua donna, Kate. Quando i fuorilegge eliminano lo sceriffo, i fratelli Earp e Doc affrontano \"I Cowboys\" all'Ok Corral.",
+    "type": "movie",
+    "genres": [
+      "Western",
+      "Azione"
+    ],
+    "link": "https://vixsrc.to/movie/11969/",
+    "added": "2026-01-21T04:59:07.865907"
+  },
+  {
+    "id": "10567",
+    "title": "Dinosauri",
+    "poster": "https://image.tmdb.org/t/p/w780/siBSIs7xMvU2KdAqsfrlyNxLAUq.jpg",
+    "overview": "Siamo nel tardo Cretaceo, 65 milioni di anni fa. L'iguanodonte Aladar è stato separato dal branco quando era ancora un ovetto ed è stato allevato su un'isola da un clan di lemuri. Quando una devastante pioggia di meteoriti getta il suo mondo nel caos, Aladar, insieme alla sua famiglia adottiva, cerca rifugio sulla terraferma. Si unisce ad un gruppo di dinosauri in fuga verso un luogo sicuro. Avendo poco cibo e poca acqua e con la minaccia costante di predatori, il branco si mette in cammino e affronta pericoli di ogni genere. Il capobranco Kron impone ritmi faticosissimi, ed è disposto ad eliminare chi non riesce a tenere il passo. Aladar si sente in dovere di intervenire e, così facendo, si mette in urto con Kron. La sorella di Kron, Neera, è conquistata dalle capacità e dalla gentilezza di Aladar, e si mette dalla sua parte.",
+    "type": "movie",
+    "genres": [
+      "Animazione",
+      "Famiglia",
+      "Avventura",
+      "Dramma"
+    ],
+    "link": "https://vixsrc.to/movie/10567/",
+    "added": "2026-01-21T04:59:08.023183"
+  },
+  {
+    "id": "12493",
+    "title": "Anatomia di un rapimento",
+    "poster": "https://image.tmdb.org/t/p/w780/jHZtd9bNoMNojJXq2wQnvkmC47o.jpg",
+    "overview": "Il figlio di un autista viene rapito, ma è il frutto di un errore di persona. Il vero oggetto del desiderio per lo studente protagonista era il figlio di un industriale. Il commissario di polizia indaga in ricerca del rapitore e si addentrerà nei gironi di un inferno senza uscita.",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Crime"
+    ],
+    "link": "https://vixsrc.to/movie/12493/",
+    "added": "2026-01-21T04:59:08.140728"
+  },
+  {
+    "id": "62029",
+    "title": "Bingo Bongo",
+    "poster": "https://image.tmdb.org/t/p/w780/cqiWWn2tnQwJHFmAMaLR2JdRbzC.jpg",
+    "overview": "Un'équipe scientifica trova nella giungla un novello Tarzan e lo trasferisce a Milano, dove la creatura si invaghisce di una bella scienziata, impara la lingua dell'uomo e incita gli animali ad una sommossa.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/62029/",
+    "added": "2026-01-21T04:59:08.257134"
+  },
+  {
+    "id": "13851",
+    "title": "Batman - Il cavaliere di Gotham",
+    "poster": "https://image.tmdb.org/t/p/w780/geIde2fHcKmD5gwsZRBZAvpqKhT.jpg",
+    "overview": "Alcuni famosi sceneggiatori, tra i quali David Goyer (Batman Begins), Josh Olson (A History of Violence) e Alan Burnett (Batman The Animated Series), uniscono le loro forze a quelle di grandi animatori in sei avvincenti episodi che narrano la trasformazione di Batman da giovane apprendista nella lotta al crimine a Cavaliere Oscuro. In queste avventure che hanno come sfondo l'intero globo, Batman è costretto ad affrontare il temibile Spaventapasseri, lo strambo Killer Croc e l'infallibile tiratore scelto Deadshot.Dalla mente di alcuni tra i più visionari animatori del mondo un ritratto emozionante di Batman come uomo, come mito e come leggenda.",
+    "type": "movie",
+    "genres": [
+      "Fantascienza",
+      "Azione",
+      "Crime",
+      "Animazione",
+      "Dramma"
+    ],
+    "link": "https://vixsrc.to/movie/13851/",
+    "added": "2026-01-21T04:59:08.379331"
+  },
+  {
+    "id": "1262",
+    "title": "Vero come la finzione",
+    "poster": "https://image.tmdb.org/t/p/w780/ip9KCqwzTJy9QYcc2poVle9GsJC.jpg",
+    "overview": "L'universo di Harold Crick, agente del fisco, viene sconvolto quando inizia a sentire una misteriosa voce narrante che fa la cronaca in diretta della sua vita e che solo lui è in grado di sentire. La misteriosa narratrice è Kay Eiffel, una scrittrice in declino che sta scrivendo il suo ultimo libro che, per puro paradosso, è proprio la fedele descrizione della vita di Harold, ormai completamente guidata dalle parole dell'autrice. Ad aggiungere disagio al povero Harold è anche il tragico destino che Kay ha in mentre per l'eroe del suo libro. Il 'protagonista' a questo punto cerca conforto nell'aiuto dell'eccentrico dottor Jules Hilbert e tra le braccia di Ana Pascalo, una delle 'vittime' dei suoi controlli fiscali. Le cose si mettono ancora peggio quando Harold, ribellandosi al testo del romanzo, cerca in tutti i modi di sopravvivere tanto da indurre l'editore del libro ad assumere un killer per portare a compimento l'opera...",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Commedia",
+      "Romance",
+      "Fantasy"
+    ],
+    "link": "https://vixsrc.to/movie/1262/",
+    "added": "2026-01-21T04:59:08.499097"
+  },
+  {
+    "id": "9053",
+    "title": "DOA - Dead or Alive",
+    "poster": "https://image.tmdb.org/t/p/w780/gtlai95IERRDgRhPCK0WEuwCRP0.jpg",
+    "overview": "Cinque donne s'incontrano come avversarie in una gara di arti marziali, ma finiranno per unire le forze contro un nemico comune.",
+    "type": "movie",
+    "genres": [
+      "Avventura",
+      "Azione",
+      "Thriller"
+    ],
+    "link": "https://vixsrc.to/movie/9053/",
+    "added": "2026-01-21T04:59:08.618402"
+  },
+  {
+    "id": "15741",
+    "title": "Dorothy",
+    "poster": "https://image.tmdb.org/t/p/w780/qBY3W5fupe0IYd8G3YorMh1G2FX.jpg",
+    "overview": "A Jane Morton, psichiatra di Dublino in profondo lutto per la morte accidentale del marito e del figlio, viene assegnato il caso di Dorothy Mills, una adolescente di un piccolo centro che ha tentato di strangolare un bambino. Sopravvissuta miracolosamente a un incidente d'auto, Jane scopre un villaggio in preda a strani eventi prima di imbattersi in Dorothy, ritenuta da lei affetta da disturbo di personalità multipla. Gli eventi prenderanno una piega diversa nel momento in cui Dorothy parlerà con la voce di David, il figlio morto della psichiatra.",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Thriller",
+      "Mistero",
+      "Horror"
+    ],
+    "link": "https://vixsrc.to/movie/15741/",
+    "added": "2026-01-21T04:59:08.738097"
+  },
+  {
+    "id": "1306400",
+    "title": "Merrily We Roll Along",
+    "poster": "https://image.tmdb.org/t/p/w780/8h3uNPMdQKr7ffwAjU0aURFqIK.jpg",
+    "overview": "",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Musica"
+    ],
+    "link": "https://vixsrc.to/movie/1306400/",
+    "added": "2026-01-21T04:59:08.893390"
+  },
+  {
+    "id": "13676",
+    "title": "La sirenetta - Quando tutto ebbe inizio",
+    "poster": "https://image.tmdb.org/t/p/w780/mnmyGVKMCLU8DcdGOdUhAShqWzq.jpg",
+    "overview": "La storia di Ariel, molto tempo prima che incontrasse il Principe Eric e camminasse sulla terra. In quel periodo, a causa della morte della Regina Athena, la musica era bandita dal regno acquatico di Atlantica. La giovane Ariel cresce così senza amore e senza musica, fino a quando scopre per caso un night club clandestino. Ariel, divisa tra il senso di dovere verso la famiglia e l’amore per la musica, è spinta a compiere la scelta più difficile della sua vita e combattere contro la subdola governante.",
+    "type": "movie",
+    "genres": [
+      "Famiglia",
+      "Animazione"
+    ],
+    "link": "https://vixsrc.to/movie/13676/",
+    "added": "2026-01-21T04:59:09.057550"
+  },
+  {
+    "id": "13805",
+    "title": "Disaster Movie",
+    "poster": "https://image.tmdb.org/t/p/w780/3J8XKUfhJiNzwobUZVtizXYPe8b.jpg",
+    "overview": "Will, riceve in sogno l'annuncio della fine del mondo. Al risveglio lascia la fidanzata Amy, alla quale non riesce a comunicare il proprio amore, quindi decide, a venticinque anni, di dare un party per i sedici che non ha mai festeggiato, ma la serata viene sconvolta da una serie di eventi catastrofici che gettano nel panico la città. Un meteorite uccide Hannah Montana, mentre Batman fugge, trolley alla mano. Una principessa ninfomane esce \"come d'incanto\" da un tombino e si unisce al gruppetto di amici di Will, che si muove verso il museo di storia naturale dove Amy è bloccata, trafitta da una statua egizia. Ma il tragitto è disseminato di altri guai.",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Fantascienza"
+    ],
+    "link": "https://vixsrc.to/movie/13805/",
+    "added": "2026-01-21T04:59:09.175462"
+  },
+  {
+    "id": "17622",
+    "title": "Fifty Dead Men Walking",
+    "poster": "https://image.tmdb.org/t/p/w780/ahHguslRzE5Qgx8KTJvlDeSEJE2.jpg",
+    "overview": "È il 1989 e in una Belfast dilaniata da conflitti e terrorismo, il piccolo criminale Marty McGartland viene reclutato dalla polizia britannica per infiltrarsi nell'IRA.  Guidato dall'ufficiale delle forze speciali 'Fergus', McGartland ottiene una visione senza precedenti dei rapporti dell'organizzazione, fornendo al suo responsabile britannico informazioni inestimabili e salvavita.  Basato su una storia vera.",
+    "type": "movie",
+    "genres": [
+      "Azione",
+      "Thriller"
+    ],
+    "link": "https://vixsrc.to/movie/17622/",
+    "added": "2026-01-21T04:59:09.298651"
+  },
+  {
+    "id": "14248",
+    "title": "Igor",
+    "poster": "https://image.tmdb.org/t/p/w780/mI4SPs0bZQm7bGVZKToC8KUsTd.jpg",
+    "overview": "Il mondo é popolato da una smisurata quantità di scienziati diabolici, che con le loro pazze invenzioni creano lo scompiglio. Igor é l'assistente di uno di questi ed il suo più grande desiderio é quello di seguire le orme del suo maestro, anzi, vuole diventare più bravo di lui e batterlo alla fiera della \"Scienza Malvagia\", che si tiene ogni anno e vede parteciparvi gli scienziati più agguerriti...",
+    "type": "movie",
+    "genres": [
+      "Animazione",
+      "Commedia",
+      "Famiglia",
+      "Fantasy",
+      "Horror"
+    ],
+    "link": "https://vixsrc.to/movie/14248/",
+    "added": "2026-01-21T04:59:09.416995"
+  },
+  {
+    "id": "1276271",
+    "title": "Un film fatto per Bene",
+    "poster": "https://image.tmdb.org/t/p/w780/3xKygU0ce9Sd0q7zo6Cg7PPbAgL.jpg",
+    "overview": "Le riprese del film di Franco Maresco su Carmelo Bene vengono bruscamente interrotte dopo l’ennesimo incidente sul set. A staccare la spina è il produttore Andrea Occhipinti, esasperato dai ciak infiniti e dai ripetuti ritardi. Dal canto suo, il regista di Belluscone e La mafia non è più quella di una volta accusa la produzione di “filmicidio”, facendo poi perdere le sue tracce. A cercare di ricucire lo strappo è un amico di Maresco, Umberto Cantone, che chiama a testimoni tutti coloro che hanno partecipato all’impresa, in un'indagine che è l'occasione per ripercorrere la personalità e le idee dell’autore più corrosivo e apocalittico del cinema italiano. E se intanto, lontano da tutto e da tutti, Maresco stesse ultimando il suo film, diventato “il solo modo per dare forma alla rabbia e all’orrore che provo per questo mondo di merda”?",
+    "type": "movie",
+    "genres": [
+      "Documentario"
+    ],
+    "link": "https://vixsrc.to/movie/1276271/",
+    "added": "2026-01-21T04:59:09.534128"
+  },
+  {
+    "id": "13094",
+    "title": "Dance of the Dead",
+    "poster": "https://image.tmdb.org/t/p/w780/bQuGNO5TwgGHENhVLahKcofkZe1.jpg",
+    "overview": "",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Horror"
+    ],
+    "link": "https://vixsrc.to/movie/13094/",
+    "added": "2026-01-21T04:59:09.695335"
+  },
+  {
+    "id": "17908",
+    "title": "Il mio cane Skip",
+    "poster": "https://image.tmdb.org/t/p/w780/bzlOmq5d2bu6saO6l5hrAFIvxyI.jpg",
+    "overview": "Willie, un bambino timido e insicuro, riceve in regalo il cucciolo Skip; i due diventano inseparabili, e il suo nuovo amico a quattro zampe aiuterà Willie a relazionarsi meglio con il mondo e avere fiducia in se stesso, accompagnandolo nei momenti più importanti della sua vita.",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Dramma",
+      "Famiglia"
+    ],
+    "link": "https://vixsrc.to/movie/17908/",
+    "added": "2026-01-21T04:59:09.815411"
+  },
+  {
+    "id": "11661",
+    "title": "Joyeux Noël: una verità dimenticata dalla storia",
+    "poster": "https://image.tmdb.org/t/p/w780/9PumcrCLyw3kgiZUaRXV2L1Oedt.jpg",
+    "overview": "La trama della pellicola è incentrata sulla Tregua di Natale del 1914 fra soldati di trincea tedeschi, francesi e scozzesi. Lo scopo di questo film è il dimostrare l'assurdità della guerra.",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Guerra",
+      "Romance",
+      "Storia"
+    ],
+    "link": "https://vixsrc.to/movie/11661/",
+    "added": "2026-01-21T04:59:09.934362"
+  },
+  {
+    "id": "9910",
+    "title": "Rischio a due",
+    "poster": "https://image.tmdb.org/t/p/w780/zE9YqNbQGJajXYUKpaBopGNVBNH.jpg",
+    "overview": "Un giocatore di football costretto a terminare la sua carriera per una grave ferita al ginocchio entra a far parte del mondo delle scommesse sportive diventando il braccio destro di uno dei bookmakers più potenti del paese.",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Crime",
+      "Dramma",
+      "Thriller"
+    ],
+    "link": "https://vixsrc.to/movie/9910/",
+    "added": "2026-01-21T04:59:10.059121"
+  },
+  {
+    "id": "318728",
+    "title": "栄光への５０００キロ",
+    "poster": "https://image.tmdb.org/t/p/w780/7djsJloZqTY3VloYN0ACH7NuDFp.jpg",
+    "overview": "",
+    "type": "movie",
+    "genres": [
+      "Azione",
+      "Avventura"
+    ],
+    "link": "https://vixsrc.to/movie/318728/",
+    "added": "2026-01-21T04:59:10.179582"
+  },
+  {
+    "id": "1421309",
+    "title": "La vita da grandi",
+    "poster": "https://image.tmdb.org/t/p/w780/ttQBhfScEkM94KbQq1bEpGuuWk9.jpg",
+    "overview": "Irene sta costruendo una vita regolare a Roma, quando è costretta a tornare a Rimini, la sua città natale per prendersi cura di Omar, suo fratello autistico di 4o anni. Scoprirà che Omar ha idee chiare sul suo futuro: non vuole in nessun modo vivere con lei una volta che i genitori non ci saranno più. Convince Irene a tenere per lui un corso intensivo di adultità che gli permetta di essere autonomo, ma soprattutto di realizzare i suoi sogni, come partecipare al Talent che lo renderà un cantante famoso.",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Dramma"
+    ],
+    "link": "https://vixsrc.to/movie/1421309/",
+    "added": "2026-01-21T04:59:10.300704"
+  },
+  {
+    "id": "5910",
+    "title": "Hana-Bi - Fiori di fuoco",
+    "poster": "https://image.tmdb.org/t/p/w780/2c3At9Y4XiciSWhptwSLIrjyW5T.jpg",
+    "overview": "Nishi, un detective di polizia violento ed irascibile costretto alle dimissioni per un incidente procurato al suo collega Horibe, è costretto su una sedia a rotelle. Passa il suo tempo accudendo la moglie Miyuki, affetta da leucemia. Nishi ha un grosso problema: ha contratto un debito con la Yakuza per curare la moglie, ma non ha i soldi per pagarlo. Nel frattempo Horibe si dedica alla pittura, creando delle opere surrealistiche di grande bellezza.",
+    "type": "movie",
+    "genres": [
+      "Crime",
+      "Dramma"
+    ],
+    "link": "https://vixsrc.to/movie/5910/",
+    "added": "2026-01-21T04:59:10.425219"
+  },
+  {
+    "id": "9299",
+    "title": "Tesis",
+    "poster": "https://image.tmdb.org/t/p/w780/zaaTJQYrkuzxFFqwoTRlrQVaLdg.jpg",
+    "overview": "Angela è una giovane studentessa della Facoltà di Cinema di Madrid, e sta preparando la sua tesi di laurea; l'argomento è la violenza negli audiovisivi. Per questo si rivolge al suo relatore per commissionargli una ricerca dei film più violenti in circolazione.",
+    "type": "movie",
+    "genres": [
+      "Horror",
+      "Thriller"
+    ],
+    "link": "https://vixsrc.to/movie/9299/",
+    "added": "2026-01-21T04:59:10.542222"
+  },
+  {
+    "id": "151027",
+    "title": "La professoressa di scienze naturali",
+    "poster": "https://image.tmdb.org/t/p/w780/sDCaUm6IpeNLYzXY2pztKbSKyZX.jpg",
+    "overview": "In subbuglio un liceo di una cittadina sicula: la nuova insegnante è troppo bbona. Qualche pretesa c'era: fornire uno spaccato di vita provinciale siciliana, ma il film non si solleva dai piani bassi di un cinema fatto di barzellette, sguaiataggini e doppi sensi.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/151027/",
+    "added": "2026-01-21T04:59:10.661657"
+  },
+  {
+    "id": "125572",
+    "title": "La professoressa di lingue",
+    "poster": "https://image.tmdb.org/t/p/w780/vxljVwl8ILQGXsfcDSNfK67biPN.jpg",
+    "overview": "Michele, rampollo di una ricca famiglia di commercianti, è rimandato in francese perché la balbuzie gli impedisce di superare l'esame. Arriva Pamela, bella e disinibita, e con la sua particolare \"cura\" guarisce il timido Michele.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/125572/",
+    "added": "2026-01-21T04:59:10.803122"
+  },
+  {
+    "id": "127745",
+    "title": "La Compagna di Banco",
+    "poster": "https://image.tmdb.org/t/p/w780/mgZKesPoWYSovyoIGMZS2C2zcut.jpg",
+    "overview": "Simona è una bella ragazza, figlia di un industriale, che viene trasferita a Trani in una lussuosa villa e si iscrive all’ultimo anno del liceo. I ragazzi fanno a gara per entrare nelle sue grazie e si innamora del compagno di banco Mario, tra l’invidia delle altre studentesse. Esse reagiscono e dicono a Simona che questo ragazzo è abituato a conquistare le donne, ma poi le abbandona subito dopo. Le ragazze decidono allora che Simona diventi la loro vendicatrice facendo innamorare Mario per poi mollarlo.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/127745/",
+    "added": "2026-01-21T04:59:10.919982"
+  },
+  {
+    "id": "467541",
+    "title": "La clinica dell'amore",
+    "poster": "https://image.tmdb.org/t/p/w780/uYcHHAT33KCGVcRc7z8aEsg1Bo5.jpg",
+    "overview": "Amalia, moglie dell'onorevole Antenore Onorato, sentendosi trascurata dal marito, sospetta l'adulterio; quindi si reca da Perugia a Roma per incaricare delle indagini il \"Dottore\", investigatore privato. Questi, avendo scoperto che Antenore, in occasione di un convegno \"Pax Populorum\", è entrato in una villa di Ostia; invia nella stessa il collaboratore Lepre. Ma la villa in questione è una clinica che si occupa di casi di impotenza maschile e sul momento, ospita, oltre all'onorevole, un generale e un industriale del Nord. Il Dottore, male informato da Lepre, si introduce nella clinica al posto del tedesco prof. Von Stronphen che rinchiude nel proprio ufficio. In veste di improvvisato specialista, il Dottore cura efficacemente i tre ricoverati e, messe a posto le rispettive coppie, con i finanziamenti dell'industriale rileva la clinica stessa, cambiando così mestiere.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/467541/",
+    "added": "2026-01-21T04:59:11.040012"
+  },
+  {
+    "id": "107008",
+    "title": "L'insegnante viene a casa",
+    "poster": "https://image.tmdb.org/t/p/w780/8lu4fcuolvlNdq6RmJgoD7AgKM8.jpg",
+    "overview": "Luisa, trasferitasi da Milano a Lucca per stare vicino all'uomo che ama, il consigliere comunale Ferdinando, si accorge di non avere scelto il momento migliore: si avvicinano infatti le elezioni e la presenza dell'amante può essere dannosa per la carriera politica del candidato sindaco. Così, mentre tutti sbavano per lei, Luisa sceglierà chi le vuole veramente bene.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/107008/",
+    "added": "2026-01-21T04:59:11.160097"
+  },
+  {
+    "id": "106992",
+    "title": "L'insegnante va in collegio",
+    "poster": "https://image.tmdb.org/t/p/w780/td71Nz455PJL0GFSEq3vRNgJ5HA.jpg",
+    "overview": "Ossessionato dai sequestri di persona, un industriale del Nord si trasferisce al Sud e inizia a vivere fingendosi un barbone. Le antiche abitudini sono dure a morire sicché lui, nonostante sia sposato, non smette di frequentare l'amante e ci prova anche con l'insegnante di inglese di suo figlio. In questo modo, benché camuffato, comincia a dare nell'occhio.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/106992/",
+    "added": "2026-01-21T04:59:11.284203"
+  },
+  {
+    "id": "127744",
+    "title": "L'Insegnante Balla… Con Tutta La Classe",
+    "poster": "https://image.tmdb.org/t/p/w780/osDhCAZC1yGy6imfQBRuM9uWOSX.jpg",
+    "overview": "Nel liceo \"Fratelli Bandiera\" di una cittadina toscana la professoressa Gambetti insegna ginnastica con un suo metodo igienico-ritmico-sportivo, basato sul ballo. La bella insegnante suscita proteste tra il corpo insegnanti ed accende i sogni erotici degli studenti. Ma quando il preside perde al gioco una grossa somma finanziatagli dal CONI per sussidiare la squadra di basket, l'unica salvezza è far partecipare la professoressa ad una gara di ballo per vincere il premio in denaro e salvare così sia la squadra della scuola che lo stesso preside.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/127744/",
+    "added": "2026-01-21T04:59:11.403132"
+  },
+  {
+    "id": "106924",
+    "title": "L'insegnante al mare con tutta la classe",
+    "poster": "https://image.tmdb.org/t/p/w780/fhO7fuPCqJqthgaBFU7qYYYlIkf.jpg",
+    "overview": "Mario Cubetti, figlio di uno speculatore edile, è stato rimandato a settembre. Il padre decide di chiamare un'insegnante: lo scopo ufficiale è quello delle ripetizioni, quello segreto è invece il desiderio di avere un'avventura con lei. Tutti insieme si recano al mare. Le tresche non filano però secondo i desideri del lubrico genitore.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/106924/",
+    "added": "2026-01-21T04:59:11.519085"
+  },
+  {
+    "id": "378569",
+    "title": "Se mi lasci non vale",
+    "poster": "https://image.tmdb.org/t/p/w780/wklFM45fPjKV2iXdVQT1T35oila.jpg",
+    "overview": "Vincenzo e Paolo sono stati lasciati dalle rispettive compagne, Sara e Federica, e sono a pezzi. Si incontrano per caso, riconoscendo l'uno nell'altro lo stesso scoramento, e decidono di farla pagare alle due ex: Vincenzo farà innamorare di sé Federica, e Paolo farà lo stesso con Sara, dopodiché i due procederanno in sincrono ad abbandonare le rispettive conquiste, spezzando loro il cuore. Ma non tutto fila come dovrebbe, anche perché si mette di mezzo Alberto, un attore squattrinato che accetta di interpretare il ruolo dell'autista di Vincenzo e poi non si accontenta della parte da subalterno.",
+    "type": "movie",
+    "genres": [
+      "Commedia"
+    ],
+    "link": "https://vixsrc.to/movie/378569/",
+    "added": "2026-01-21T05:00:45.713061"
+  },
+  {
+    "id": "306207",
+    "title": "再会～Silent Truth～",
+    "poster": "https://image.tmdb.org/t/p/w780/lxo5aQtdmcB662LdWQu4tTZxytA.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [
+      "Mistero"
+    ],
+    "link": "https://vixsrc.to/tv/306207/",
+    "added": "2026-01-21T05:22:55.021940"
+  },
+  {
+    "id": "299679",
+    "title": "ストロボ・エッジ",
+    "poster": "https://image.tmdb.org/t/p/w780/ffyDwJgci4AIVdESJPWjCtRV5hp.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [],
+    "link": "https://vixsrc.to/tv/299679/",
+    "added": "2026-01-21T05:22:55.138455"
+  },
+  {
+    "id": "304199",
+    "title": "Niebo",
+    "poster": "https://image.tmdb.org/t/p/w780/md5icWQyzD9jaVBenpr0gvvnRSB.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [
+      "Dramma",
+      "Mistero"
+    ],
+    "link": "https://vixsrc.to/tv/304199/",
+    "added": "2026-01-21T05:22:59.451428"
   }
 ]
