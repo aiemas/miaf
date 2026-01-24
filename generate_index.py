@@ -512,6 +512,7 @@ let currentType='movie', currentList=[], shown=0;
 
 function render(reset=false) {{
     if(reset){{ grid.innerHTML=''; shown=0; }}
+    shown = 0;
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
     let gSel = Array.from(document.getElementById('genreSelect').selectedOptions).map(o=>o.value);
@@ -522,7 +523,8 @@ function render(reset=false) {{
     while(shown<listToShow.length && count<40) {{
         let m = listToShow[shown++];
         let isFav = favorites.includes(m.id);
-        let genreMatch = gSel.length===0 || gSel.includes('all') || gSel.every(g => m.genres.includes(g));
+        let genreMatch = gSel.length===0 || gSel[0]==='all' || gSel.every(g => m.genres.includes(g));
+
 
         if(genreMatch && (
             m.title.toLowerCase().includes(s) ||
@@ -569,10 +571,7 @@ function populateGenres(){{
 function updateType(t){{
     currentType=t;
     if(t==="movie" || t==="tv"){{
-        currentList = allData
-          .filter(x => x.type === t)
-          .sort((a, b) => (b.is_new === true) - (a.is_new === true));
-
+        currentList=allData.filter(x=>x.type===t);
         genreSelect.style.display='inline';
         populateGenres();
     }} else if(t==="favorites"){{
@@ -650,8 +649,7 @@ def main():
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
             directors = [c["name"] for c in info.get("credits", {}).get("crew", []) if c.get("job")=="Director"]
 
-            is_new = not any(str(tmdb_id) == e["id"] for e in old_entries)
-            
+
             entries.append({
                 "id": str(tmdb_id),
                 "title": title,

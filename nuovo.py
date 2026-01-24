@@ -3,6 +3,8 @@ import os, sys, json, requests
 from datetime import datetime
 
 # ================= CONFIG =================
+
+FORCE_PEGI_REFRESH = True
 SRC_URLS = {
     "movie": "https://vixsrc.to/api/list/movie?lang=it",
     "tv": "https://vixsrc.to/api/list/tv?lang=it"
@@ -26,6 +28,45 @@ def get_api_key():
     return key
 
 
+def tmdb_get(api_key, type_, tmdb_id):
+    try:
+        r = requests.get(
+            TMDB_BASE.format(type=type_, id=tmdb_id),
+            params={"api_key": api_key, "language": "it-IT"},
+            timeout=30
+        )
+        return r.json() if r.status_code == 200 else None
+    except requests.exceptions.RequestException as e:
+        print(f"⚠️ TMDB timeout / errore su ID {tmdb_id}: {e}")
+        return None
+
+
+def tmdb_get_pegi(api_key, type_, tmdb_id):
+    try:
+        if type_ == "tv":
+            url = f"https://api.themoviedb.org/3/tv/{tmdb_id}/content_ratings"
+            r = requests.get(url, params={"api_key": api_key}, timeout=15)
+            if r.status_code == 200:
+                for c in r.json().get("results", []):
+                    if c.get("iso_3166_1") == "IT":
+                        return c.get("rating") or None
+
+        else:  # movie
+            url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/release_dates"
+            r = requests.get(url, params={"api_key": api_key}, timeout=15)
+            if r.status_code == 200:
+                for c in r.json().get("results", []):
+                    if c.get("iso_3166_1") == "IT":
+                        for rel in c.get("release_dates", []):
+                            if rel.get("certification"):
+                                return rel.get("certification") or None
+    except:
+        pass
+
+    return None
+
+
+
 def fetch_list(url):
     r = requests.get(url, headers=HEADERS, timeout=20)
     r.raise_for_status()
@@ -45,60 +86,6 @@ def extract_ids(data):
 
 
 def tmdb_get(api_key, type_, tmdb_id):
-    r = requests.get(
-        TMDB_BASE.format(type=type_, id=tmdb_id),
-        params={"api_key": api_key, "language": "it-IT"},
-        timeout=15
-    )
-    return r.json() if r.status_code == 200 else None
-
-
-def tmdb_get_rating(api_key, type_, tmdb_id):
-    if type_ == "movie":
-        url = f"https://api.themoviedb.org/3/movie/{tmdb_id}/release_dates"
-        r = requests.get(url, params={"api_key": api_key}, timeout=15)
-        if r.status_code != 200:
-            return None
-
-        for c in r.json().get("results", []):
-            if c.get("iso_3166_1") in ("IT", "US"):
-                for rel in c.get("release_dates", []):
-                    cert = rel.get("certification")
-                    if cert:
-                        return cert
-
-    else:  # TV
-        url = f"https://api.themoviedb.org/3/tv/{tmdb_id}/content_ratings"
-        r = requests.get(url, params={"api_key": api_key}, timeout=15)
-        if r.status_code != 200:
-            return None
-
-        for c in r.json().get("results", []):
-            if c.get("iso_3166_1") in ("IT", "US"):
-                return c.get("rating")
-
-    return None
-
-
-def map_to_pegi(cert):
-    if not cert:
-        return None
-
-    cert = cert.upper()
-
-    if cert in ("G", "TV-G"):
-        return "3"
-    if cert in ("PG"):
-        return "7"
-    if cert in ("PG-13", "TV-14"):
-        return "12"
-    if cert in ("R", "TV-MA", "18"):
-        return "18"
-
-    return cert
-
-
-    
     r = requests.get(
         TMDB_BASE.format(type=type_, id=tmdb_id),
         params={"api_key": api_key, "language": "it-IT"},
@@ -149,50 +136,47 @@ body {
   padding: 0 10px;
 }
 
+.browse-all {
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 14px;
+  letter-spacing: 1px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity .25s, color .25s;
+}
+
+/* appare quando la riga è attiva (hover o focus TV) */
+.row:hover .browse-all,
+.row:focus-within .browse-all {
+  opacity: 1;
+}
+
+/* focus telecomando */
+.browse-all:focus {
+  outline: 2px solid #dc2626;
+  border-radius: 6px;
+  color: #fff;
+}
+
 
 .row {
   margin:20px 10px;
   position:relative;
 }
 
-.row h2 {
-  font-family: "Oswald", "Arial Narrow", Arial, sans-serif;
-}
-
-.row:first-of-type h2 {
-  font-size: 26px;
-  color: #fff;
-  text-shadow:
-    0 3px 10px rgba(0,0,0,0.9),
-    0 0 18px rgba(220,38,38,0.6);
-}
-
 
 .topbar {
-  position: relative;   /* ← FONDAMENTALE */
-  z-index: 10;
-  background: rgba(0,0,0,.95);
-  padding: 12px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  position:sticky;
+  top:0;
+  z-index:100;
+  background:rgba(0,0,0,.9);
+  padding:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
 }
-
-
-/* 🔥 quando ci vai col telecomando */
-.topbar:focus-within {
-  z-index: 999;
-}
-
-.topbar input:focus,
-.topbar select:focus,
-.topbar button:focus {
-  outline: 3px solid #dc2626;
-  box-shadow: 0 0 10px rgba(220,38,38,.8);
-  border-radius: 8px;
-}
-
-
 
 .topbar input, .topbar select {
   padding:8px;
@@ -222,11 +206,6 @@ body {
   cursor:pointer;
 }
 
-#content {
-  margin-top: 10px;
-}
-
-
 .genre-menu {
   position:absolute;
   top:110%;
@@ -245,35 +224,10 @@ body {
   display:flex;
   align-items:center;
   gap:8px;
-  font-size:15px;
-  padding:6px 8px;
-  border-radius:6px;
-}
-
-.genre-menu label:focus {
-  outline: 3px solid #dc2626;
-  background: rgba(220,38,38,.25);
-}
-
-
-.genre-menu label {
-  display:flex;
-  align-items:center;
-  gap:8px;
   font-size:14px;
   cursor:pointer;
   padding:4px 0;
 }
-
-.genre-menu input {
-  pointer-events: auto;
-}
-
-.genre-menu label:focus-within {
-  outline: 2px solid #dc2626;
-  border-radius: 6px;
-}
-
 
 
 .row h2 {
@@ -323,24 +277,20 @@ body {
 .poster:hover { transform:scale(1.08); }
 .poster img { width:100%; display:block; }
 
-.poster:focus {
-  outline: 4px solid #dc2626;
-  transform: scale(1.08);
-  z-index: 10;
-}
-
-
 .pegi {
   position:absolute;
-  top:6px;
-  left:6px;
+  bottom:8px;
+  left:8px;
   background:#dc2626;
   color:#fff;
-  font-weight:bold;
   font-size:13px;
-  padding:4px 6px;
+  font-weight:bold;
+  padding:4px 8px;
   border-radius:6px;
-  z-index:5;
+  box-shadow:0 2px 6px rgba(0,0,0,.6);
+}
+.poster {
+  position:relative;
 }
 
 
@@ -358,6 +308,8 @@ body {
   display:none;
   z-index:1000;
 }
+
+
 
 #infoBackdrop {
   position:absolute;
@@ -392,6 +344,42 @@ body {
   cursor:pointer;
 }
 
+#genreSelect {
+  padding:8px;
+  font-size:16px;
+  background:#111;
+  color:#fff;
+  border-radius:8px;
+}
+
+#playerOverlay {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  z-index: 2000;
+}
+
+#playerFrame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+#playerClose {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  z-index: 2100;
+  font-size: 26px;
+  color: white;
+  cursor: pointer;
+  background: rgba(0,0,0,.6);
+  padding: 6px 12px;
+  border-radius: 10px;
+}
+
+
+
 .actions button {
   padding:10px 16px;
   border:none;
@@ -400,6 +388,28 @@ body {
   margin-right:10px;
   cursor:pointer;
 }
+
+.vote-circle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: #444;
+  box-shadow: 0 2px 6px rgba(0,0,0,.6);
+}
+
+.vote-good { background: #16a34a; }   /* verde */
+.vote-mid  { background: #f59e0b; }   /* giallo */
+.vote-bad  { background: #dc2626; }   /* rosso */
+
 
 .play { background:#dc2626; color:#fff; }
 .fav { background:#2563eb; color:#fff; }
@@ -422,29 +432,15 @@ select.episode {
     <option value="favorites">★ Preferiti</option>
     <option value="recent">🕘 Recenti</option>
   </select>
-  <div class="genre-dropdown">
-   <button id="genreBtn" tabindex="0">🎭 Generi ▼</button>
-   <div id="genreMenu" class="genre-menu"></div>
-  </div>
+
+  <select id="genreSelect" multiple size="1">
+  <option value="" disabled>🎭 Generi</option>
+</select>
+
 
 
   <button id="randomPick">🎲 Cosa guardiamo stasera?</button>
 </div>
-
-<div id="playerOverlay" style="
-  position:fixed;
-  inset:0;
-  background:#000;
-  display:none;
-  z-index:2000;
-">
-  <iframe id="playerFrame"
-    allow="autoplay; fullscreen"
-    allowfullscreen
-    style="width:100%;height:100%;border:none">
-  </iframe>
-</div>
-
 
 <div id="content"></div>
 
@@ -455,6 +451,16 @@ select.episode {
     <h1 id="infoTitle"></h1>
     <div id="infoMeta"></div>
     <p id="infoOverview"></p>
+
+
+<div id="playerOverlay" style="display:none">
+  <iframe
+    id="playerFrame"
+    allowfullscreen
+    allow="autoplay; fullscreen"
+  ></iframe>
+</div>
+    
 
     <div id="tvControls" style="display:none">
       <select id="seasonSel" class="episode"></select>
@@ -471,48 +477,11 @@ select.episode {
 
 <script>
 const DATA = __DATA__;
-const playerOverlay = document.getElementById("playerOverlay");
-const playerFrame = document.getElementById("playerFrame");
-
-function openPlayer(item, push=true){
-  let url;
-
-  if(item.type==="tv"){
-    url = `https://vixsrc.to/tv/${item.id}/${seasonSel.value}/${episodeSel.value}?autoplay=1`;
-  } else {
-    url = `https://vixsrc.to/movie/${item.id}?autoplay=1`;
-  }
-
-  playerFrame.src = url;
-  playerOverlay.style.display = "block";
-
-  if (playerOverlay.requestFullscreen) {
-    playerOverlay.requestFullscreen();
-  }
-
-  if(push){
-    history.pushState({page:"player", id:item.id}, "", "#player-"+item.id);
-  }
-}
-
-function closePlayer(push=true){
-  playerFrame.src="";
-  playerOverlay.style.display="none";
-
-  if (document.fullscreenElement) {
-    document.exitFullscreen();
-  }
-
-  if(push && currentItem){
-    history.pushState({page:"info", id:currentItem.id}, "", "#info-"+currentItem.id);
-  }
-}
 
 const content = document.getElementById("content");
 const search = document.getElementById("searchBox");
 const typeSelect = document.getElementById("typeSelect");
-const genreBtn = document.getElementById("genreBtn");
-const genreMenu = document.getElementById("genreMenu");
+const genreSelect = document.getElementById("genreSelect");
 const randomPickBtn = document.getElementById("randomPick");
 
 let favorites = JSON.parse(localStorage.getItem("fav") || "[]");
@@ -523,60 +492,59 @@ let currentItem = null;
 const GENRES = [...new Set(DATA.flatMap(x=>x.genres||[]))].sort();
 
 GENRES.forEach(g => {
-  const label = document.createElement("label");
-  label.tabIndex = 0;
-  label.innerHTML = `<input type="checkbox" value="${g}" tabindex="-1"> ${g}`;
-
-
-  const checkbox = label.querySelector("input");
-
-  
-
-  // 🔥 QUANDO CLICCHI UN GENERE → RICOSTRUISCE LA GRIGLIA
-  checkbox.addEventListener("change", rebuild);
-
-  label.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    checkbox.checked = !checkbox.checked;
-    rebuild();
-  }
+  const opt = document.createElement("option");
+  opt.value = g;
+  opt.textContent = g;
+  genreSelect.appendChild(opt);
 });
 
-
-  
-
-  genreMenu.appendChild(label);
-});
 
 
 
 function poster(item) {
-  return `
-    <div class="poster"
-         tabindex="0"
-         onclick="openInfoById('${item.id}')"
-         onkeydown="if(event.key==='Enter'){openInfoById('${item.id}')}"
-         style="position:relative">
+  let voteBadge = "";
 
-      ${item.pegi ? `<div class="pegi">PEGI ${item.pegi}</div>` : ""}
+  if (item.vote && item.vote > 0) {
+    let cls = "vote-mid";
+    if (item.vote >= 7.5) cls = "vote-good";
+    else if (item.vote < 5.5) cls = "vote-bad";
+
+    voteBadge = `
+      <div class="vote-circle ${cls}">
+        ${item.vote}
+      </div>`;
+  }
+
+  return `
+    <div class="poster" onclick="openInfoById('${item.id}')">
       <img loading="lazy" src="${item.poster}">
+      ${item.pegi ? `<div class="pegi">${item.pegi}</div>` : ""}
+      ${voteBadge}
     </div>`;
 }
+
+
 
 function addRow(title, items) {
   if(!items.length) return;
   content.innerHTML += `
     <div class="row">
       <div class="row-title">
-        <h2>${title}</h2>
-      </div>
+  <h2>${title}</h2>
+  <button class="browse-all"
+    onclick="browseGenre('${title}')"
+    tabindex="0">
+    Sfoglia tutti →
+  </button>
+</div>
+
+      
 
       <div class="row-content">
         ${items.slice(0,25).map(poster).join("")}
       </div>
     </div>`;
 }
-
 
 
 function buildHome(list) {
@@ -593,38 +561,6 @@ function buildHome(list) {
   });
 }
 
-genreBtn.onclick = () => {
-  const open = genreMenu.style.display === "block";
-  genreMenu.style.display = open ? "none" : "block";
-
-  if (!open) {
-    // 🔥 focus automatico sul primo genere
-    const first = genreMenu.querySelector("input");
-    if (first) first.focus();
-  }
-};
-
-document.addEventListener("keydown", e => {
-  if (e.key === "Backspace" || e.key === "Escape") {
-    if (genreMenu.style.display === "block") {
-      genreMenu.style.display = "none";
-      genreBtn.focus();
-    }
-  }
-});
-
-
-document.addEventListener("focusin", e => {
-  const el = e.target;
-  if (el.classList.contains("poster")) {
-    el.scrollIntoView({
-      behavior: "smooth",
-      block: "nearest",
-      inline: "center"
-    });
-  }
-});
-
 
 document.addEventListener("click", e => {
   if (!e.target.closest(".genre-dropdown")) {
@@ -633,9 +569,9 @@ document.addEventListener("click", e => {
 });
 
 function getSelectedGenres() {
-  return [...genreMenu.querySelectorAll("input:checked")]
-    .map(x => x.value);
+  return [...genreSelect.selectedOptions].map(o => o.value);
 }
+
 
 
 function buildGrid(list) {
@@ -643,24 +579,15 @@ function buildGrid(list) {
 }
 
 function browseGenre(genre) {
+  // reset ricerca
   search.value = "";
-
-  // 🔥 CASO SPECIALE: ULTIME USCITE
-  if (genre.includes("Ultime")) {
-    buildGrid(
-      DATA
-        .filter(x => x.type === typeSelect.value && x.added)
-        .sort((a, b) => b.added.localeCompare(a.added))
-    );
-    return;
-  }
 
   // reset dropdown generi
   genreMenu.querySelectorAll("input").forEach(c => {
     c.checked = (c.value === genre);
   });
 
-  // vista griglia per generi normali
+  // forza vista griglia
   buildGrid(
     DATA.filter(x =>
       x.type === typeSelect.value &&
@@ -668,8 +595,6 @@ function browseGenre(genre) {
     )
   );
 }
-
-
 
 function rebuild() {
   const q = search.value.toLowerCase();
@@ -726,17 +651,6 @@ function randomPick() {
   openInfoById(pick.id);
 }
 
-function closeInfoCard() {
-  const card = document.getElementById("infoCard");
-  if (card && card.style.display === "block") {
-    card.style.display = "none";
-    currentItem = null;
-    return true; // dice ad Android: "ho gestito io il back"
-  }
-  return false;
-}
-
-
 
 function openInfoById(id){
   const item = DATA.find(x=>x.id===id);
@@ -746,14 +660,7 @@ function openInfoById(id){
   document.getElementById("infoBackdrop").style.backgroundImage=`url(${item.poster})`;
   infoTitle.textContent=item.title;
   infoOverview.textContent=item.overview;
-  let meta = item.genres.join(" • ");
-
-  if (item.pegi) {
-  meta += ` • <span class="pegi">VM${item.pegi}</span>`;
-}
-
-infoMeta.innerHTML = meta;
-
+  infoMeta.textContent=item.genres.join(" • ");
 
   const tvControls=document.getElementById("tvControls");
   tvControls.style.display=item.type==="tv"?"block":"none";
@@ -769,17 +676,30 @@ infoMeta.innerHTML = meta;
     }
   }
 
-  playBtn.onclick = () => openPlayer(item);
+  playBtn.onclick = () => {
+  let url;
+
+  if (currentItem.type === "tv") {
+    url = `https://vixsrc.to/tv/${currentItem.id}/${seasonSel.value}/${episodeSel.value}`;
+  } else {
+    url = currentItem.link;
+  }
+
+  const overlay = document.getElementById("playerOverlay");
+  const frame = document.getElementById("playerFrame");
+
+  frame.src = url;
+  overlay.style.display = "block";
+
+  // 🔥 QUESTO È IL PUNTO CHIAVE
+  history.pushState({ player: true }, "");
+};
+
+
 
 
   favBtn.onclick=()=>toggleFav(item.id);
   document.getElementById("infoCard").style.display="block";
-  history.pushState(
-  { page: "info", id: item.id },
-  "",
-  "#info-" + item.id
-);
-
 }
 
 function toggleFav(id){
@@ -787,41 +707,30 @@ function toggleFav(id){
   localStorage.setItem("fav",JSON.stringify(favorites));
 }
 
-document.getElementById("closeBtnBottom").onclick = closeInfoCard;
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") closeInfoCard();
-});
+document.getElementById("closeBtnBottom").onclick = () => {
+  document.getElementById("infoCard").style.display = "none";
+};
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") infoCard.style.display="none"; });
 
-
-search.oninput=rebuild;
-typeSelect.onchange=rebuild;
+search.oninput = rebuild;
+typeSelect.onchange = rebuild;
 randomPickBtn.onclick = randomPick;
+genreSelect.onchange = rebuild;
 rebuild();
-setTimeout(() => {
-  const firstPoster = document.querySelector(".poster");
-  if (firstPoster) firstPoster.focus();
-}, 300);
-window.addEventListener("popstate", e => {
-  const s = e.state;
 
-  // se stavo guardando un video → torna a infocard
-  if (s && s.page === "player") {
-    openPlayer(currentItem, false);
-    return;
+/* 🔥 BACK ANDROID → TORNA ALLA INFOCARD */
+window.addEventListener("popstate", () => {
+  const overlay = document.getElementById("playerOverlay");
+  const frame = document.getElementById("playerFrame");
+
+  if (overlay.style.display === "block") {
+    frame.src = "";
+    overlay.style.display = "none";
+
+    // blocca ritorno alla home
+    history.pushState({}, "");
   }
-
-  // se stavo in infocard → chiudi player e mostra info
-  if (s && s.page === "info") {
-    closePlayer(false);
-    openInfoById(s.id);
-    return;
-  }
-
-  // fallback → home
-  closePlayer(false);
-  closeInfoCard();
 });
-
 </script>
 
 </body>
@@ -836,7 +745,7 @@ window.addEventListener("popstate", e => {
 def main():
     api_key = get_api_key()
 
-    # 🔥 CARICA ARCHIVIO E SISTEMA added SE MANCA
+    # 🔥 carica archivio
     old = {}
     for e in load_archive():
         if "added" not in e:
@@ -846,35 +755,42 @@ def main():
     new = []
 
     for t, url in SRC_URLS.items():
+        print(f"➡️ Scarico lista {t}")
         data = fetch_list(url)
-        for tmdb_id in extract_ids(data):
-            info = tmdb_get(api_key, t, tmdb_id)
-            raw_rating = tmdb_get_rating(api_key, t, tmdb_id)
-            pegi = map_to_pegi(raw_rating)
 
+        for tmdb_id in extract_ids(data):
+
+            # ✅ già presente
+            if tmdb_id in old and not FORCE_PEGI_REFRESH:
+                continue
+
+
+            info = tmdb_get(api_key, t, tmdb_id)
             if not info:
                 continue
 
             poster_path = info.get("poster_path")
             if not poster_path:
-                continue  # salta titoli senza locandina
+                continue
 
-            existing = old.get(tmdb_id)
+            existing = old.get(tmdb_id, {})
+
+            pegi = tmdb_get_pegi(api_key, t, tmdb_id)
 
             new.append({
                 "id": tmdb_id,
                 "title": info.get("title") or info.get("name") or "",
                 "poster": TMDB_IMAGE + poster_path,
                 "overview": info.get("overview", ""),
-                "pegi": pegi,
                 "type": t,
                 "genres": [g["name"] for g in info.get("genres", [])],
+                "pegi": pegi,
+                "vote": round(info.get("vote_average", 0), 1),
                 "link": f"https://vixsrc.to/{t}/{tmdb_id}/",
-                # 🔥 mantiene la data se già esiste
-                "added": existing["added"] if existing else datetime.utcnow().isoformat()
+                "added": existing.get("added", datetime.utcnow().isoformat())
             })
 
-    # 🔁 MERGE DEFINITIVO
+    # 🔁 merge
     for e in new:
         old[e["id"]] = e
 
@@ -885,6 +801,7 @@ def main():
         f.write(build_html(entries))
 
     print(f"✅ {OUTPUT_HTML} generato con {len(entries)} titoli")
+
 
 
 
