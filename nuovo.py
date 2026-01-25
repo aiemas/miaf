@@ -4,7 +4,7 @@ from datetime import datetime
 
 # ================= CONFIG =================
 
-FORCE_PEGI_REFRESH = True
+FORCE_PEGI_REFRESH = False
 SRC_URLS = {
     "movie": "https://vixsrc.to/api/list/movie?lang=it",
     "tv": "https://vixsrc.to/api/list/tv?lang=it"
@@ -136,30 +136,6 @@ body {
   padding: 0 10px;
 }
 
-.browse-all {
-  background: none;
-  border: none;
-  color: #bbb;
-  font-size: 14px;
-  letter-spacing: 1px;
-  cursor: pointer;
-  opacity: 0;
-  transition: opacity .25s, color .25s;
-}
-
-/* appare quando la riga è attiva (hover o focus TV) */
-.row:hover .browse-all,
-.row:focus-within .browse-all {
-  opacity: 1;
-}
-
-/* focus telecomando */
-.browse-all:focus {
-  outline: 2px solid #dc2626;
-  border-radius: 6px;
-  color: #fff;
-}
-
 
 .row {
   margin:20px 10px;
@@ -168,8 +144,7 @@ body {
 
 
 .topbar {
-  position:sticky;
-  top:0;
+  position: relative;   /* 🔥 NON sticky */
   z-index:100;
   background:rgba(0,0,0,.9);
   padding:12px;
@@ -177,6 +152,7 @@ body {
   gap:10px;
   flex-wrap:wrap;
 }
+
 
 .topbar input, .topbar select {
   padding:8px;
@@ -275,6 +251,11 @@ body {
   transition:transform .2s;
 }
 .poster:hover { transform:scale(1.08); }
+.poster:focus {
+  outline: 3px solid #dc2626;
+  transform: scale(1.12);
+  z-index: 10;
+}
 .poster img { width:100%; display:block; }
 
 .pegi {
@@ -365,6 +346,11 @@ body {
   border: none;
 }
 
+#playerFrame:focus {
+  outline: none;   /* rimuove cornice gialla */
+}
+
+
 #playerClose {
   position: absolute;
   top: 16px;
@@ -451,15 +437,6 @@ select.episode {
     <h1 id="infoTitle"></h1>
     <div id="infoMeta"></div>
     <p id="infoOverview"></p>
-
-
-<div id="playerOverlay" style="display:none">
-  <iframe
-    id="playerFrame"
-    allowfullscreen
-    allow="autoplay; fullscreen"
-  ></iframe>
-</div>
     
 
     <div id="tvControls" style="display:none">
@@ -475,7 +452,82 @@ select.episode {
   </div>
 </div>
 
+<div id="playerOverlay" style="display:none">
+  <iframe
+  id="playerFrame"
+  tabindex="0"
+  allow="autoplay; fullscreen"
+  allowfullscreen
+></iframe>
+
+
+
 <script>
+
+// 🎯 NAVIGAZIONE PERFETTA NELLA GRID
+document.addEventListener("keydown", e => {
+  const active = document.activeElement;
+
+  // 🔥 ArrowUp dalla prima locandina → focus sulla topbar
+  if (e.key === "ArrowUp") {
+    const row = active.closest(".row");
+    if (row && row.previousElementSibling === null) { 
+      // siamo sulla prima riga
+      e.preventDefault();
+      const firstInput = document.querySelector(".topbar input, .topbar select, .topbar button");
+      if (firstInput) firstInput.focus();
+      return;
+    }
+  }
+
+  // 🔥 ArrowDown dalla topbar → prima locandina
+  const topbarEls = document.querySelectorAll(".topbar input, .topbar select, .topbar button");
+  if ([...topbarEls].includes(active) && e.key === "ArrowDown") {
+    e.preventDefault();
+    const firstPoster = document.querySelector(".poster");
+    if (firstPoster) firstPoster.focus();
+    return;
+  }
+
+  // 🔹 se non siamo su un poster, ignoriamo tutto il resto
+  if (!active.classList.contains("poster")) return;
+
+  const grid = active.closest(".grid");
+  if (!grid) return; // non siamo in modalità grid
+
+  const posters = [...grid.querySelectorAll(".poster")];
+  const index = posters.indexOf(active);
+  if (index === -1) return;
+
+  // calcola numero colonne REALI
+  const gridStyle = window.getComputedStyle(grid);
+  const cols = gridStyle.gridTemplateColumns.split(" ").length;
+
+  let target = index;
+
+  switch (e.key) {
+    case "ArrowRight":
+      target = index + 1;
+      break;
+    case "ArrowLeft":
+      target = index - 1;
+      break;
+    case "ArrowDown":
+      target = index + cols;
+      break;
+    case "ArrowUp":
+      target = index - cols;
+      break;
+    default:
+      return;
+  }
+
+  if (posters[target]) {
+    e.preventDefault();
+    posters[target].focus();
+  }
+});
+
 const DATA = __DATA__;
 
 const content = document.getElementById("content");
@@ -516,7 +568,7 @@ function poster(item) {
   }
 
   return `
-    <div class="poster" onclick="openInfoById('${item.id}')">
+    <div class="poster" tabindex="0" onclick="openInfoById('${item.id}')">
       <img loading="lazy" src="${item.poster}">
       ${item.pegi ? `<div class="pegi">${item.pegi}</div>` : ""}
       ${voteBadge}
@@ -531,11 +583,6 @@ function addRow(title, items) {
     <div class="row">
       <div class="row-title">
   <h2>${title}</h2>
-  <button class="browse-all"
-    onclick="browseGenre('${title}')"
-    tabindex="0">
-    Sfoglia tutti →
-  </button>
 </div>
 
       
@@ -615,12 +662,13 @@ function rebuild() {
     );
   }
 
-  // 🔥 LOGICA CORRETTA
-  if (q || selectedGenres.length || t !== "movie") {
-    buildGrid(list);
-  } else {
+  // HOME a righe SOLO senza filtri e SOLO film
+  if (!q && !selectedGenres.length && t === "movie") {
     buildHome(list);
+  } else {
+    buildGrid(list);
   }
+
 }
 
 
@@ -678,11 +726,12 @@ function openInfoById(id){
 
   playBtn.onclick = () => {
   let url;
+  const params = "?lang=it&sottotitoli=off&autoplay=1&quality=1080p";
 
   if (currentItem.type === "tv") {
-    url = `https://vixsrc.to/tv/${currentItem.id}/${seasonSel.value}/${episodeSel.value}`;
+    url = `https://vixsrc.to/tv/${currentItem.id}/${seasonSel.value}/${episodeSel.value}${params}`;
   } else {
-    url = currentItem.link;
+    url = `${currentItem.link}${params}`;
   }
 
   const overlay = document.getElementById("playerOverlay");
@@ -691,15 +740,37 @@ function openInfoById(id){
   frame.src = url;
   overlay.style.display = "block";
 
-  // 🔥 QUESTO È IL PUNTO CHIAVE
-  history.pushState({ player: true }, "");
+// Imposta SRC DOPO aver reso visibile l'overlay
+setTimeout(() => {
+  frame.src = url;
+
+  // 🔥 Forza autofocus sul player dopo un piccolo delay
+  setTimeout(() => {
+    frame.focus();
+
+    // 🔥 Per Fire TV / Android TV: simuliamo un click per far partire controlli remoti
+    try { frame.contentWindow.focus(); } catch(e){}
+
+  }, 200);  // 200ms di delay aiutano le TV a registrare focus
+}, 50);
+
+history.pushState({ player: true }, "");
+
 };
 
 
 
 
-  favBtn.onclick=()=>toggleFav(item.id);
-  document.getElementById("infoCard").style.display="block";
+
+  favBtn.onclick = () => toggleFav(item.id);
+
+  const card = document.getElementById("infoCard");
+  card.style.display = "block";
+
+  /* 🎯 AUTOFOCUS SUL TASTO GUARDA (TV / FIRE STICK) */
+  setTimeout(() => {
+    playBtn.focus();
+  }, 50);
 }
 
 function toggleFav(id){
@@ -712,11 +783,40 @@ document.getElementById("closeBtnBottom").onclick = () => {
 };
 document.addEventListener("keydown",e=>{ if(e.key==="Escape") infoCard.style.display="none"; });
 
+document.addEventListener("keydown", e => {
+  const overlay = document.getElementById("playerOverlay");
+  if (overlay.style.display !== "block") return;
+
+  // OK / SPACE → play-pause
+  if (e.key === " " || e.key === "Enter") {
+    e.preventDefault();
+    document.getElementById("playerFrame").focus();
+  }
+});
+
+
 search.oninput = rebuild;
 typeSelect.onchange = rebuild;
 randomPickBtn.onclick = randomPick;
 genreSelect.onchange = rebuild;
 rebuild();
+
+// 🔥 FIRE TV: primo ArrowDown → prima locandina
+document.addEventListener("keydown", e => {
+  if (e.key !== "ArrowDown") return;
+
+  const active = document.activeElement;
+
+  // se NON siamo già su una locandina
+  if (!active.classList.contains("poster")) {
+    const firstPoster = document.querySelector(".poster");
+    if (firstPoster) {
+      e.preventDefault();
+      firstPoster.focus();
+    }
+  }
+});
+
 
 /* 🔥 BACK ANDROID → TORNA ALLA INFOCARD */
 window.addEventListener("popstate", () => {
@@ -727,10 +827,66 @@ window.addEventListener("popstate", () => {
     frame.src = "";
     overlay.style.display = "none";
 
+    // ⬇️ 🔥 RIPRISTINA FOCUS SU "GUARDA"
+    setTimeout(() => {
+      if (document.getElementById("infoCard").style.display === "block") {
+        playBtn.focus();
+      }
+    }, 50);
+
     // blocca ritorno alla home
     history.pushState({}, "");
   }
 });
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Enter" && document.activeElement.classList.contains("poster")) {
+    document.activeElement.click();
+  }
+});
+
+document.addEventListener("keydown", e => {
+  const active = document.activeElement;
+  if (!active.classList.contains("poster")) return;
+
+  const row = active.closest(".row");
+  if (!row) return;
+
+  const posters = [...row.querySelectorAll(".poster")];
+  const index = posters.indexOf(active);
+  if (index === -1) return;
+
+  // ⬇️ riga sotto
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    const nextRow = row.nextElementSibling;
+    if (!nextRow || !nextRow.classList.contains("row")) return;
+
+    const nextPosters = nextRow.querySelectorAll(".poster");
+    if (nextPosters[index]) {
+      nextPosters[index].focus();
+    } else if (nextPosters.length) {
+      nextPosters[nextPosters.length - 1].focus();
+    }
+  }
+
+  // ⬆️ riga sopra
+  if (e.key === "ArrowUp") {
+    e.preventDefault();
+    const prevRow = row.previousElementSibling;
+    if (!prevRow || !prevRow.classList.contains("row")) return;
+
+    const prevPosters = prevRow.querySelectorAll(".poster");
+    if (prevPosters[index]) {
+      prevPosters[index].focus();
+    } else if (prevPosters.length) {
+      prevPosters[prevPosters.length - 1].focus();
+    }
+  }
+});
+
+
+
 </script>
 
 </body>
