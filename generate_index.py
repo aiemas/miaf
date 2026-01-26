@@ -86,6 +86,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
 
 
 def build_html(entries, latest_entries):
+    entries_json = json.dumps(entries, ensure_ascii=False)
     html = f"""<!doctype html>
 <html lang='it'>
 <head>
@@ -213,6 +214,11 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     box-shadow: 0 6px 14px rgba(0,0,0,0.6);
 }}
 
+#playerOverlay iframe:focus {{
+  outline: none !important;
+}}
+
+
 #bottomControls button {{
   display:block;
   margin:10px auto;
@@ -257,7 +263,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
   <option value='favorites'>★ Preferiti</option>
   <option value='recent'>👁 Visti di recente</option>
 </select>
-<select id='genreSelect' multiple size=5></select>
+<select id='genreSelect' multiple size=1></select>
 <input type='text' id='searchBox' placeholder='Cerca...'>
 </div>
 <div id='moviesGrid' class='grid'></div>
@@ -268,7 +274,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 
 <div id='playerOverlay'>
-  <iframe allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+  <iframe tabindex="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
   <div id="playerTitle"></div>
 </div>
 
@@ -295,7 +301,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <script>
-const allData = {entries};
+const allData = {entries_json};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 let recentList = JSON.parse(localStorage.getItem("recent") || "[]");
 let currentItem = null;
@@ -341,6 +347,10 @@ function openInfo(item, push=true) {{
     infoCard.style.backgroundImage = `linear-gradient(to right, rgba(20,20,20,0.85) 30%, rgba(20,20,20,0.4) 70%), url('${{item.poster}}')`;
     infoCard.style.backgroundColor = "rgba(20,20,20,0.85)";
     infoTitle.textContent = item.title;
+    // autofocus sul tasto "Guarda"
+    setTimeout(() => {{
+      playBtn.focus();
+    }}, 0);
     infoGenres.textContent = "Generi: " + (item.genres && item.genres.length ? item.genres.join(", ") : "");
     let vote = Math.round(item.vote * 10) / 10; // es: 7.8
     let dash = Math.round((vote / 10) * 100);   // percentuale su 100
@@ -398,13 +408,19 @@ infoVote.innerHTML = `
 
     playBtn.onclick = () => openPlayer(item);
 
+    // autofocus diretto sul player (senza cornice)
+    setTimeout(() => {{
+      iframe.focus();
+    }}, 300);
+
+    
     if(push) {{
         history.pushState({{page:"info", itemId:item.id}}, "", "#info-"+item.id);
     }}
 
     function updateEpisodes() {{
         let season = parseInt(seasonSelect.value);
-        let epCount = item.episodes[season] || 1;
+        let epCount = item.episodes[String(season)] || 1;
         episodeSelect.innerHTML = "";
         for(let e=1;e<=epCount;e++) {{
             let o = document.createElement('option');
@@ -556,7 +572,11 @@ function render(reset=false) {{
 
 function populateGenres(){{
     const set=new Set();
-    currentList.forEach(m=>m.genres.forEach(g=>set.add(g)));
+    currentList.forEach(m=>{{
+      if(Array.isArray(m.genres)){{
+        m.genres.forEach(g=>set.add(g));
+      }}
+    }});
     const sel=document.getElementById('genreSelect');
     sel.innerHTML='<option value="all">Tutti i generi</option>';
     [...set].sort().forEach(g=>{{
@@ -669,11 +689,15 @@ def main():
             if idx < 10:
                 latest_entries += f"<img class='poster' src='{poster}' alt='{title}' title='{title}'>\n"
 
-    # --- Unione con l'archivio esistente ---
-    combined = {e["id"]: e for e in old_entries}
-    for e in entries:
-        combined[e["id"]] = e  # aggiorna o aggiunge nuovo
-    all_entries = list(combined.values())
+    # --- Unione con l'archivio esistente e metti nuovi in testa ---
+    old_dict = {e["id"]: e for e in old_entries}
+
+    # Lista finale: prima i nuovi, poi i vecchi che non sono nuovi
+    all_entries = entries.copy()  # nuovi in cima
+    for e in old_entries:
+        if e["id"] not in [n["id"] for n in entries]:
+            all_entries.append(e)
+
 
     # Debug e salvataggio
     print(f"Totale entries da salvare: {len(all_entries)}")

@@ -774,7 +774,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.6,
+    "vote": 7.9,
     "link": "https://vixsrc.to/tv/280948/",
     "added": "2026-01-18T13:53:11.101714"
   },
@@ -1179,7 +1179,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 3.9,
+    "vote": 4.3,
     "link": "https://vixsrc.to/tv/246864/",
     "added": "2026-01-18T13:53:13.292573"
   },
@@ -3037,7 +3037,7 @@
       "Fantasy"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/991494/",
     "added": "2026-01-18T13:39:15.406368"
   },
@@ -3324,7 +3324,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 5.9,
+    "vote": 6.0,
     "link": "https://vixsrc.to/movie/38780/",
     "added": "2026-01-18T13:39:16.850582"
   },
@@ -3829,7 +3829,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 5.5,
+    "vote": 5.6,
     "link": "https://vixsrc.to/movie/23742/",
     "added": "2026-01-18T13:39:19.260553"
   },
@@ -6165,7 +6165,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/movie/1400032/",
     "added": "2026-01-18T13:39:31.158464"
   },
@@ -6209,8 +6209,7 @@
     "genres": [
       "Crime",
       "Dramma",
-      "Thriller",
-      "Azione"
+      "Thriller"
     ],
     "pegi": null,
     "vote": 7.2,
@@ -6753,6 +6752,7 @@
     "type": "movie",
     "genres": [
       "Azione",
+      "Avventura",
       "Dramma"
     ],
     "pegi": null,
@@ -9709,7 +9709,8 @@
     "type": "movie",
     "genres": [
       "Documentario",
-      "Musica"
+      "Musica",
+      "Dramma"
     ],
     "pegi": null,
     "vote": 7.6,
@@ -10045,7 +10046,7 @@
   },
   {
     "id": "310593",
-    "title": "Youth - La giovinezza",
+    "title": "Youth – La giovinezza",
     "poster": "https://image.tmdb.org/t/p/w780/bfJPsZDX4dbTM51X1yyPmZGEPIC.jpg",
     "overview": "In un elegante albergo ai piedi delle Alpi Fred e Mick, due vecchi amici alla soglia degli ottant’anni, trascorrono insieme una vacanza primaverile. Fred è un compositore e direttore d’orchestra in pensione, Mick un regista ancora in attività. Sanno che il loro futuro si va velocemente esaurendo e decidono di affrontarlo insieme. Guardano con curiosità e tenerezza alla vita confusa dei propri figli, all’entusiasmo dei giovani collaboratori di Mick, agli altri ospiti dell’albergo, a quanti sembrano poter disporre di un tempo che a loro non è dato. E mentre Mick si affanna nel tentativo di concludere la sceneggiatura di quello che pensa sarà il suo ultimo e più significativo film, Fred, che da tempo ha rinunciato alla musica, non intende assolutamente tornare sui propri passi. Ma c’è chi vuole a tutti i costi vederlo dirigere ancora una volta e ascoltare le sue composizioni",
     "type": "movie",
@@ -12600,7 +12601,7 @@
       "Commedia"
     ],
     "pegi": "10+",
-    "vote": 6.0,
+    "vote": 6.1,
     "link": "https://vixsrc.to/movie/1218762/",
     "added": "2026-01-18T13:40:02.801856"
   },
@@ -12763,7 +12764,8 @@
     "type": "movie",
     "genres": [
       "Fantascienza",
-      "Commedia"
+      "Thriller",
+      "Crime"
     ],
     "pegi": "10+",
     "vote": 7.4,
@@ -12977,7 +12979,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 7.7,
+    "vote": 7.6,
     "link": "https://vixsrc.to/movie/1422166/",
     "added": "2026-01-18T13:40:04.638944"
   },
@@ -17482,7 +17484,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.1,
     "link": "https://vixsrc.to/movie/1196791/",
     "added": "2026-01-18T13:40:26.813584"
   },
@@ -18699,7 +18701,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/1426792/",
     "added": "2026-01-18T13:40:32.888906"
   },
@@ -19471,7 +19473,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/606057/",
     "added": "2026-01-18T13:40:36.682316"
   },
@@ -23769,7 +23771,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.3,
+    "vote": 6.2,
     "link": "https://vixsrc.to/movie/1327769/",
     "added": "2026-01-18T13:40:58.226438"
   },
@@ -25820,7 +25822,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 5.5,
+    "vote": 5.6,
     "link": "https://vixsrc.to/movie/1049942/",
     "added": "2026-01-18T13:41:08.789127"
   },
@@ -32776,7 +32778,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.1,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/1244705/",
     "added": "2026-01-18T13:41:43.955632"
   },
@@ -33929,7 +33931,7 @@
       "Documentario"
     ],
     "pegi": "T",
-    "vote": 8.1,
+    "vote": 8.2,
     "link": "https://vixsrc.to/movie/1400288/",
     "added": "2026-01-18T13:41:49.708584"
   },
@@ -33973,7 +33975,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/1265344/",
     "added": "2026-01-18T13:41:49.904933"
   },
@@ -34194,7 +34196,7 @@
   {
     "id": "1284120",
     "title": "The Ugly Stepsister",
-    "poster": "https://image.tmdb.org/t/p/w780/bDHsYuXlCC3Qd2wTgcsKa4YL0iB.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/x72NzHdo6FBlp0tagYvETYGkW3L.jpg",
     "overview": "Elvira (Lea Myren) è pronta a tutto pur di conquistare il cuore di un principe. In un regno in cui la bellezza è un business brutale, Elvira dovrà competere con la bellissima e incantevole Agnes (Thea Sofie Loch Naess) pur di diventare la preferita del giovane erede al trono.",
     "type": "movie",
     "genres": [
@@ -37105,7 +37107,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 5.7,
+    "vote": 5.8,
     "link": "https://vixsrc.to/movie/7510/",
     "added": "2026-01-18T13:42:05.783315"
   },
@@ -38414,7 +38416,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 6.3,
+    "vote": 6.2,
     "link": "https://vixsrc.to/movie/9705/",
     "added": "2026-01-18T13:42:12.312435"
   },
@@ -42200,7 +42202,7 @@
       "Fantasy"
     ],
     "pegi": null,
-    "vote": 7.9,
+    "vote": 7.8,
     "link": "https://vixsrc.to/movie/1303162/",
     "added": "2026-01-18T13:42:30.719375"
   },
@@ -43212,7 +43214,7 @@
       "Thriller"
     ],
     "pegi": "14+",
-    "vote": 7.9,
+    "vote": 7.8,
     "link": "https://vixsrc.to/movie/1376434/",
     "added": "2026-01-18T13:42:35.714144"
   },
@@ -54894,7 +54896,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/1392117/",
     "added": "2026-01-18T13:43:33.076530"
   },
@@ -55018,7 +55020,7 @@
       "Dramma"
     ],
     "pegi": "6+",
-    "vote": 6.8,
+    "vote": 6.9,
     "link": "https://vixsrc.to/movie/1136633/",
     "added": "2026-01-18T13:43:33.642278"
   },
@@ -57126,7 +57128,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.7,
     "link": "https://vixsrc.to/movie/16297/",
     "added": "2026-01-18T13:43:44.021652"
   },
@@ -58951,7 +58953,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 4.9,
+    "vote": 5.0,
     "link": "https://vixsrc.to/movie/1386877/",
     "added": "2026-01-18T13:43:53.115181"
   },
@@ -61319,7 +61321,7 @@
       "Famiglia"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.9,
     "link": "https://vixsrc.to/movie/885021/",
     "added": "2026-01-18T13:44:05.180557"
   },
@@ -64082,7 +64084,8 @@
     "overview": "Wayne e Garth, finito il liceo, continuano la loro attività di conduttori in trasmissioni via cavo e di musicisti. Wayne, in crisi sentimentale, viene salvato dalla visione di un nativo americano che lo mette in contatto con il fu Jim Morrison. Questi gli consiglia di organizzare un gran concerto rock. Incredibile, ma vero: Wayne e Garth ce la fanno, nonostante tutto. Sulla scia del successo del n.1, cambia la regia e il secondo episodio spinge sul pedale della parodia woodstockiana e della presa in giro del mito dei '60...",
     "type": "movie",
     "genres": [
-      "Commedia"
+      "Commedia",
+      "Musica"
     ],
     "pegi": null,
     "vote": 6.1,
@@ -73214,7 +73217,7 @@
       "Horror"
     ],
     "pegi": null,
-    "vote": 5.6,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/1146143/",
     "added": "2026-01-18T13:45:03.042642"
   },
@@ -73841,7 +73844,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/1189198/",
     "added": "2026-01-18T13:45:06.198231"
   },
@@ -75086,7 +75089,7 @@
       "Avventura"
     ],
     "pegi": "T",
-    "vote": 5.0,
+    "vote": 5.1,
     "link": "https://vixsrc.to/movie/9947/",
     "added": "2026-01-18T13:45:12.356251"
   },
@@ -84926,7 +84929,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.2,
     "link": "https://vixsrc.to/movie/916/",
     "added": "2026-01-18T13:46:00.862580"
   },
@@ -85439,7 +85442,7 @@
       "Avventura"
     ],
     "pegi": null,
-    "vote": 5.5,
+    "vote": 5.4,
     "link": "https://vixsrc.to/movie/321494/",
     "added": "2026-01-18T13:46:03.974839"
   },
@@ -85838,7 +85841,7 @@
       "Famiglia"
     ],
     "pegi": "T",
-    "vote": 6.2,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/153518/",
     "added": "2026-01-18T13:46:05.784354"
   },
@@ -91717,7 +91720,7 @@
       "Fantascienza"
     ],
     "pegi": null,
-    "vote": 7.0,
+    "vote": 7.1,
     "link": "https://vixsrc.to/movie/754/",
     "added": "2026-01-18T13:46:35.271450"
   },
@@ -93105,7 +93108,7 @@
   {
     "id": "11319",
     "title": "Le avventure di Bianca e Bernie",
-    "poster": "https://image.tmdb.org/t/p/w780/qf2w4N26UeoS6aXcwtMGRy4zTJU.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/p5pXsKRjWLW1fvGhZpqfwxEDl2v.jpg",
     "overview": "La piccola Penny, rapita dalla perfida madame Medusa e tenuta prigioniera sul relitto di una barca in una palude, lancia in mare una bottiglia con una richiesta di aiuto. Dopo aver navigato fino a New York, la bottiglia viene ritrovata dalla Società di Salvataggio, una società di topini con rappresentanti da tutto il mondo. La graziosa e coraggiosa Miss Bianca, insieme al simpatico Bernie, riceve l'incarico di ritrovare e trarre in salvo la bambina. Per i due topini inizia una fantastica avventura...",
     "type": "movie",
     "genres": [
@@ -93573,7 +93576,7 @@
   {
     "id": "16276",
     "title": "Triplice Inganno",
-    "poster": "https://image.tmdb.org/t/p/w780/c4v9pCBh5ox9UtdC5xhTTyvpZdX.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/qsb0gxAXAkmJp3fRO6R9OwJmC4s.jpg",
     "overview": "\"Le Tigre\", questo è il soprannome di Georges Clémenceau, ministro degli interni francese degli inizi del XX secolo. Nel 1907, per far fronte ad un'ondata di crimini che insanguinano la Belle Epoque, egli crea una forza di polizia inedita, le brigate mobili, meglio conosciute come \"Les Brigades du Tigre\". Il loro scopo è di lottare ad armi pari contro i malfattori utilizzando le tecniche più innovative dell'epoca (automobili, telefono, telegrafo, macchine da scrivere, impronte digitali, fotografie...).",
     "type": "movie",
     "genres": [
@@ -97517,7 +97520,7 @@
       "Romance"
     ],
     "pegi": null,
-    "vote": 7.5,
+    "vote": 7.3,
     "link": "https://vixsrc.to/movie/842479/",
     "added": "2026-01-18T13:47:04.603456"
   },
@@ -101509,7 +101512,7 @@
       "Western"
     ],
     "pegi": null,
-    "vote": 7.8,
+    "vote": 7.9,
     "link": "https://vixsrc.to/movie/698508/",
     "added": "2026-01-18T13:47:24.002493"
   },
@@ -102834,7 +102837,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/1945/",
     "added": "2026-01-18T13:47:30.358374"
   },
@@ -106984,7 +106987,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 6.2,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/842942/",
     "added": "2026-01-18T13:47:50.716468"
   },
@@ -110884,7 +110887,7 @@
     "id": "821881",
     "title": "Le nuotatrici",
     "poster": "https://image.tmdb.org/t/p/w780/oZTGMUJhpvIN6BneQTpifdqJWAl.jpg",
-    "overview": "Dalla Siria dilaniata dalla guerra alle Olimpiadi di Rio 2016, due giovani sorelle intraprendono un viaggio rischioso, mettendo a frutto il loro cuore e le loro capacità di nuoto.",
+    "overview": "Dalla guerra in Siria alle Olimpiadi di Rio del 2016, due sorelle intraprendono un viaggio rischioso, utilizzando in maniera eroica le proprie emozioni e il talento di nuotatrici.",
     "type": "movie",
     "genres": [
       "Dramma",
@@ -114695,7 +114698,7 @@
       "Thriller"
     ],
     "pegi": "VM14",
-    "vote": 6.7,
+    "vote": 6.8,
     "link": "https://vixsrc.to/movie/755566/",
     "added": "2026-01-18T13:48:29.491720"
   },
@@ -121902,7 +121905,7 @@
   {
     "id": "526896",
     "title": "Morbius",
-    "poster": "https://image.tmdb.org/t/p/w780/bGec80ISnidac04ICAodWE0wS1b.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/ec6mrBpf7X5FFUVQ3bbJawXtFFz.jpg",
     "overview": "Infetto da una rara e pericolosa malattia del sangue, determinato a salvare chiunque sia destinato a subire la sua stessa sorte, il Dr. Morbius tenta una scommessa disperata. Quello che inizialmente sembra essere un successo si rivela presto un rimedio potenzialmente più pericoloso della malattia stessa.",
     "type": "movie",
     "genres": [
@@ -126987,7 +126990,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 5.0,
+    "vote": 5.1,
     "link": "https://vixsrc.to/movie/718135/",
     "added": "2026-01-18T13:49:29.836916"
   },
@@ -134962,7 +134965,7 @@
       "Avventura"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.0,
     "link": "https://vixsrc.to/movie/522478/",
     "added": "2026-01-18T13:50:08.877027"
   },
@@ -136021,7 +136024,9 @@
       "Animazione",
       "Famiglia",
       "Commedia",
-      "Fantasy"
+      "Fantasy",
+      "Romance",
+      "Avventura"
     ],
     "pegi": "T",
     "vote": 7.9,
@@ -136056,7 +136061,7 @@
       "Romance"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 6.1,
     "link": "https://vixsrc.to/movie/46503/",
     "added": "2026-01-18T13:50:14.309212"
   },
@@ -137806,7 +137811,7 @@
       "Horror"
     ],
     "pegi": null,
-    "vote": 5.8,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/38321/",
     "added": "2026-01-18T13:50:22.755298"
   },
@@ -151221,18 +151226,16 @@
   },
   {
     "id": "10676",
-    "title": "Halloween III - Il signore della notte",
-    "poster": "https://image.tmdb.org/t/p/w780/zhCGvCmtI8fxqeaOStPt9r0Tk2j.jpg",
-    "overview": "Il Dott. Daniel Challis, in piena crisi familiare, è medico di turno in un ospedale americano e si trova a prestare le sue cure ad un uomo in fin di vita aggredito da strani individui. Il malato pronuncia misteriose parole e durante la notte viene ucciso. Daniel ed Ellie Grimbridge, la figlia del morto, che faceva il venditore di giocattoli, vogliono scoprire gli assassini e si mettono sulle tracce di un'ambigua fabbrica di maschere mostruose, propagandate ogni minuto dalla televisione con ritmo ossessivo per invitare i compratori a partecipare alla grande festa in costume di Halloween, che avrà luogo la notte del primo novembre. I due giungono nel paesino della fabbrica, Santa Mira, dove Cochran Conal, il padrone, domina incontrastato sugli abitanti, vive avvolto nel mistero ed ha al suo servizio delle persone molto sospette. Altri orrendi assassinii vengono commessi e le vittime sono persone o troppo curiose o troppo libere nel parlare...",
-    "type": "movie",
+    "title": "The Upside Down Show",
+    "poster": "https://image.tmdb.org/t/p/w780/2xuziRtz7P0MZKBmDUOjJuNIXUt.jpg",
+    "overview": "",
+    "type": "tv",
     "genres": [
-      "Horror",
-      "Fantascienza",
-      "Mistero"
+      "Commedia"
     ],
     "pegi": null,
-    "vote": 5.2,
-    "link": "https://vixsrc.to/movie/10676/",
+    "vote": 9.0,
+    "link": "https://vixsrc.to/tv/10676/",
     "added": "2026-01-18T13:51:28.275991"
   },
   {
@@ -157874,7 +157877,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/8386/",
     "added": "2026-01-18T13:51:59.758651"
   },
@@ -169799,7 +169802,7 @@
       "Horror"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/139038/",
     "added": "2026-01-18T13:52:57.178037"
   },
@@ -172206,7 +172209,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 8.1,
+    "vote": 8.2,
     "link": "https://vixsrc.to/tv/224372/",
     "added": "2026-01-18T13:53:14.922783"
   },
@@ -172931,7 +172934,7 @@
       "Sci-Fi & Fantasy"
     ],
     "pegi": null,
-    "vote": 6.9,
+    "vote": 6.6,
     "link": "https://vixsrc.to/tv/293304/",
     "added": "2026-01-18T13:53:19.027409"
   },
@@ -173185,7 +173188,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.1,
+    "vote": 6.4,
     "link": "https://vixsrc.to/tv/72922/",
     "added": "2026-01-18T13:53:20.265735"
   },
@@ -173753,7 +173756,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.8,
+    "vote": 7.7,
     "link": "https://vixsrc.to/tv/301001/",
     "added": "2026-01-18T13:53:23.337758"
   },
@@ -181656,7 +181659,7 @@
       "War & Politics"
     ],
     "pegi": null,
-    "vote": 7.8,
+    "vote": 7.9,
     "link": "https://vixsrc.to/tv/225647/",
     "added": "2026-01-18T13:54:04.789372"
   },
@@ -189174,7 +189177,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.9,
+    "vote": 6.8,
     "link": "https://vixsrc.to/tv/256585/",
     "added": "2026-01-18T13:54:43.199963"
   },
@@ -189365,7 +189368,7 @@
       "Sci-Fi & Fantasy"
     ],
     "pegi": null,
-    "vote": 8.2,
+    "vote": 8.1,
     "link": "https://vixsrc.to/tv/290160/",
     "added": "2026-01-18T13:54:44.190238"
   },
@@ -190113,7 +190116,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 7.7,
+    "vote": 7.6,
     "link": "https://vixsrc.to/tv/247732/",
     "added": "2026-01-18T13:54:48.292913"
   },
@@ -190755,9 +190758,9 @@
   },
   {
     "id": "259207",
-    "title": "Critical: Codice Rosso",
+    "title": "Critical - Codice rosso",
     "poster": "https://image.tmdb.org/t/p/w780/7s25OHjyqVuNUNJcUlzhx5lgzJU.jpg",
-    "overview": "Questa docuserie senza compromessi segue da vicino le squadre di emergenza di Londra e le persone soccorse.",
+    "overview": "Dalle emergenze più gravi alla sala operatoria, questa docuserie segue il personale dei centri traumatologici di Londra mentre si prende cura di persone gravemente ferite.",
     "type": "tv",
     "genres": [
       "Documentario"
@@ -191108,7 +191111,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.5,
+    "vote": 6.4,
     "link": "https://vixsrc.to/tv/201646/",
     "added": "2026-01-18T13:54:53.357050"
   },
@@ -191486,7 +191489,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 8.5,
+    "vote": 8.4,
     "link": "https://vixsrc.to/tv/205082/",
     "added": "2026-01-18T13:54:55.295474"
   },
@@ -193336,7 +193339,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 7.4,
+    "vote": 7.5,
     "link": "https://vixsrc.to/tv/17287/",
     "added": "2026-01-18T13:55:05.476687"
   },
@@ -199709,7 +199712,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 6.1,
     "link": "https://vixsrc.to/tv/258902/",
     "added": "2026-01-18T13:55:39.089436"
   },
@@ -207456,7 +207459,7 @@
       "War & Politics"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.4,
     "link": "https://vixsrc.to/tv/82744/",
     "added": "2026-01-18T13:56:20.413479"
   },
@@ -208708,7 +208711,7 @@
       "Commedia"
     ],
     "pegi": "VM14",
-    "vote": 7.0,
+    "vote": 6.9,
     "link": "https://vixsrc.to/tv/112211/",
     "added": "2026-01-18T13:56:27.214070"
   },
@@ -215813,7 +215816,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.7,
+    "vote": 7.8,
     "link": "https://vixsrc.to/tv/208397/",
     "added": "2026-01-18T13:57:06.124039"
   },
@@ -216677,7 +216680,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.5,
+    "vote": 6.6,
     "link": "https://vixsrc.to/tv/123856/",
     "added": "2026-01-18T13:57:10.804900"
   },
@@ -218895,7 +218898,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 6.9,
+    "vote": 6.8,
     "link": "https://vixsrc.to/tv/121710/",
     "added": "2026-01-18T13:57:22.722039"
   },
@@ -221354,7 +221357,7 @@
       "Commedia"
     ],
     "pegi": "T",
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/tv/94951/",
     "added": "2026-01-18T13:57:35.749480"
   },
@@ -221561,7 +221564,7 @@
   {
     "id": "90802",
     "title": "The Sandman",
-    "poster": "https://image.tmdb.org/t/p/w780/dhbqyYjLfTNAHodDDjDELzwO6F4.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/q54qEgagGOYCq5D1903eBVMNkbo.jpg",
     "overview": "Dopo lunghi anni di prigionia il Re dei Sogni Morfeo intraprende un viaggio attraverso mondi diversi per ritrovare quanto gli è stato rubato e recuperare i suoi poteri.",
     "type": "tv",
     "genres": [
@@ -224580,7 +224583,7 @@
   {
     "id": "4604",
     "title": "Smallville",
-    "poster": "https://image.tmdb.org/t/p/w780/mHZSq8LA5Dt48JjaOZ5tcPXQRVN.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/azU5zRPEaiACTY6kAlEddIe8ypk.jpg",
     "overview": "16 ottobre 1989: una catastrofica pioggia di meteoriti contenenti un minerale radioattivo, la kryptonite, si abbatte sulla cittadina di Smallville, nel Kansas. Due coniugi, Jonathan e Martha Kent, trovano in un campo un bambino nei pressi di una astronave e decidono di prenderlo con sé e crescerlo come un figlio. Dieci anni più tardi Clark Kent, il bambino divenuto ormai un adolescente, e l'amica Chloe Sullivan, entrambi giornalisti in erba del liceo di Smallville, indagano su alcuni eventi inspiegabili che si verificano nella cittadina e che sono causati dai frammenti dei meteoriti ancora presenti, che hanno modificato geneticamente alcuni abitanti dotandoli di strani poteri.",
     "type": "tv",
     "genres": [
@@ -227785,7 +227788,7 @@
       "Commedia"
     ],
     "pegi": "T",
-    "vote": 8.4,
+    "vote": 8.3,
     "link": "https://vixsrc.to/tv/97546/",
     "added": "2026-01-18T13:58:10.231341"
   },
@@ -235419,7 +235422,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.6,
+    "vote": 7.7,
     "link": "https://vixsrc.to/tv/68421/",
     "added": "2026-01-18T13:58:49.875912"
   },
@@ -235596,7 +235599,7 @@
   {
     "id": "85949",
     "title": "Star Trek: Picard",
-    "poster": "https://image.tmdb.org/t/p/w780/bONYUEn7iMFCebhDuqNG7hqqwoO.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/nIlAKIrLKxOeoEnc0Urb65yNCp.jpg",
     "overview": "La fine è solamente l'inizio e dopo aver abbandonato la Flotta della Federazione dei Pianeti Uniti 15 anni prima, l'Ammiraglio Jean-Luc Picard comincia un nuovo capitolo della sua vita.",
     "type": "tv",
     "genres": [
@@ -235713,7 +235716,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 5.1,
+    "vote": 5.0,
     "link": "https://vixsrc.to/tv/223530/",
     "added": "2026-01-18T13:53:10.865918"
   },
@@ -236100,7 +236103,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 8.0,
+    "vote": 8.7,
     "link": "https://vixsrc.to/tv/270420/",
     "added": "2026-01-18T13:53:10.469514"
   },
@@ -236287,7 +236290,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 9.3,
+    "vote": 8.9,
     "link": "https://vixsrc.to/tv/229891/",
     "added": "2026-01-18T13:53:10.522138"
   },
@@ -236567,7 +236570,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.5,
     "link": "https://vixsrc.to/movie/1451402/",
     "added": "2026-01-21T04:59:07.630602"
   },
@@ -236898,7 +236901,7 @@
       "Dramma"
     ],
     "pegi": "T",
-    "vote": 7.1,
+    "vote": 7.2,
     "link": "https://vixsrc.to/movie/1421309/",
     "added": "2026-01-21T04:59:10.300704"
   },
@@ -237158,7 +237161,7 @@
       "Crime"
     ],
     "pegi": "14+",
-    "vote": 7.3,
+    "vote": 7.2,
     "link": "https://vixsrc.to/movie/1595481/",
     "added": "2026-01-22T05:07:31.532526"
   },
@@ -237430,9 +237433,11 @@
     "id": "1567411",
     "title": "Pretty Miss Lolly",
     "poster": "https://image.tmdb.org/t/p/w780/b95mW6OcukXn6EfcckR7heZvnu8.jpg",
-    "overview": "",
+    "overview": "Un giovane solo e isolato, che soffre per le conseguenze della pandemia, intraprende un'odissea nazionale per trovare l'amore della sua vita, una donna bellissima e incantevole che mette su un sito web a pagamento di dubbia origine.",
     "type": "movie",
-    "genres": [],
+    "genres": [
+      "Dramma"
+    ],
     "pegi": null,
     "vote": 1.0,
     "link": "https://vixsrc.to/movie/1567411/",
@@ -237449,7 +237454,7 @@
       "Sci-Fi & Fantasy"
     ],
     "pegi": null,
-    "vote": 4.0,
+    "vote": 4.8,
     "link": "https://vixsrc.to/tv/273160/",
     "added": "2026-01-22T05:17:30.123151"
   },
@@ -237479,7 +237484,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 8.5,
+    "vote": 8.4,
     "link": "https://vixsrc.to/tv/254071/",
     "added": "2026-01-22T05:17:30.236194"
   },
@@ -237782,7 +237787,7 @@
     "id": "698",
     "title": "Moonraker - Operazione spazio",
     "poster": "https://image.tmdb.org/t/p/w780/tWx7g8ENuCzNPUhRrfYqFh3T1MB.jpg",
-    "overview": "Un miliardario megalomane progetta la distruzione del mondo, ma ci pensa l'agente 007.Uno space shuttle viene rapito da una misteriosa organizzazione capeggiata da Hugo Drax, anche proprietario dell'impresa che costruisce le navette spaziali. Per risolvere l'enigma viene mandato in missione James Bond, che si trova a dover collaborare con una spia della Cia, ovviamente bellissima e affascinante. Le indagini di 007 lo portano addirittura a volare nello spazio.  Uno 007 minore, quasi ricalcato dal precedente La spia che mi amava. Fu un successo e, primo tra i film occidentali, incassò vertiginosamente anche in Asia. Ma la vicenda è stantia. In epoca di effetti speciali, i produttori trasformano Bond in una specie di Flash Gordon. Certo la prima parte, meno rutilante del viaggio nel cosmo, riserva momenti divertenti.",
+    "overview": "Un miliardario megalomane progetta la distruzione del mondo, ma ci pensa l'agente 007. Uno space shuttle viene rapito da una misteriosa organizzazione capeggiata da Hugo Drax, anche proprietario dell'impresa che costruisce le navette spaziali. Per risolvere l'enigma viene mandato in missione James Bond, che si trova a dover collaborare con una spia della Cia, ovviamente bellissima e affascinante. Le indagini di 007 lo portano addirittura a volare nello spazio. Uno 007 minore, quasi ricalcato dal precedente La spia che mi amava. Fu un successo e, primo tra i film occidentali, incassò vertiginosamente anche in Asia. Ma la vicenda è stantia. In epoca di effetti speciali, i produttori trasformano Bond in una specie di Flash Gordon. Certo la prima parte, meno rutilante del viaggio nel cosmo, riserva momenti divertenti.",
     "type": "movie",
     "genres": [
       "Azione",
@@ -237959,7 +237964,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.9,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/1443762/",
     "added": "2026-01-23T14:52:24.246009"
   },
@@ -238322,8 +238327,159 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 3.6,
+    "vote": 3.8,
     "link": "https://vixsrc.to/movie/1608982/",
     "added": "2026-01-24T16:47:08.197497"
+  },
+  {
+    "id": "124117",
+    "title": "Pixel Perfect - Star ad alta definizione",
+    "poster": "https://image.tmdb.org/t/p/w780/iECydPkTMsXrUosHZ7jwGVQ5X1H.jpg",
+    "overview": "Roscoe è un geniale teen-ager che per aiutare gli Zettabyes, la band in difficoltà della sua migliore amica Samantha, crea una rockstar olografica di nome Loretta Modern. Quest'ultima ha tanto successo che il gruppo viene relegato a semplice supporto della nuova diva: ma Loretta non è cattiva, cerca solo la propria identità...Un giorno Samantha cerca di imitare Loretta e si fa male, e Loretta prova ad aiutarla...così Samantha si \"aggiusta\" e Loretta diventa il loro angelo custode.",
+    "type": "movie",
+    "genres": [
+      "Famiglia",
+      "televisione film",
+      "Fantascienza",
+      "Commedia"
+    ],
+    "pegi": null,
+    "vote": 5.2,
+    "link": "https://vixsrc.to/movie/124117/",
+    "added": "2026-01-25T05:41:40.111318"
+  },
+  {
+    "id": "26267",
+    "title": "A me gli occhi...",
+    "poster": "https://image.tmdb.org/t/p/w780/pegrxHBfb4bV7pNaXYSCqIDii7p.jpg",
+    "overview": "A me gli occhi... narra la storia di ciò che può succedere quando un reality show scopre qualcosa che non può essere visto in televisione. L'aspirante Allison Miller insieme al suo cameraman stanno facendo il giro dell'America per trovare il miglior giovane mago di tutti i tempi. Dopo tanti provini andati male, Allison deve contare su Danny Sinclair che gli mostra un trucco di magia che alla fine gli permette di essere ammesso al reality show. Ma a quanto pare Danny non usa \"trucchi\" di magia...",
+    "type": "movie",
+    "genres": [
+      "televisione film",
+      "Commedia",
+      "Mistero"
+    ],
+    "pegi": null,
+    "vote": 5.7,
+    "link": "https://vixsrc.to/movie/26267/",
+    "added": "2026-01-25T05:41:40.228732"
+  },
+  {
+    "id": "2899",
+    "title": "Long Way Round",
+    "poster": "https://image.tmdb.org/t/p/w780/uoAYNsbmjQXk0vs72R6ITZzYaYx.jpg",
+    "overview": "Nel 2004 Ewan McGregor e Charley Boorman hanno intrapreso l'epica sfida di pedalare per 20.000 miglia attraverso 12 paesi e 19 fusi orari in soli 115 giorni. Guarda due amici fare il giro del mondo insieme e, contro tutte le probabilità, realizzare il loro sogno.",
+    "type": "tv",
+    "genres": [
+      "Documentario",
+      "Reality"
+    ],
+    "pegi": null,
+    "vote": 8.3,
+    "link": "https://vixsrc.to/tv/2899/",
+    "added": "2026-01-25T06:06:35.243626"
+  },
+  {
+    "id": "14069",
+    "title": "In Treatment",
+    "poster": "https://image.tmdb.org/t/p/w780/gytzjthKWMji7olvAnBGohbGmWS.jpg",
+    "overview": "Ambientato all'interno dei confini altamente caricati delle sessioni di psicoterapia individuale e incentrato sul dottor Paul Weston, uno psicoterapeuta che esibisce un contegno perspicace e riservato mentre tratta i suoi pazienti, ma mostra un'insicurezza paralizzante quando viene consigliato dal suo stesso terapeuta.",
+    "type": "tv",
+    "genres": [
+      "Dramma"
+    ],
+    "pegi": "VM14",
+    "vote": 7.6,
+    "link": "https://vixsrc.to/tv/14069/",
+    "added": "2026-01-25T06:06:35.365005"
+  },
+  {
+    "id": "25992",
+    "title": "MasterChef",
+    "poster": "https://image.tmdb.org/t/p/w780/aMDr01WW5nG4tF4VYjn3Mbzfx6x.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [
+      "Reality"
+    ],
+    "pegi": null,
+    "vote": 5.4,
+    "link": "https://vixsrc.to/tv/25992/",
+    "added": "2026-01-25T06:06:35.492278"
+  },
+  {
+    "id": "72581",
+    "title": "Room 104",
+    "poster": "https://image.tmdb.org/t/p/w780/wOyn9r9VC2pJhXasUKxlpEmCAGV.jpg",
+    "overview": "Una serie antologica ambientata in una camera d'albergo, in cui ogni ospite che viene a soggiornare rivela un insieme unico di circostanze e stranezze.",
+    "type": "tv",
+    "genres": [
+      "Mistero",
+      "Dramma",
+      "Commedia"
+    ],
+    "pegi": null,
+    "vote": 5.7,
+    "link": "https://vixsrc.to/tv/72581/",
+    "added": "2026-01-25T06:06:54.963554"
+  },
+  {
+    "id": "96213",
+    "title": "McMillion$",
+    "poster": "https://image.tmdb.org/t/p/w780/xyUciqZC5hGYJqefmbGbTy5fxYh.jpg",
+    "overview": "Un resoconto dettagliato della truffa del gioco del monopolio di McDonald's negli anni '90, come raccontato dai partecipanti al caso, inclusi i vincitori e gli agenti dell'FBI che hanno catturato l'ufficiale di sicurezza che ha orchestrato l'intero schema.",
+    "type": "tv",
+    "genres": [
+      "Documentario",
+      "Crime",
+      "Dramma"
+    ],
+    "pegi": null,
+    "vote": 7.0,
+    "link": "https://vixsrc.to/tv/96213/",
+    "added": "2026-01-25T06:07:23.173491"
+  },
+  {
+    "id": "226403",
+    "title": "How to Create a Sex Scandal",
+    "poster": "https://image.tmdb.org/t/p/w780/ocT6vwIwFrj3C8wFLtT0hRL58pS.jpg",
+    "overview": "Nel 2005, la sonnolenta comunità di Mineola, in Texas, viene messa in subbuglio quando i bambini del posto rivelano storie scioccanti su un giro sessuale pedofilo avvenuto in un club di scambisti locale. Man mano che vengono effettuati arresti, ergastoli pronunciati e vite rovinate, diventa presto evidente che c'è molto di più nella storia di quanto sembri. Ora vengono rivelate le sorprendenti ripercussioni a lungo termine dello scandalo.",
+    "type": "tv",
+    "genres": [
+      "Documentario",
+      "Crime"
+    ],
+    "pegi": null,
+    "vote": 6.5,
+    "link": "https://vixsrc.to/tv/226403/",
+    "added": "2026-01-25T06:08:50.586000"
+  },
+  {
+    "id": "228853",
+    "title": "Prens",
+    "poster": "https://image.tmdb.org/t/p/w780/oDtYdl5i8rRLmB9xAU6VOwHKjMQ.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [
+      "Commedia"
+    ],
+    "pegi": null,
+    "vote": 8.3,
+    "link": "https://vixsrc.to/tv/228853/",
+    "added": "2026-01-25T07:57:21.896692"
+  },
+  {
+    "id": "105532",
+    "title": "The Girls on the Bus",
+    "poster": "https://image.tmdb.org/t/p/w780/w2ZqWIqf0hbxshHoRY9bJtXAY67.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [
+      "Dramma"
+    ],
+    "pegi": null,
+    "vote": 6.0,
+    "link": "https://vixsrc.to/tv/105532/",
+    "added": "2026-01-25T08:44:48.722383"
   }
 ]

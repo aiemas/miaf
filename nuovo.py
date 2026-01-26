@@ -725,6 +725,11 @@ function openInfoById(id){
   }
 
   playBtn.onclick = () => {
+  // 🔥 aggiorna "recenti"
+  recent = recent.filter(x => x !== currentItem.id);
+  recent.unshift(currentItem.id);
+  if (recent.length > 50) recent.pop();
+  localStorage.setItem("recent", JSON.stringify(recent));
   let url;
   const params = "?lang=it&sottotitoli=off&autoplay=1&quality=1080p";
 
