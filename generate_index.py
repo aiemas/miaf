@@ -76,7 +76,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     url = TMDB_BASE.format(type=type_, id=tmdb_id)
     r = requests.get(
         url,
-        params={"api_key": api_key, "language": language, "append_to_response": "credits"},
+        params={"api_key": api_key, "language": language, "append_to_response": "credits,release_dates,content_ratings"},
         timeout=15
     )
     if r.status_code == 404:
@@ -111,6 +111,20 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
+.pegi-badge{{
+  position:absolute;
+  bottom:6px;
+  right:6px;
+  background:rgba(0,0,0,0.8);
+  border:2px solid #fff;
+  color:#fff;
+  font-size:11px;
+  font-weight:bold;
+  padding:2px 6px;
+  border-radius:6px;
+  pointer-events:none;
+  z-index:5;
+}}
 .favorite-btn{{font-size:20px;color:#fff;text-shadow:0 0 4px #000;}}
 .favorite-btn.active{{color:gold;}}
 .card .favorite-btn{{position:absolute;top:8px;left:8px;pointer-events:none;}}
@@ -294,6 +308,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     <p id="infoYear"></p>
     <p id="infoDuration"></p>
     <p id="infoCast"></p>
+    <p id="infoPegi"></p>
     
     <select id="seasonSelect"></select>
     <select id="episodeSelect"></select>
@@ -324,6 +339,7 @@ const episodeSelect=document.getElementById('episodeSelect');
 const infoYear=document.getElementById('infoYear');
 const infoDuration=document.getElementById('infoDuration');
 const infoCast=document.getElementById('infoCast');
+const infoPegi=document.getElementById('infoPegi');
 const genreSelect=document.getElementById('genreSelect');
 
 closeCardBtn.onclick = () => {{
@@ -382,6 +398,7 @@ infoVote.innerHTML = `
     infoYear.textContent = item.year ? "Anno: " + item.year : "";
     infoDuration.textContent = item.duration ? "Durata: " + item.duration + " min" : "";
     infoCast.textContent = item.cast && item.cast.length ? "Cast: " + item.cast.slice(0,5).join(", ") : "";
+    infoPegi.textContent = item.pegi ? "Classificazione: " + item.pegi : "";
 
     favoriteInCard.classList.toggle("active", favorites.includes(item.id));
     favoriteInCard.onclick = () => {{
@@ -558,10 +575,11 @@ function render(reset=false) {{
             card.innerHTML = `
                 <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
                 <div class='badge'>${{m.vote}}</div>
-                <p style="margin:2px 0;font-size:12px;color:#ccc;">
+                <p style="margin:2px 30px 2px 4px;font-size:12px;color:#ccc;">
                     ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
                 <span class="favorite-btn ${{isFav ? 'active' : ''}}" style="pointer-events:none;">★</span>
+                ${{m.pegi ? `<div class="pegi-badge">${{m.pegi}}</div>` : ``}}
             `;
             card.onclick = () => openInfo(m);
             grid.appendChild(card);
@@ -665,7 +683,35 @@ def main():
             duration = info.get("runtime") or (runtime_list[0] if runtime_list else None)
 
             cast = [c["name"] for c in info.get("credits", {}).get("cast", [])] if info.get("credits") else []
-            directors = [c["name"] for c in info.get("credits", {}).get("crew", []) if c.get("job")=="Director"]
+            directors = [c["name"] for c in info.get("credits", {}).get("crew", []) if c.get("job") == "Director"] if info.get("credits") else []
+
+
+            # --- PEGI (EU / ITA, NO USA) ---
+            pegi = ""
+
+            if type_ == "movie":
+                for r in info.get("release_dates", {}).get("results", []):
+                    if r.get("iso_3166_1") in ("IT", "FR", "DE", "ES", "GB"):
+                        for rel in r.get("release_dates", []):
+                            cert = rel.get("certification")
+                            if cert and cert.isdigit() and cert != "0":
+                                pegi = f"PEGI {cert}"
+                                break
+
+                    if pegi:
+                        break
+
+            elif type_ == "tv":
+                for r in info.get("content_ratings", {}).get("results", []):
+                    if r.get("iso_3166_1") in ("IT", "FR", "DE", "ES", "GB"):
+                        cert = r.get("rating")
+                        digits = "".join(filter(str.isdigit, cert or ""))
+                        if digits in ("12", "14", "16", "18"):
+                            pegi = f"PEGI {digits}"
+                            break
+
+
+
 
 
             entries.append({
@@ -677,6 +723,7 @@ def main():
                 "overview": overview,
                 "link": link,
                 "type": type_,
+                "pegi": pegi,
                 "seasons": seasons,
                 "episodes": episodes,
                 "duration": duration or 0,
