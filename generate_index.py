@@ -101,7 +101,12 @@ def build_html(entries, latest_entries):
   gtag('js', new Date());
   gtag('config', 'G-4Z7RJ384ZY');
 </script>
+
 <style>
+#recommended img:focus {{
+  outline: 3px solid gold;
+  outline-offset: 2px;
+}}
 body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
 h1{{color:#fff;text-align:center;margin-bottom:20px;}}
 .controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
@@ -111,6 +116,19 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 .card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
+.playing-badge{{
+  position:absolute;
+  top:8px;
+  left:8px;
+  background:#e50914;
+  color:#fff;
+  padding:4px 6px;
+  font-size:11px;
+  font-weight:bold;
+  border-radius:6px;
+  z-index:6;
+}}
+
 .pegi-badge{{
   position:absolute;
   bottom:6px;
@@ -312,6 +330,16 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
     
     <select id="seasonSelect"></select>
     <select id="episodeSelect"></select>
+    <div id="recommended" tabindex="0" style="
+      display:flex;
+      gap:10px;
+      margin-top:20px;
+      overflow-x:auto;
+      padding-bottom:10px;
+      flex-wrap:nowrap;
+    ">
+    </div>
+
   </div>
 </div>
 
@@ -319,6 +347,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 const allData = {entries_json};
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 let recentList = JSON.parse(localStorage.getItem("recent") || "[]");
+let lastEpisodes = JSON.parse(localStorage.getItem("lastEpisodes") || "{{}}");
 let currentItem = null;
 
 const grid=document.getElementById('moviesGrid');
@@ -365,8 +394,20 @@ function openInfo(item, push=true) {{
     infoTitle.textContent = item.title;
     // autofocus sul tasto "Guarda"
     setTimeout(() => {{
-      playBtn.focus();
+        playBtn.focus();
     }}, 0);
+
+    // Intercetta freccia giù per andare subito ai consigliati
+    playBtn.onkeydown = (e) => {{
+        if (e.key === "ArrowDown") {{
+            const firstRec = recommendedDiv.querySelector("img");
+            if (firstRec) {{
+                firstRec.focus();
+                e.preventDefault();
+            }}
+        }}
+    }};
+
     infoGenres.textContent = "Generi: " + (item.genres && item.genres.length ? item.genres.join(", ") : "");
     let vote = Math.round(item.vote * 10) / 10; // es: 7.8
     let dash = Math.round((vote / 10) * 100);   // percentuale su 100
@@ -377,7 +418,53 @@ if (vote < 5) {{
   color = "#f44336"; // rosso
 }} else if (vote < 7) {{
   color = "#ff9800"; // arancione/giallo
-}}
+  }}
+
+  // --- CONSIGLIATI ---
+const recommendedDiv = document.getElementById("recommended");
+recommendedDiv.innerHTML = ""; // reset
+
+const recItems = allData
+  .map(x => {{
+    if (
+      x.id === item.id ||
+      !Array.isArray(x.genres) ||
+      !Array.isArray(item.genres)
+    ) return null;
+
+    const commonGenres = x.genres.filter(g => item.genres.includes(g));
+    return {{
+      item: x,
+      commonCount: commonGenres.length
+    }};
+  }})
+  .filter(x => x && x.commonCount >= 2)
+  .sort((a, b) => b.commonCount - a.commonCount)
+  .slice(0, 10)
+  .map(x => x.item);
+
+
+
+
+recItems.forEach(r => {{
+    const rCard = document.createElement("img");
+    rCard.src = r.poster;
+    rCard.title = r.title;
+    rCard.style.width = "100px";
+    rCard.style.flexShrink = "0";
+    rCard.style.cursor = "pointer";
+    rCard.style.borderRadius = "8px";
+    rCard.onclick = () => openInfo(r);  // clicca per aprire
+    recommendedDiv.appendChild(rCard);
+    rCard.setAttribute("tabindex", "0");
+    rCard.setAttribute("role", "button");
+        rCard.onkeydown = (e) => {{
+          if (e.key === "Enter" || e.key === "OK") {{
+            openInfo(r);
+          }}
+        }};
+
+    }});
 
 infoVote.innerHTML = `
   <svg viewBox="0 0 36 36" class="circular-chart">
@@ -421,6 +508,13 @@ infoVote.innerHTML = `
         }}
         seasonSelect.onchange = updateEpisodes;
         updateEpisodes();
+        const last = lastEpisodes[item.id];
+        if (last) {{
+            seasonSelect.value = last.season;
+            updateEpisodes();
+            episodeSelect.value = last.episode;
+        }}
+
     }}
 
     playBtn.onclick = () => openPlayer(item);
@@ -448,6 +542,46 @@ infoVote.innerHTML = `
     }}
 }}
 
+let titleTimeout = null;
+
+function showPlayerTitle(text){{
+    playerTitle.textContent = text;
+    playerTitle.style.display = "block";
+
+    if (titleTimeout) clearTimeout(titleTimeout);
+    titleTimeout = setTimeout(() => {{
+        playerTitle.style.display = "none";
+    }}, 3000); // 3 secondi e sparisce
+}}
+
+function attachPlayerOverlayEvents(item){{
+    const show = () => {{
+        if(item.type === "tv"){{
+            const s = seasonSelect.value || 1;
+            const e = episodeSelect.value || 1;
+            showPlayerTitle(`${{item.title}} • Stagione ${{s}} Episodio ${{e}}`);
+        }} else {{
+            showPlayerTitle(item.title);
+        }}
+    }};
+
+    // click / tap sull’overlay
+    overlay.onclick = show;
+
+    // OK / Enter / Space da telecomando o tastiera
+    document.onkeydown = (e) => {{
+        if (
+            e.key === "Enter" ||
+            e.key === " " ||
+            e.key === "OK"
+        ) {{
+            show();
+        }}
+    }};
+}}
+
+
+
 function openPlayer(item, push=true) {{
     infoCard.style.display = 'none';
     overlay.style.display='flex';
@@ -456,11 +590,26 @@ function openPlayer(item, push=true) {{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
         link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
+        lastEpisodes[item.id] = {{ season, episode }};
+        localStorage.setItem("lastEpisodes", JSON.stringify(lastEpisodes));
+
     }} else {{
         link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
     }}
     iframe.src = link;
+    attachPlayerOverlayEvents(item);
+    
+
     addToRecent(item.id);
+    // Titolo a scomparsa nel player
+    if(item.type === "tv"){{
+        const s = seasonSelect.value || 1;
+        const e = episodeSelect.value || 1;
+        showPlayerTitle(`${{item.title}} • Stagione ${{s}} Episodio ${{e}}`);
+    }} else {{
+        showPlayerTitle(item.title);
+    }}
+
 
     if (overlay.requestFullscreen) overlay.requestFullscreen();
     else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
@@ -572,9 +721,17 @@ function render(reset=false) {{
         )) {{
             const card = document.createElement('div');
             card.className='card';
+            const last = lastEpisodes[m.id];
+            let playingBadge = '';
+            if (m.type === 'tv' && last) {{
+                playingBadge = '<div class="playing-badge">▶ S' + last.season + 'E' + last.episode + '</div>';
+            }}
+
+
             card.innerHTML = `
                 <img class='poster' src='${{m.poster}}' alt='${{m.title}}'>
                 <div class='badge'>${{m.vote}}</div>
+                ${{playingBadge}}
                 <p style="margin:2px 30px 2px 4px;font-size:12px;color:#ccc;">
                     ${{m.duration ? m.duration + ' min • ' : ''}}${{m.year ? m.year : ''}}
                 </p>
