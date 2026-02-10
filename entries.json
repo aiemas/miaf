@@ -745,7 +745,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 6.3,
     "link": "https://vixsrc.to/tv/157194/",
     "added": "2026-01-18T13:53:10.925056"
   },
@@ -759,7 +759,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.6,
+    "vote": 5.3,
     "link": "https://vixsrc.to/tv/310759/",
     "added": "2026-01-18T13:53:11.014455"
   },
@@ -1181,7 +1181,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 4.3,
+    "vote": 4.5,
     "link": "https://vixsrc.to/tv/246864/",
     "added": "2026-01-18T13:53:13.292573"
   },
@@ -1549,7 +1549,7 @@
   {
     "id": "1034716",
     "title": "People we meet on vacation - Un amore in vacanza",
-    "poster": "https://image.tmdb.org/t/p/w780/kOrJqRyt1pklNgDwJMjzN1GuNXS.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/scito8StLP6N5QzDVYo7lJBqqWc.jpg",
     "overview": "Poppy è uno spirito libero, mentre Alex è organizzato. Dopo anni di vacanze estive insieme, questi amici agli antipodi iniziano a chiedersi se potrebbero essere la coppia perfetta.",
     "type": "movie",
     "genres": [
@@ -3833,7 +3833,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 5.6,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/23742/",
     "added": "2026-01-18T13:39:19.260553"
   },
@@ -5072,7 +5072,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 6.3,
+    "vote": 6.4,
     "link": "https://vixsrc.to/movie/1584619/",
     "added": "2026-01-18T13:39:25.511572"
   },
@@ -5549,7 +5549,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 5.4,
+    "vote": 5.3,
     "link": "https://vixsrc.to/movie/1403373/",
     "added": "2026-01-18T13:39:27.999240"
   },
@@ -6108,7 +6108,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.9,
+    "vote": 7.0,
     "link": "https://vixsrc.to/movie/74534/",
     "added": "2026-01-18T13:39:30.872124"
   },
@@ -6563,7 +6563,7 @@
   {
     "id": "18174",
     "title": "An Inspector Calls",
-    "poster": "https://image.tmdb.org/t/p/w780/tWENUwa05Ex4Q0ClG9XdUcQza0i.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/j637ICfPZPVnhoGPlRw9xVf6IqL.jpg",
     "overview": "",
     "type": "movie",
     "genres": [
@@ -7179,7 +7179,8 @@
     "type": "movie",
     "genres": [
       "Horror",
-      "Mistero"
+      "Mistero",
+      "Dramma"
     ],
     "pegi": null,
     "vote": 5.7,
@@ -7497,7 +7498,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.2,
     "link": "https://vixsrc.to/movie/10440/",
     "added": "2026-01-18T13:39:37.682811"
   },
@@ -9839,7 +9840,7 @@
       "Dramma"
     ],
     "pegi": "T",
-    "vote": 4.9,
+    "vote": 4.8,
     "link": "https://vixsrc.to/movie/328901/",
     "added": "2026-01-18T13:39:49.159685"
   },
@@ -9977,7 +9978,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 6.9,
+    "vote": 7.0,
     "link": "https://vixsrc.to/movie/338614/",
     "added": "2026-01-18T13:39:49.845853"
   },
@@ -10756,7 +10757,7 @@
   {
     "id": "312831",
     "title": "The Hallow",
-    "poster": "https://image.tmdb.org/t/p/w780/sOT4KqFPlvxTeEwyHOcn8agJnsI.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/vQ6d1rDgz4kMkv1EXzfq0UzlPdi.jpg",
     "overview": "Una povera famiglia composta di padre, madre e figlio scatenerà le ire di misteriose forze demoniache assetate di carne umana. Succede in un piccolo villaggio rurale irlandese, dove imperversa un'antica maledizione ben nota ma cautamente taciuta dagli abitanti della zona.",
     "type": "movie",
     "genres": [
@@ -13229,7 +13230,7 @@
       "Guerra"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 6.1,
     "link": "https://vixsrc.to/movie/377447/",
     "added": "2026-01-18T13:40:05.770342"
   },
@@ -14500,7 +14501,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.4,
+    "vote": 7.5,
     "link": "https://vixsrc.to/movie/1299209/",
     "added": "2026-01-18T13:40:12.017919"
   },
@@ -16308,7 +16309,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.1,
     "link": "https://vixsrc.to/movie/474753/",
     "added": "2026-01-18T13:40:21.182996"
   },
@@ -20879,7 +20880,7 @@
       "Musica"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.7,
     "link": "https://vixsrc.to/movie/1557993/",
     "added": "2026-01-18T13:40:43.736675"
   },
@@ -24112,7 +24113,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/869602/",
     "added": "2026-01-18T13:40:59.869144"
   },
@@ -25687,7 +25688,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.2,
     "link": "https://vixsrc.to/movie/937348/",
     "added": "2026-01-18T13:41:08.099303"
   },
@@ -27779,7 +27780,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 6.1,
     "link": "https://vixsrc.to/movie/1040603/",
     "added": "2026-01-18T13:41:18.513144"
   },
@@ -31027,7 +31028,7 @@
       "Fantasy"
     ],
     "pegi": null,
-    "vote": 7.6,
+    "vote": 7.9,
     "link": "https://vixsrc.to/movie/1429747/",
     "added": "2026-01-18T13:41:34.772581"
   },
@@ -31056,7 +31057,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/1242404/",
     "added": "2026-01-18T13:41:34.910972"
   },
@@ -31894,7 +31895,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/1262852/",
     "added": "2026-01-18T13:41:39.327658"
   },
@@ -34186,7 +34187,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 6.1,
     "link": "https://vixsrc.to/movie/1212742/",
     "added": "2026-01-18T13:41:50.993371"
   },
@@ -35381,7 +35382,7 @@
       "Romance"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.1,
     "link": "https://vixsrc.to/movie/1246049/",
     "added": "2026-01-18T13:41:57.122824"
   },
@@ -38431,7 +38432,7 @@
       "Fantascienza"
     ],
     "pegi": null,
-    "vote": 6.1,
+    "vote": 6.2,
     "link": "https://vixsrc.to/movie/9457/",
     "added": "2026-01-18T13:42:12.401685"
   },
@@ -43057,7 +43058,7 @@
       "Commedia"
     ],
     "pegi": "T",
-    "vote": 6.7,
+    "vote": 6.6,
     "link": "https://vixsrc.to/movie/454619/",
     "added": "2026-01-18T13:42:34.840121"
   },
@@ -47539,7 +47540,8 @@
     "type": "movie",
     "genres": [
       "Commedia",
-      "Avventura"
+      "Avventura",
+      "Azione"
     ],
     "pegi": null,
     "vote": 6.4,
@@ -47697,7 +47699,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.9,
     "link": "https://vixsrc.to/movie/72976/",
     "added": "2026-01-18T13:42:57.831901"
   },
@@ -48337,7 +48339,7 @@
       "Romance"
     ],
     "pegi": null,
-    "vote": 6.3,
+    "vote": 6.4,
     "link": "https://vixsrc.to/movie/11821/",
     "added": "2026-01-18T13:43:00.783344"
   },
@@ -55412,7 +55414,7 @@
       "Avventura"
     ],
     "pegi": "T",
-    "vote": 6.9,
+    "vote": 6.8,
     "link": "https://vixsrc.to/movie/516729/",
     "added": "2026-01-18T13:43:35.566425"
   },
@@ -57032,7 +57034,7 @@
     "type": "movie",
     "genres": [
       "Horror",
-      "Dramma"
+      "Fantascienza"
     ],
     "pegi": null,
     "vote": 7.3,
@@ -69197,7 +69199,7 @@
   {
     "id": "1175554",
     "title": "InFiniti",
-    "poster": "https://image.tmdb.org/t/p/w780/yZavFtLOkuifyDdwG6feDBBEzCI.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/iI7DYaeQEWjKFg4deOSgDS4ZGfe.jpg",
     "overview": "Roberta e Davide stanno felicemente insieme da quattro anni da quando si sono incontrati e innamorati al Museo di Casa Leopardi a Recanati: oggi Davide sta cercando di affermarsi come pittore, mentre Roberta, nonostante la sua passione letteraria, è diventata un agente immobiliare e lavora nell’agenzia di Davide, sposato alla ricca e annoiata Greta ma segretamente innamorato di lei. Quando Roberta scopre che Davide all’inizio della loro relazione l’ha tradita, il rapporto tra i due entra in crisi profonda e la ragazza comincia ad interessarsi a Lorenzo, il commesso del supermercato che ha un tatuaggio “leopardiano” sul polso. Ma anche nelle relazioni non tutto è come sembra e come nel nastro di Moebius due persone possono camminare nello stesso spazio ma ritrovarsi alla fine in punti diametralmente opposti.",
     "type": "movie",
     "genres": [
@@ -74229,7 +74231,7 @@
       "Azione"
     ],
     "pegi": "T",
-    "vote": 5.6,
+    "vote": 5.7,
     "link": "https://vixsrc.to/movie/1116141/",
     "added": "2026-01-18T13:45:08.212016"
   },
@@ -75429,7 +75431,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.2,
     "link": "https://vixsrc.to/movie/998022/",
     "added": "2026-01-18T13:45:13.966157"
   },
@@ -82246,7 +82248,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.0,
+    "vote": 7.1,
     "link": "https://vixsrc.to/movie/787428/",
     "added": "2026-01-18T13:45:47.365908"
   },
@@ -87538,7 +87540,7 @@
       "Dramma"
     ],
     "pegi": "T",
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/movie/923939/",
     "added": "2026-01-18T13:46:14.344723"
   },
@@ -88520,7 +88522,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.8,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/1106049/",
     "added": "2026-01-18T13:46:19.184116"
   },
@@ -89405,7 +89407,7 @@
       "Famiglia"
     ],
     "pegi": null,
-    "vote": 6.1,
+    "vote": 6.2,
     "link": "https://vixsrc.to/movie/11077/",
     "added": "2026-01-18T13:46:23.706419"
   },
@@ -89981,7 +89983,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/9679/",
     "added": "2026-01-18T13:46:26.504374"
   },
@@ -91721,7 +91723,7 @@
       "Fantascienza"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.0,
     "link": "https://vixsrc.to/movie/754/",
     "added": "2026-01-18T13:46:35.271450"
   },
@@ -93758,7 +93760,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 6.2,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/1020910/",
     "added": "2026-01-18T13:46:45.324108"
   },
@@ -93911,7 +93913,7 @@
       "Thriller"
     ],
     "pegi": "VM14",
-    "vote": 8.2,
+    "vote": 8.1,
     "link": "https://vixsrc.to/movie/426/",
     "added": "2026-01-18T13:46:46.125012"
   },
@@ -102839,7 +102841,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 6.5,
+    "vote": 6.6,
     "link": "https://vixsrc.to/movie/1945/",
     "added": "2026-01-18T13:47:30.358374"
   },
@@ -115335,8 +115337,7 @@
     "genres": [
       "Fantasy",
       "Azione",
-      "Avventura",
-      "Fantascienza"
+      "Avventura"
     ],
     "pegi": null,
     "vote": 4.7,
@@ -118973,7 +118974,7 @@
       "Horror"
     ],
     "pegi": null,
-    "vote": 5.8,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/1691/",
     "added": "2026-01-18T13:48:50.179202"
   },
@@ -120726,7 +120727,8 @@
     "type": "movie",
     "genres": [
       "Azione",
-      "Fantasy"
+      "Fantasy",
+      "Thriller"
     ],
     "pegi": null,
     "vote": 5.6,
@@ -128250,7 +128252,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 5.1,
+    "vote": 5.2,
     "link": "https://vixsrc.to/movie/18065/",
     "added": "2026-01-18T13:49:35.987802"
   },
@@ -131684,7 +131686,7 @@
       "Thriller"
     ],
     "pegi": "T",
-    "vote": 6.0,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/257088/",
     "added": "2026-01-18T13:49:52.833692"
   },
@@ -132060,7 +132062,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.2,
     "link": "https://vixsrc.to/movie/449406/",
     "added": "2026-01-18T13:49:54.687216"
   },
@@ -142194,7 +142196,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 7.0,
+    "vote": 6.9,
     "link": "https://vixsrc.to/movie/13809/",
     "added": "2026-01-18T13:50:43.959137"
   },
@@ -144562,7 +144564,7 @@
       "Musica"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.7,
     "link": "https://vixsrc.to/movie/603519/",
     "added": "2026-01-18T13:50:56.037304"
   },
@@ -146271,7 +146273,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 6.5,
+    "vote": 6.6,
     "link": "https://vixsrc.to/movie/22774/",
     "added": "2026-01-18T13:51:04.481225"
   },
@@ -150965,7 +150967,7 @@
       "Romance"
     ],
     "pegi": null,
-    "vote": 6.7,
+    "vote": 6.8,
     "link": "https://vixsrc.to/movie/15144/",
     "added": "2026-01-18T13:51:26.952798"
   },
@@ -152800,7 +152802,7 @@
       "Fantascienza"
     ],
     "pegi": "T",
-    "vote": 6.8,
+    "vote": 6.7,
     "link": "https://vixsrc.to/movie/605/",
     "added": "2026-01-18T13:51:35.883492"
   },
@@ -163719,7 +163721,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.1,
     "link": "https://vixsrc.to/movie/18240/",
     "added": "2026-01-18T13:52:27.287572"
   },
@@ -168021,7 +168023,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.0,
     "link": "https://vixsrc.to/movie/624/",
     "added": "2026-01-18T13:52:48.345433"
   },
@@ -172539,7 +172541,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 8.1,
+    "vote": 8.2,
     "link": "https://vixsrc.to/tv/209110/",
     "added": "2026-01-18T13:53:16.802934"
   },
@@ -172554,7 +172556,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 6.5,
+    "vote": 6.6,
     "link": "https://vixsrc.to/tv/240459/",
     "added": "2026-01-18T13:53:16.856028"
   },
@@ -173274,7 +173276,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 8.0,
+    "vote": 7.9,
     "link": "https://vixsrc.to/tv/219080/",
     "added": "2026-01-18T13:53:20.735524"
   },
@@ -174427,7 +174429,7 @@
   {
     "id": "86605",
     "title": "Well-Intended Love",
-    "poster": "https://image.tmdb.org/t/p/w780/noPDH546wRgXjNN8GTXRAZBj8an.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/3V8k1UoEDWFoZeES0qARGXatBuh.jpg",
     "overview": "Per ricevere più rapidamente un trapianto di midollo osseo e poter continuare la sua carriera di attrice, Xia Lin ha un matrimonio segreto con Ling Yi Zhou, l'amministratore delegato di un'azienda. Nonostante le cospirazioni e le incomprensioni che incontrano, i due trovano il vero amore.",
     "type": "tv",
     "genres": [
@@ -174451,7 +174453,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 8.7,
+    "vote": 8.8,
     "link": "https://vixsrc.to/tv/274570/",
     "added": "2026-01-18T13:53:26.862651"
   },
@@ -174970,7 +174972,7 @@
   {
     "id": "302723",
     "title": "Semplicemente Alicia",
-    "poster": "https://image.tmdb.org/t/p/w780/xV0dzVfaYgqWBnKVNWWyZk2YdrE.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/8XvSmuyZQkzB6eVy37oq0rGNpWe.jpg",
     "overview": "Divisa tra due amori, Alicia sposa segretamente sia un famoso scrittore sia un ex prete. Per quanto tempo riuscirà a destreggiarsi tra sentimenti, bugie e la sua doppia vita?",
     "type": "tv",
     "genres": [
@@ -177989,7 +177991,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.2,
+    "vote": 6.5,
     "link": "https://vixsrc.to/tv/275722/",
     "added": "2026-01-18T13:53:45.023682"
   },
@@ -179606,7 +179608,7 @@
   {
     "id": "128999",
     "title": "我的邻居长不大",
-    "poster": "https://image.tmdb.org/t/p/w780/cWSTNrCE0X1caoijv0LWfFoejsB.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/f75DlpGaggxyNPh3UFIDKn4D3Zd.jpg",
     "overview": "",
     "type": "tv",
     "genres": [
@@ -184804,7 +184806,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 7.0,
+    "vote": 7.1,
     "link": "https://vixsrc.to/tv/216005/",
     "added": "2026-01-18T13:54:20.960292"
   },
@@ -184941,7 +184943,7 @@
   },
   {
     "id": "202097",
-    "title": "Accused",
+    "title": "Accused - Sotto Processo",
     "poster": "https://image.tmdb.org/t/p/w780/w0zeTmejqPqVw07jVDkeQqJvxqq.jpg",
     "overview": "In questa serie di antologie criminali, gli spettatori scoprono come una persona comune è rimasta coinvolta in una situazione straordinaria, rivelando alla fine come una svolta sbagliata porti a un'altra, finché non è troppo tardi per tornare indietro. Raccontato dal punto di vista dell'imputato, ogni episodio si apre in un'aula di tribunale con gli accusati senza conoscere il loro crimine o come sono finiti sotto processo.",
     "type": "tv",
@@ -189550,7 +189552,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 5.1,
+    "vote": 5.2,
     "link": "https://vixsrc.to/tv/294862/",
     "added": "2026-01-18T13:54:45.205697"
   },
@@ -190032,7 +190034,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 7.6,
+    "vote": 7.5,
     "link": "https://vixsrc.to/tv/298234/",
     "added": "2026-01-18T13:54:47.828092"
   },
@@ -190511,7 +190513,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.4,
+    "vote": 7.3,
     "link": "https://vixsrc.to/tv/157239/",
     "added": "2026-01-18T13:54:50.266012"
   },
@@ -190642,6 +190644,7 @@
     "overview": "Davanti alla malattia della figlia, un’ex poliziotta profondamente religiosa che ha perso tutto, si trova costretta a cercare una soluzione ai margini della legalità. Si affida a un gangster e diventa una “talpa” durante una rapina, ma quando viene tradita, reagisce con sangue freddo e ingegno. L’amore materno si trasforma così in un’arma potente.",
     "type": "tv",
     "genres": [
+      "Crime",
       "Dramma"
     ],
     "pegi": null,
@@ -190921,7 +190924,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.0,
     "link": "https://vixsrc.to/tv/294726/",
     "added": "2026-01-18T13:54:52.445944"
   },
@@ -191360,7 +191363,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.5,
+    "vote": 7.6,
     "link": "https://vixsrc.to/tv/87553/",
     "added": "2026-01-18T13:54:54.611386"
   },
@@ -191513,7 +191516,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/tv/90665/",
     "added": "2026-01-18T13:54:55.357999"
   },
@@ -195074,7 +195077,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.0,
+    "vote": 4.8,
     "link": "https://vixsrc.to/tv/68915/",
     "added": "2026-01-18T13:55:14.571971"
   },
@@ -197864,7 +197867,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.7,
     "link": "https://vixsrc.to/tv/228528/",
     "added": "2026-01-18T13:55:29.370722"
   },
@@ -198807,7 +198810,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.1,
+    "vote": 6.0,
     "link": "https://vixsrc.to/tv/256116/",
     "added": "2026-01-18T13:55:34.343918"
   },
@@ -199854,7 +199857,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.4,
+    "vote": 7.5,
     "link": "https://vixsrc.to/tv/250923/",
     "added": "2026-01-18T13:55:39.706372"
   },
@@ -200406,7 +200409,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.7,
     "link": "https://vixsrc.to/tv/220564/",
     "added": "2026-01-18T13:55:42.540270"
   },
@@ -201215,7 +201218,7 @@
       "Famiglia"
     ],
     "pegi": "T",
-    "vote": 7.6,
+    "vote": 7.5,
     "link": "https://vixsrc.to/tv/31390/",
     "added": "2026-01-18T13:55:47.332654"
   },
@@ -203328,7 +203331,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.2,
     "link": "https://vixsrc.to/tv/31078/",
     "added": "2026-01-18T13:55:58.365405"
   },
@@ -204134,7 +204137,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 6.3,
+    "vote": 6.4,
     "link": "https://vixsrc.to/tv/257207/",
     "added": "2026-01-18T13:56:02.513563"
   },
@@ -205243,7 +205246,7 @@
       "Sci-Fi & Fantasy"
     ],
     "pegi": "VM14",
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/tv/247441/",
     "added": "2026-01-18T13:56:08.134625"
   },
@@ -206512,7 +206515,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.7,
     "link": "https://vixsrc.to/tv/253384/",
     "added": "2026-01-18T13:56:15.155247"
   },
@@ -207262,7 +207265,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.7,
     "link": "https://vixsrc.to/tv/253249/",
     "added": "2026-01-18T13:56:19.133661"
   },
@@ -210259,7 +210262,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.0,
+    "vote": 6.9,
     "link": "https://vixsrc.to/tv/7354/",
     "added": "2026-01-18T13:56:35.452750"
   },
@@ -211340,7 +211343,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 8.4,
+    "vote": 8.5,
     "link": "https://vixsrc.to/tv/221851/",
     "added": "2026-01-18T13:56:41.566897"
   },
@@ -212141,7 +212144,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 7.0,
+    "vote": 7.1,
     "link": "https://vixsrc.to/tv/113622/",
     "added": "2026-01-18T13:56:45.806103"
   },
@@ -212231,7 +212234,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.2,
     "link": "https://vixsrc.to/tv/72755/",
     "added": "2026-01-18T13:56:46.341881"
   },
@@ -213610,7 +213613,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 8.0,
+    "vote": 8.1,
     "link": "https://vixsrc.to/tv/202208/",
     "added": "2026-01-18T13:56:54.069239"
   },
@@ -213626,7 +213629,7 @@
       "Western"
     ],
     "pegi": null,
-    "vote": 7.5,
+    "vote": 7.6,
     "link": "https://vixsrc.to/tv/137883/",
     "added": "2026-01-18T13:56:54.157611"
   },
@@ -214063,7 +214066,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.4,
+    "vote": 7.5,
     "link": "https://vixsrc.to/tv/74140/",
     "added": "2026-01-18T13:56:56.549288"
   },
@@ -214519,7 +214522,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 5.7,
+    "vote": 5.8,
     "link": "https://vixsrc.to/tv/71181/",
     "added": "2026-01-18T13:56:58.931056"
   },
@@ -217012,7 +217015,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.5,
+    "vote": 5.7,
     "link": "https://vixsrc.to/tv/221483/",
     "added": "2026-01-18T13:57:12.454919"
   },
@@ -219294,7 +219297,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 7.9,
+    "vote": 7.8,
     "link": "https://vixsrc.to/tv/114621/",
     "added": "2026-01-18T13:57:24.634102"
   },
@@ -225992,7 +225995,7 @@
       "Famiglia"
     ],
     "pegi": null,
-    "vote": 7.7,
+    "vote": 7.6,
     "link": "https://vixsrc.to/tv/138395/",
     "added": "2026-01-18T13:58:00.617643"
   },
@@ -227274,7 +227277,7 @@
   {
     "id": "80986",
     "title": "Stargirl",
-    "poster": "https://image.tmdb.org/t/p/w780/68EbeOUOG66a23bCwP9VK4WzwTj.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/JJxVsQPPiuLcArALotMHsCubeo.jpg",
     "overview": "Courtney Whitmore, una ragazza intelligente, atletica e soprattutto gentile, scopre che il suo patrigno ha un segreto: era la spalla di un supereroe. \"Prendendo in prestito\" il bastone cosmico dell'eroe scomparso anni prima, diventa l'improbabile ispirazione per una generazione completamente nuova di supereroi.",
     "type": "tv",
     "genres": [
@@ -230904,7 +230907,7 @@
       "Documentario"
     ],
     "pegi": null,
-    "vote": 8.1,
+    "vote": 8.2,
     "link": "https://vixsrc.to/tv/87083/",
     "added": "2026-01-18T13:58:26.509563"
   },
@@ -235445,7 +235448,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.6,
+    "vote": 7.7,
     "link": "https://vixsrc.to/tv/68421/",
     "added": "2026-01-18T13:58:49.875912"
   },
@@ -236158,7 +236161,7 @@
       "Romance"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/12572/",
     "added": "2026-01-18T13:39:02.281524"
   },
@@ -236593,7 +236596,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.5,
     "link": "https://vixsrc.to/movie/1451402/",
     "added": "2026-01-21T04:59:07.630602"
   },
@@ -237479,7 +237482,7 @@
       "Sci-Fi & Fantasy"
     ],
     "pegi": null,
-    "vote": 6.1,
+    "vote": 6.2,
     "link": "https://vixsrc.to/tv/273160/",
     "added": "2026-01-22T05:17:30.123151"
   },
@@ -238641,7 +238644,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.8,
+    "vote": 7.7,
     "link": "https://vixsrc.to/movie/1317288/",
     "added": "2026-01-26T09:44:50.613651"
   },
@@ -238881,7 +238884,8 @@
     "type": "movie",
     "genres": [
       "Fantascienza",
-      "Dramma"
+      "Dramma",
+      "Horror"
     ],
     "pegi": null,
     "vote": 7.7,
@@ -239651,7 +239655,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.4,
     "link": "https://vixsrc.to/movie/1602705/",
     "added": "2026-01-30T08:46:13.158457"
   },
@@ -239809,7 +239813,7 @@
       "Dramma"
     ],
     "pegi": "T",
-    "vote": 7.7,
+    "vote": 7.5,
     "link": "https://vixsrc.to/movie/1266016/",
     "added": "2026-01-31T12:16:00.077546"
   },
@@ -239935,7 +239939,7 @@
       "Horror"
     ],
     "pegi": null,
-    "vote": 5.9,
+    "vote": 5.8,
     "link": "https://vixsrc.to/movie/1234731/",
     "added": "2026-01-31T12:16:51.883378"
   },
@@ -240132,7 +240136,7 @@
       "Thriller"
     ],
     "pegi": "14+",
-    "vote": 6.3,
+    "vote": 6.2,
     "link": "https://vixsrc.to/movie/1315303/",
     "added": "2026-02-02T04:13:03.653780"
   },
@@ -240878,7 +240882,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 6.3,
+    "vote": 6.4,
     "link": "https://vixsrc.to/movie/1620991/",
     "added": "2026-02-05T04:52:48.903912"
   },
@@ -240893,7 +240897,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 5.3,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/1433842/",
     "added": "2026-02-05T04:52:49.032866"
   },
@@ -241282,7 +241286,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.9,
+    "vote": 5.5,
     "link": "https://vixsrc.to/tv/269160/",
     "added": "2026-02-06T05:59:24.732033"
   },
@@ -241369,7 +241373,7 @@
       "Documentario"
     ],
     "pegi": "10+",
-    "vote": 8.4,
+    "vote": 7.8,
     "link": "https://vixsrc.to/movie/1596291/",
     "added": "2026-02-07T04:57:29.107860"
   },
@@ -241412,7 +241416,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 6.1,
     "link": "https://vixsrc.to/movie/1436061/",
     "added": "2026-02-07T04:57:29.812437"
   },
@@ -241491,7 +241495,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.0,
+    "vote": 7.5,
     "link": "https://vixsrc.to/tv/259856/",
     "added": "2026-02-07T05:44:11.950698"
   },
@@ -241764,7 +241768,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 3.9,
+    "vote": 3.7,
     "link": "https://vixsrc.to/tv/270600/",
     "added": "2026-02-09T04:01:28.695603"
   },
@@ -241796,5 +241800,161 @@
     "vote": 7.1,
     "link": "https://vixsrc.to/tv/81131/",
     "added": "2026-02-09T04:02:06.950447"
+  },
+  {
+    "id": "84657",
+    "title": "Guerrieri Romantici",
+    "poster": "https://image.tmdb.org/t/p/w780/yRKeR54AciJKAf7i6ApWfONDp0l.jpg",
+    "overview": "Mentre gli anni della dinastia Goryeo si concludono, un giovane uomo e sua sorella partono alla ricerca di una vita migliore. Non volendo accontentarsi del destino che era stato loro riservato, Yo Yi (Kim Min Jong) e sua sorella minore, Hyang Yi (Jin Jae Young), sono determinati a cambiare il proprio futuro, a qualsiasi costo.  Desideroso di dare alla sorella la vita che merita, Yo Yi si unisce presto a un gruppo di assassini che si definiscono i \"Guerrieri Romantici\". Con l'unico scopo di fare soldi, questo gruppo di straccioni autoproclamati assassini accetta di intraprendere il più grande lavoro della propria carriera. C'è solo un problema, nessuno di loro è abbastanza abile per portarlo a termine ma questo non impedisce a loro di provarci!  I guerrieri si mettono in viaggio per adempiere al loro contratto ma non vanno lontano e si perdono in un bosco.",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Fantasy",
+      "Romance",
+      "Horror",
+      "Azione"
+    ],
+    "pegi": null,
+    "vote": 5.0,
+    "link": "https://vixsrc.to/movie/84657/",
+    "added": "2026-02-10T03:45:36.323436"
+  },
+  {
+    "id": "2453",
+    "title": "Harley Davidson e Marlboro Man",
+    "poster": "https://image.tmdb.org/t/p/w780/qPN9HMWd7F7j6d6YYYPhiz9dT0t.jpg",
+    "overview": "In un mondo dove non vige alcuna regola, la coppia di sbandati Harley Davidson e Marlboro Man aiuta un vecchio amico a salvare il suo bar svaligiando proprio la banca che cerca di assumerne il controllo. Tuttavia, non si tratta di una banca normale e il furgone blindato che i due attaccano non è pieno di denaro, bensì di droga! Da questo momento Harley e Marlboro diventano oggetto di una spietata caccia all'uomo condotta dagli inarrestabili scagnozzi senza scrupoli del corrotto direttore di banca.",
+    "type": "movie",
+    "genres": [
+      "Azione",
+      "Thriller"
+    ],
+    "pegi": null,
+    "vote": 6.3,
+    "link": "https://vixsrc.to/movie/2453/",
+    "added": "2026-02-10T03:45:36.428559"
+  },
+  {
+    "id": "1433339",
+    "title": "Tre ciotole",
+    "poster": "https://image.tmdb.org/t/p/w780/fyIdHPdzB2fBJqbUdglqx1sUSKM.jpg",
+    "overview": "Dopo quello che sembrava un banale litigio, Marta e Antonio si lasciano. Marta reagisce alla rottura chiudendosi in sé stessa. L’unico sintomo che non può ignorare è la sua improvvisa mancanza di appetito. Antonio, chef in rampa di lancio, si butta sul lavoro. Ma sebbene sia stato lui a lasciare Marta, non riesce a dimenticarla. Quando Marta scopre che la mancanza di appetito ha più a che fare con la propria salute che con il dolore della separazione, tutto cambia: il sapore del cibo, la musica, il desiderio, la certezza delle scelte fatte.",
+    "type": "movie",
+    "genres": [
+      "Dramma"
+    ],
+    "pegi": null,
+    "vote": 7.3,
+    "link": "https://vixsrc.to/movie/1433339/",
+    "added": "2026-02-10T03:45:36.527825"
+  },
+  {
+    "id": "27274",
+    "title": "Frankenhooker",
+    "poster": "https://image.tmdb.org/t/p/w780/s8Oubzkc2pPdOdj4D23ljZSKRbg.jpg",
+    "overview": "",
+    "type": "movie",
+    "genres": [
+      "Commedia",
+      "Horror",
+      "Fantascienza"
+    ],
+    "pegi": null,
+    "vote": 6.3,
+    "link": "https://vixsrc.to/movie/27274/",
+    "added": "2026-02-10T03:45:36.671953"
+  },
+  {
+    "id": "1339658",
+    "title": "Ehi, tu!",
+    "poster": "https://image.tmdb.org/t/p/w780/8nBOFo78pKgzLipgGZhC8VA33wp.jpg",
+    "overview": "Il primo weekend fuori porta di Iris e Isaac come coppia sta andando alla grande, finché Isaac non dice che non sapeva che fossero una coppia. Convinta di aver trovato il ragazzo perfetto e che lui sia solo confuso, Iris fa di tutto, in modo sempre più assurdo e irrazionale, per dimostrare a Isaac che sono fatti l'uno per l'altra.",
+    "type": "movie",
+    "genres": [
+      "Romance",
+      "Commedia",
+      "Thriller"
+    ],
+    "pegi": null,
+    "vote": 6.3,
+    "link": "https://vixsrc.to/movie/1339658/",
+    "added": "2026-02-10T03:45:37.360219"
+  },
+  {
+    "id": "1429605",
+    "title": "F Valentine's Day",
+    "poster": "https://image.tmdb.org/t/p/w780/8zPExowfpfZOTpS1W4J7G27lH4H.jpg",
+    "overview": "",
+    "type": "movie",
+    "genres": [
+      "Romance",
+      "Commedia"
+    ],
+    "pegi": null,
+    "vote": 6.0,
+    "link": "https://vixsrc.to/movie/1429605/",
+    "added": "2026-02-10T03:45:37.460490"
+  },
+  {
+    "id": "17609",
+    "title": "Antichrist",
+    "poster": "https://image.tmdb.org/t/p/w780/1npvm5xly8UdxWiG5Gh1GB8Ay15.jpg",
+    "overview": "Il film, che riprende la teoria secondo la quale il mondo sarebbe stato creato da Satana e non da Dio, vede una coppia che, in seguito alla morte del figlio caduto da una finestra, cerca un po' di pace andando a trascorrere un breve periodo di vacanza nei boschi, provando così a recuperare il loro rapporto, caduto in una crisi profonda. Le esperienze di cui saranno testimoni, però, sono quanto di più terrificante ed inumano si possa mai immaginare...",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Horror",
+      "Thriller"
+    ],
+    "pegi": "18+",
+    "vote": 6.6,
+    "link": "https://vixsrc.to/movie/17609/",
+    "added": "2026-02-10T03:46:21.821764"
+  },
+  {
+    "id": "1079810",
+    "title": "The Long Game",
+    "poster": "https://image.tmdb.org/t/p/w780/inta4LBe5fJsjgsZjCT6nxjSHso.jpg",
+    "overview": "In un Texas segregato, a cinque caddy adolescenti messicano-americani era vietato giocare nel country club in cui lavoravano. Contro ogni previsione, formarono la propria squadra, costruirono un campo a una buca nei campi e vinsero il campionato del Texas State del 1957. Basato su una storia vera.",
+    "type": "movie",
+    "genres": [
+      "Dramma",
+      "Famiglia"
+    ],
+    "pegi": null,
+    "vote": 7.0,
+    "link": "https://vixsrc.to/movie/1079810/",
+    "added": "2026-02-10T03:52:10.226791"
+  },
+  {
+    "id": "96229",
+    "title": "Bake Off Italia - Dolci in forno",
+    "poster": "https://image.tmdb.org/t/p/w780/4u0mRkv7LbofpZb7M5fuxpYIs0J.jpg",
+    "overview": "Sedici concorrenti uniti da un'unica passione, la pasticceria. Una sfida. Alla fine solo uno di loro diventerà il miglior fornaio dilettante d'Italia e realizzerà il suo sogno.",
+    "type": "tv",
+    "genres": [
+      "Reality"
+    ],
+    "pegi": null,
+    "vote": 6.8,
+    "link": "https://vixsrc.to/tv/96229/",
+    "added": "2026-02-10T04:08:34.134395"
+  },
+  {
+    "id": "291904",
+    "title": "Lo strano e meraviglioso mondo di Gumball",
+    "poster": "https://image.tmdb.org/t/p/w780/wG6tRzXB8lTE03i7NaqwO04z5Oy.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [
+      "Animazione",
+      "Famiglia",
+      "Commedia",
+      "Sci-Fi & Fantasy"
+    ],
+    "pegi": null,
+    "vote": 8.4,
+    "link": "https://vixsrc.to/tv/291904/",
+    "added": "2026-02-10T04:11:17.878711"
   }
 ]
