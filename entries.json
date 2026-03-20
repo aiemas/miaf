@@ -7179,8 +7179,7 @@
     "type": "movie",
     "genres": [
       "Horror",
-      "Mistero",
-      "Dramma"
+      "Mistero"
     ],
     "pegi": null,
     "vote": 5.5,
@@ -18703,7 +18702,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.4,
+    "vote": 6.5,
     "link": "https://vixsrc.to/movie/1426792/",
     "added": "2026-01-18T13:40:32.888906"
   },
@@ -30580,7 +30579,7 @@
       "Dramma"
     ],
     "pegi": "14+",
-    "vote": 5.9,
+    "vote": 6.0,
     "link": "https://vixsrc.to/movie/790459/",
     "added": "2026-01-18T13:41:32.611647"
   },
@@ -39589,7 +39588,6 @@
       "Animazione",
       "Famiglia",
       "Commedia",
-      "Musica",
       "televisione film"
     ],
     "pegi": null,
@@ -39769,8 +39767,8 @@
     "overview": "Tre amiche da una vita viaggiano a Key West, in Florida, per fare da damigelle al matrimonio a sorpresa della loro amica del college Marilyn. Una volta lì, i legami di sorellanza si riaccendono, il passato riemerge in tutto il suo splendore, e ci sono abbastanza scintille, drink e romanticismo da cambiare le loro vite in modi inaspettati.",
     "type": "movie",
     "genres": [
-      "Commedia",
-      "Dramma"
+      "Dramma",
+      "Commedia"
     ],
     "pegi": null,
     "vote": 5.9,
@@ -40124,7 +40122,7 @@
       "Azione"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.7,
     "link": "https://vixsrc.to/movie/1429744/",
     "added": "2026-01-18T13:42:20.606777"
   },
@@ -43554,7 +43552,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 5.4,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/1245165/",
     "added": "2026-01-18T13:42:37.376396"
   },
@@ -48565,7 +48563,7 @@
       "Fantasy"
     ],
     "pegi": null,
-    "vote": 7.6,
+    "vote": 7.7,
     "link": "https://vixsrc.to/movie/439058/",
     "added": "2026-01-18T13:43:01.836924"
   },
@@ -51139,7 +51137,7 @@
     "id": "702691",
     "title": "Dragon Soldiers",
     "poster": "https://image.tmdb.org/t/p/w780/jNCPqxqBZ74NpQfxpBBaD8o6eTg.jpg",
-    "overview": "",
+    "overview": "In una cittadina di periferia, un mostro letale si aggira nella foresta circostante, uccidendo chiunque si avvicini troppo. Disperati, un gruppo di soldati d'élite viene chiamato a intervenire per fermare l'attacco. Ben presto, però, i cacciatori si trasformano in prede, mentre lottano per uccidere la terrificante bestia sputafuoco.",
     "type": "movie",
     "genres": [
       "Azione",
@@ -51694,7 +51692,7 @@
     "id": "1437446",
     "title": "Tornado Town: Nell'occhio del ciclone",
     "poster": "https://image.tmdb.org/t/p/w780/mJfAOq79O1y56RCWGVy4Rj2J4kd.jpg",
-    "overview": "Il cielo diventa scuro, cala un silenzio inquietante... e un tornado mostruoso colpisce Joplin, nel Missouri. In questo documentario i sopravvissuti condividono storie e video.",
+    "overview": "Nel maggio 2011 un violento tornado si abbatte su Joplin, Missouri. Con riprese inedite al cardiopalma, questo documentario entra nel micidiale occhio del ciclone.",
     "type": "movie",
     "genres": [
       "Documentario"
@@ -55012,7 +55010,7 @@
       "Azione"
     ],
     "pegi": "T",
-    "vote": 5.8,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/1233243/",
     "added": "2026-01-18T13:43:33.572625"
   },
@@ -61167,7 +61165,7 @@
       "televisione film"
     ],
     "pegi": null,
-    "vote": 5.8,
+    "vote": 5.7,
     "link": "https://vixsrc.to/movie/1067513/",
     "added": "2026-01-18T13:44:04.279728"
   },
@@ -61957,7 +61955,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 6.3,
+    "vote": 6.2,
     "link": "https://vixsrc.to/movie/970347/",
     "added": "2026-01-18T13:44:08.296266"
   },
@@ -65411,7 +65409,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 5.4,
+    "vote": 5.3,
     "link": "https://vixsrc.to/movie/960470/",
     "added": "2026-01-18T13:44:24.748164"
   },
@@ -70273,7 +70271,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 5.6,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/1167351/",
     "added": "2026-01-18T13:44:48.587809"
   },
@@ -70387,7 +70385,7 @@
   {
     "id": "764807",
     "title": "Felix e il tesoro di Morga",
-    "poster": "https://image.tmdb.org/t/p/w780/fMa1u2dgmsnRahWJ2NtOUQsuiLo.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/yuUkSd4SwKSxHHOzSQHoWwdG4Fi.jpg",
     "overview": "Approfittando dell'assenza della madre in partenza su una nave da crociera per riposarsi e rilassarsi, il dodicenne Félix parte alla ricerca di suo padre, un pescatore scomparso in mare due anni prima.",
     "type": "movie",
     "genres": [
@@ -73964,7 +73962,8 @@
     "genres": [
       "Romance",
       "Dramma",
-      "Fantascienza"
+      "Mistero",
+      "Fantasy"
     ],
     "pegi": null,
     "vote": 7.0,
@@ -74540,7 +74539,7 @@
       "Azione"
     ],
     "pegi": null,
-    "vote": 5.3,
+    "vote": 5.4,
     "link": "https://vixsrc.to/movie/1180702/",
     "added": "2026-01-18T13:45:09.654832"
   },
@@ -75100,7 +75099,7 @@
       "Crime"
     ],
     "pegi": "T",
-    "vote": 7.8,
+    "vote": 7.9,
     "link": "https://vixsrc.to/movie/16/",
     "added": "2026-01-18T13:45:12.426288"
   },
@@ -76524,7 +76523,7 @@
   },
   {
     "id": "1002088",
-    "title": "크로스",
+    "title": "Mission: Cross",
     "poster": "https://image.tmdb.org/t/p/w780/wfu6FxzW8g1dFE251jSqwQoGlqk.jpg",
     "overview": "",
     "type": "movie",
@@ -87909,7 +87908,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 6.7,
+    "vote": 6.6,
     "link": "https://vixsrc.to/movie/1005681/",
     "added": "2026-01-18T13:46:16.212273"
   },
@@ -98813,7 +98812,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.7,
     "link": "https://vixsrc.to/movie/1001835/",
     "added": "2026-01-18T13:47:10.921074"
   },
@@ -115168,7 +115167,7 @@
   {
     "id": "241848",
     "title": "The Guest",
-    "poster": "https://image.tmdb.org/t/p/w780/8hGMD8PhOJrzkew0RZyOWqDhGJR.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/gvlEFHu9FuYLmBZwsARTtuNIiDO.jpg",
     "overview": "David, un soldato, si introduce nella vita della famiglia Peterson, presentandosi come un amico del figlio, morto in azione. Dopo che il giovane viene accolto in casa, cominciano a verificarsi una serie di incidenti...",
     "type": "movie",
     "genres": [
@@ -116105,7 +116104,7 @@
   {
     "id": "730047",
     "title": "Cyrano",
-    "poster": "https://image.tmdb.org/t/p/w780/e4koV8iC2cCM57bqUnEnIL2a2zH.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/AhksCnTbG0lFBmZWL6NukVRnXZb.jpg",
     "overview": "Troppo impacciato per corteggiare la bella Roxane, il paroliere Cyrano de Bergerac aiuta il giovane Christianin a conquistare il cuore della ragazza grazie a splendide lettere d'amore scritte da lui.",
     "type": "movie",
     "genres": [
@@ -119417,7 +119416,7 @@
       "Azione"
     ],
     "pegi": null,
-    "vote": 6.2,
+    "vote": 6.3,
     "link": "https://vixsrc.to/movie/406759/",
     "added": "2026-01-18T13:48:52.444680"
   },
@@ -134870,7 +134869,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.6,
+    "vote": 6.7,
     "link": "https://vixsrc.to/movie/592643/",
     "added": "2026-01-18T13:50:08.497845"
   },
@@ -134945,8 +134944,7 @@
     "genres": [
       "Famiglia",
       "Commedia",
-      "Avventura",
-      "Animazione"
+      "Avventura"
     ],
     "pegi": null,
     "vote": 7.0,
@@ -150519,7 +150517,7 @@
   {
     "id": "614427",
     "title": "È per il tuo bene",
-    "poster": "https://image.tmdb.org/t/p/w780/7M9MRi2N5Pen1C7HX7Ii5l57bja.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/cK33UaL11OcrRPlyhTaEmQERfRd.jpg",
     "overview": "Tre padri dispotici contrari alle scelte sentimentali anticonvenzionali delle figlie fanno un patto per rovinarne le relazioni. È per il loro bene.",
     "type": "movie",
     "genres": [
@@ -159786,7 +159784,6 @@
     "genres": [
       "Fantasy",
       "Azione",
-      "Crime",
       "Thriller"
     ],
     "pegi": "T",
@@ -161647,7 +161644,7 @@
   {
     "id": "311",
     "title": "C'era una volta in America",
-    "poster": "https://image.tmdb.org/t/p/w780/7KuRRyFasbLFwanitRatvbymTpl.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/A0Va4hHmMfuU6WPIIeSXFUl5gjN.jpg",
     "overview": "Il quartiere ebraico della New York anni '20 costituisce il campo delle gesta di una piccola banda di ragazzini. Li capeggiano Max e Noodles, la strada è il loro regno per scippi, furterelli, ricatti al poliziotto di zona e così via. Ma i ragazzi crescono, e l'epoca del proibizionismo incalza...",
     "type": "movie",
     "genres": [
@@ -164099,6 +164096,7 @@
       "Animazione",
       "Famiglia",
       "Commedia",
+      "Dramma",
       "Azione"
     ],
     "pegi": null,
@@ -172245,7 +172243,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.8,
+    "vote": 7.5,
     "link": "https://vixsrc.to/tv/307674/",
     "added": "2026-01-18T13:53:15.308637"
   },
@@ -174403,7 +174401,7 @@
   },
   {
     "id": "274570",
-    "title": "Moon River",
+    "title": "이강에는 달이 흐른다",
     "poster": "https://image.tmdb.org/t/p/w780/yPh9oLCwmbAF6iBibip7dq4Ojd6.jpg",
     "overview": "",
     "type": "tv",
@@ -183254,7 +183252,7 @@
       "Reality"
     ],
     "pegi": null,
-    "vote": 6.2,
+    "vote": 6.3,
     "link": "https://vixsrc.to/tv/155431/",
     "added": "2026-01-18T13:54:13.106538"
   },
@@ -183458,7 +183456,7 @@
       "Sci-Fi & Fantasy"
     ],
     "pegi": null,
-    "vote": 6.8,
+    "vote": 6.7,
     "link": "https://vixsrc.to/tv/51704/",
     "added": "2026-01-18T13:54:14.235544"
   },
@@ -183522,7 +183520,7 @@
   },
   {
     "id": "201722",
-    "title": "昆仑神宫",
+    "title": "鬼吹灯之昆仑神宫",
     "poster": "https://image.tmdb.org/t/p/w780/ayGTPcKYejtulX8zRTpfJ9OHYuU.jpg",
     "overview": "",
     "type": "tv",
@@ -185854,7 +185852,7 @@
       "Commedia"
     ],
     "pegi": null,
-    "vote": 8.2,
+    "vote": 8.1,
     "link": "https://vixsrc.to/tv/247168/",
     "added": "2026-01-18T13:54:26.501859"
   },
@@ -187153,7 +187151,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 6.2,
+    "vote": 6.3,
     "link": "https://vixsrc.to/tv/255859/",
     "added": "2026-01-18T13:54:33.211771"
   },
@@ -188334,7 +188332,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 8.3,
+    "vote": 8.2,
     "link": "https://vixsrc.to/tv/275677/",
     "added": "2026-01-18T13:54:39.181536"
   },
@@ -191731,7 +191729,7 @@
       "Reality"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/tv/292225/",
     "added": "2026-01-18T13:54:56.789200"
   },
@@ -192877,7 +192875,7 @@
       "Reality"
     ],
     "pegi": null,
-    "vote": 8.4,
+    "vote": 8.5,
     "link": "https://vixsrc.to/tv/256355/",
     "added": "2026-01-18T13:55:03.150890"
   },
@@ -198054,7 +198052,7 @@
   {
     "id": "213306",
     "title": "Alex Cross",
-    "poster": "https://image.tmdb.org/t/p/w780/6hhKdavCEZi8d584ZtIrQIrBvZI.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/nKeYI3EZ37YqcyENj5fztMsts8q.jpg",
     "overview": "Un poliziesco drammatico, che segue Alex Cross, un brillante detective della Omicidi di Washington D.C., i cui problemi personali rischiano di far deragliare la sua carriera e la sua vita.",
     "type": "tv",
     "genres": [
@@ -198422,7 +198420,7 @@
       "Commedia"
     ],
     "pegi": "VM18",
-    "vote": 8.1,
+    "vote": 8.0,
     "link": "https://vixsrc.to/tv/203489/",
     "added": "2026-01-18T13:55:32.484090"
   },
@@ -198862,7 +198860,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.5,
+    "vote": 7.6,
     "link": "https://vixsrc.to/tv/246246/",
     "added": "2026-01-18T13:55:34.792174"
   },
@@ -204664,7 +204662,7 @@
   {
     "id": "4610",
     "title": "Hannah Montana",
-    "poster": "https://image.tmdb.org/t/p/w780/usJAQAA7s9lJGGOGehIZdzKPCke.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/A1rcqwmQwUTbQiRG6bP6r0fFQDy.jpg",
     "overview": "La storia narra le vicende di Miley Stewart, una dolce e tenera ragazza trasferitasi dal Tennessee alla California, insieme al fratello maggiore Jackson e al padre Robbie, famoso musicista country rimasto vedovo dopo la morte della moglie Susan. Miley sembra essere una teenager come tutte le altre: conduce una vita del tutto normale, ama passare il tempo con i suoi amici Lilly Truscott ed Oliver Oken e frequenta la scuola insieme ai suoi coetanei, ma non tutti sanno che nasconde un grande segreto. Di notte, infatti, lei è Hannah Montana, una delle popstar più famose degli Stati Uniti, ed è per questo che è costretta ad alternare una vita quotidiana piuttosto monotona ad enormi concerti in giro per il Paese.",
     "type": "tv",
     "genres": [
@@ -212736,7 +212734,7 @@
       "Sci-Fi & Fantasy"
     ],
     "pegi": null,
-    "vote": 6.0,
+    "vote": 5.9,
     "link": "https://vixsrc.to/tv/195821/",
     "added": "2026-01-18T13:56:49.687369"
   },
@@ -215407,7 +215405,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.6,
+    "vote": 7.7,
     "link": "https://vixsrc.to/tv/125816/",
     "added": "2026-01-18T13:57:04.063539"
   },
@@ -217813,7 +217811,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.3,
+    "vote": 7.4,
     "link": "https://vixsrc.to/tv/112945/",
     "added": "2026-01-18T13:57:16.936051"
   },
@@ -228444,7 +228442,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 7.1,
+    "vote": 7.2,
     "link": "https://vixsrc.to/tv/123377/",
     "added": "2026-01-18T13:58:13.837314"
   },
@@ -235712,7 +235710,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 5.1,
+    "vote": 5.2,
     "link": "https://vixsrc.to/tv/223530/",
     "added": "2026-01-18T13:53:10.865918"
   },
@@ -238559,7 +238557,7 @@
   {
     "id": "120082",
     "title": "Ti stimo fratello",
-    "poster": "https://image.tmdb.org/t/p/w780/6Nzdk6i4r7sR74W8nBvuNt2TCAQ.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/h6gs6jbXTabLqojQIvpmVZa8yqw.jpg",
     "overview": "Giovanni è un ingegnere elettronico fresco di laurea in cerca di un lavoro e di un amore. Lasciata Genova per la più produttiva Milano, è raggiunto presto e con risultati rovinosi da Jonny, gemello diverso col vizio della house music e l'inettitudine al pensiero. Occupato presso un'agenzia pubblicitaria e legatosi sentimentalmente alla tirannica figlia del suo capo, Giovanni deve fare fronte alle continue incursioni del fratello, sistemato a casa sua e in attesa dell'esame per entrare nel corpo della Guardia di Finanza. Ossessionato dalla discoteca e da una ragazza intravista tra una gazzosa e una performance ipnotica, Jonny scompaginerà la vita convenzionale di Giovanni, rivelandone la spontaneità e chiarendone una volta per tutte le ambizioni professionali e sentimentali.",
     "type": "movie",
     "genres": [
@@ -238607,7 +238605,7 @@
   {
     "id": "1317288",
     "title": "Marty Supreme",
-    "poster": "https://image.tmdb.org/t/p/w780/zrqTV3MMaIsx9dbplMwKUHxObmP.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/i0Mr9XFc0KqtWDODSRFg5kl0NNF.jpg",
     "overview": "Marty Mauser (Timothée Chalamet) è un venditore di scarpe con un’irrefrenabile ossessione per il ping pong che si muove nella New York degli anni ’50 fra truffe, scommesse, passioni proibite e sogni di gloria. Un’esistenza rocambolesca per un personaggio larger than life, eccentrico e ambiziosissimo, smodato e leggendario.",
     "type": "movie",
     "genres": [
@@ -239200,7 +239198,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.6,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/1206008/",
     "added": "2026-01-29T18:18:38.353724"
   },
@@ -241127,7 +241125,7 @@
       "Avventura"
     ],
     "pegi": null,
-    "vote": 6.1,
+    "vote": 6.0,
     "link": "https://vixsrc.to/movie/46004/",
     "added": "2026-02-06T05:03:26.250815"
   },
@@ -242736,7 +242734,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.5,
+    "vote": 5.6,
     "link": "https://vixsrc.to/movie/1317672/",
     "added": "2026-02-14T03:23:11.525733"
   },
@@ -243569,7 +243567,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 6.7,
+    "vote": 6.8,
     "link": "https://vixsrc.to/tv/241372/",
     "added": "2026-02-19T04:10:41.075283"
   },
@@ -244119,7 +244117,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 6.2,
+    "vote": 6.1,
     "link": "https://vixsrc.to/movie/1397072/",
     "added": "2026-02-21T03:15:33.314985"
   },
@@ -244273,7 +244271,7 @@
       "Crime"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/tv/218557/",
     "added": "2026-02-21T04:04:23.211885"
   },
@@ -245960,7 +245958,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 5.3,
+    "vote": 5.8,
     "link": "https://vixsrc.to/tv/310800/",
     "added": "2026-03-03T04:14:15.076894"
   },
@@ -246056,7 +246054,7 @@
   {
     "id": "10226",
     "title": "Alta tensione",
-    "poster": "https://image.tmdb.org/t/p/w780/5M27U6i7Yw6sLNJJsa36m4EUXEy.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/f6k2jfvbn4XJwSW6tczcv3JQmF3.jpg",
     "overview": "Aléx e Marie, due studentesse, vanno a preparare gli esami universitari in campagna, a casa dei genitori di Aléx. Dopo cena suona alla porta uno psicopatico che stermina la famiglia e rapisce Aléx, ma non si accorge della presenza di Marie, la quale lo segue per salvare l’amica, anche se...",
     "type": "movie",
     "genres": [
@@ -246081,7 +246079,7 @@
       "Crime"
     ],
     "pegi": "14+",
-    "vote": 6.0,
+    "vote": 5.9,
     "link": "https://vixsrc.to/movie/1159559/",
     "added": "2026-03-04T04:45:58.190146"
   },
@@ -246202,7 +246200,7 @@
       "Dramma"
     ],
     "pegi": null,
-    "vote": 5.3,
+    "vote": 5.5,
     "link": "https://vixsrc.to/movie/1629382/",
     "added": "2026-03-05T03:24:24.618945"
   },
@@ -246247,7 +246245,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.9,
+    "vote": 8.0,
     "link": "https://vixsrc.to/tv/255661/",
     "added": "2026-03-05T03:45:13.710496"
   },
@@ -246502,7 +246500,7 @@
       "Thriller"
     ],
     "pegi": null,
-    "vote": 7.2,
+    "vote": 7.3,
     "link": "https://vixsrc.to/movie/1265609/",
     "added": "2026-03-07T07:51:38.584950"
   },
@@ -247210,7 +247208,7 @@
       "Reality"
     ],
     "pegi": null,
-    "vote": 9.0,
+    "vote": 8.0,
     "link": "https://vixsrc.to/tv/287390/",
     "added": "2026-03-12T03:51:07.543813"
   },
@@ -247500,7 +247498,7 @@
       "Mistero"
     ],
     "pegi": null,
-    "vote": 7.5,
+    "vote": 6.8,
     "link": "https://vixsrc.to/tv/285386/",
     "added": "2026-03-13T03:45:02.171284"
   },
@@ -247892,7 +247890,7 @@
       "Western"
     ],
     "pegi": null,
-    "vote": 9.1,
+    "vote": 9.0,
     "link": "https://vixsrc.to/tv/225891/",
     "added": "2026-03-15T04:20:37.194376"
   },
@@ -248131,7 +248129,7 @@
       "Documentario"
     ],
     "pegi": "6+",
-    "vote": 10.0,
+    "vote": 8.0,
     "link": "https://vixsrc.to/movie/1636918/",
     "added": "2026-03-17T03:28:10.835089"
   },
@@ -248330,7 +248328,7 @@
       "Fantasy"
     ],
     "pegi": null,
-    "vote": 5.2,
+    "vote": 6.4,
     "link": "https://vixsrc.to/movie/1288599/",
     "added": "2026-03-19T03:35:36.226016"
   },
@@ -248424,7 +248422,7 @@
   {
     "id": "292474",
     "title": "Emergenza radioattiva",
-    "poster": "https://image.tmdb.org/t/p/w780/u21TjnyVRB3hxrvvC0Ia2NHgJX8.jpg",
+    "poster": "https://image.tmdb.org/t/p/w780/5MxP4pmZWyBA8d27fAaROFsaH1h.jpg",
     "overview": "Fisici e medici lottano contro il tempo per contenere un grave disastro radiologico e salvare migliaia di vite in questa serie drammatica ispirata a fatti realmente accaduti.",
     "type": "tv",
     "genres": [
@@ -248433,7 +248431,7 @@
       "Action & Adventure"
     ],
     "pegi": null,
-    "vote": 9.0,
+    "vote": 7.3,
     "link": "https://vixsrc.to/tv/292474/",
     "added": "2026-03-19T03:59:22.625721"
   },
@@ -248449,7 +248447,7 @@
       "Crime"
     ],
     "pegi": "VM14",
-    "vote": 5.5,
+    "vote": 4.8,
     "link": "https://vixsrc.to/tv/108181/",
     "added": "2026-03-19T03:59:22.747700"
   },
@@ -248496,5 +248494,78 @@
     "vote": 6.6,
     "link": "https://vixsrc.to/tv/138251/",
     "added": "2026-03-19T04:01:15.850622"
+  },
+  {
+    "id": "592",
+    "title": "La conversazione",
+    "poster": "https://image.tmdb.org/t/p/w780/3ryKU5Z6bLpdGF2EeaKhDR59hkO.jpg",
+    "overview": "Specialista in intercettazioni, che ha sempre vissuto immerso nel lavoro, scopre di avere una coscienza, di essere responsabile di quello che fa, di essere prima complice e poi vittima. Palma d'oro a Cannes e designato agli Oscar (film, regia), è un thriller che anticipa i tempi (Watergate) e le mode, rimanda al cinema di Antonioni (fotografia funzionale di Bill Butler), ma anche agli incubi allucinati di un Kafka tecnologicamente aggiornato. Uno dei migliori film USA degli anni '70 con un G. Hackman perfetto come antieroe dell'era elettronica. Apparizione non accreditata di Robert Duvall.",
+    "type": "movie",
+    "genres": [
+      "Crime",
+      "Dramma",
+      "Mistero"
+    ],
+    "pegi": "T",
+    "vote": 7.5,
+    "link": "https://vixsrc.to/movie/592/",
+    "added": "2026-03-20T03:25:23.258659"
+  },
+  {
+    "id": "1649758",
+    "title": "Meal Ticket",
+    "poster": "https://image.tmdb.org/t/p/w780/4E4WA3bfbq4mgDGrFJMNit9U1gz.jpg",
+    "overview": "",
+    "type": "movie",
+    "genres": [
+      "Documentario"
+    ],
+    "pegi": null,
+    "vote": 8.0,
+    "link": "https://vixsrc.to/movie/1649758/",
+    "added": "2026-03-20T03:25:23.487595"
+  },
+  {
+    "id": "336222",
+    "title": "Rams - Storia di due fratelli e otto pecore",
+    "poster": "https://image.tmdb.org/t/p/w780/wDcRPkcx8Yfr6SbHhQ5RoCrNxPQ.jpg",
+    "overview": "Premiato come Miglior Film nella sezione \"Un certain regard\" al Festival di Cannes 2015, \"Rams\" racconta di Gummi e Kiddiley che vivono in una valle islandese isolata, badando al gregge di famiglia, considerato uno dei migliori del paese. Quando una malattia letale colpisce il gregge di Kiddiley, minacciando l’intera vallata, le autorità decidono di abbattere tutti gli animali della zona per contenere l’epidemia. E’ una condanna a morte per gli allevatori, che numerosi abbandonano la loro terra, ma Gummi e Kiddi non si arrendono tanto facilmente.",
+    "type": "movie",
+    "genres": [
+      "Dramma"
+    ],
+    "pegi": null,
+    "vote": 7.0,
+    "link": "https://vixsrc.to/movie/336222/",
+    "added": "2026-03-20T03:25:23.713987"
+  },
+  {
+    "id": "340176",
+    "title": "Real Oni Gokko - Tag",
+    "poster": "https://image.tmdb.org/t/p/w780/hnjvaakhMiESLICya7VITYTW7E9.jpg",
+    "overview": "La gita di una scolaresca sembra procedere allegramente.",
+    "type": "movie",
+    "genres": [
+      "Horror",
+      "Azione"
+    ],
+    "pegi": null,
+    "vote": 6.5,
+    "link": "https://vixsrc.to/movie/340176/",
+    "added": "2026-03-20T03:25:23.940387"
+  },
+  {
+    "id": "65434",
+    "title": "Chelsea Does",
+    "poster": "https://image.tmdb.org/t/p/w780/6t8ONAMcJMWw86KVRzZ2dUTP2fA.jpg",
+    "overview": "",
+    "type": "tv",
+    "genres": [
+      "Documentario"
+    ],
+    "pegi": null,
+    "vote": 5.3,
+    "link": "https://vixsrc.to/tv/65434/",
+    "added": "2026-03-20T04:14:02.817875"
   }
 ]
