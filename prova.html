@@ -1,105 +1,93 @@
 <!DOCTYPE html>
-<html lang="it">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prova tendine stile</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Streaming</title>
+
 <style>
-body {
-    background: #141414;
-    color: #fff;
-    font-family: Arial, sans-serif;
-    padding: 40px;
-    text-align: center;
+
+body{
+background:#141414;
+color:white;
+font-family:Arial;
+margin:0;
+padding:20px;
 }
 
-/* Wrapper per la freccia custom */
-.select-wrapper {
-    position: relative;
-    display: inline-block;
-    margin: 10px;
+#search{
+width:100%;
+padding:15px;
+font-size:18px;
+border:none;
+border-radius:10px;
+margin-bottom:20px;
 }
 
-/* Stile select */
-select {
-    padding: 10px 35px 10px 15px;
-    border-radius: 25px;
-    border: 2px solid #e50914;
-    background: #1f1f1f;
-    color: #fff;
-    font-size: 16px;
-    outline: none;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    transition: all 0.3s ease;
-    width: 200px;
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(140px,1fr));
+gap:15px;
 }
 
-/* Focus e hover */
-select:focus {
-    border-color: #ff3333;
-    box-shadow: 0 0 8px #e50914;
+.card img{
+width:100%;
+border-radius:10px;
 }
 
-select:hover {
-    transform: scale(1.03);
-}
-
-/* Freccia custom */
-.select-wrapper::after {
-    content: '▼';
-    position: absolute;
-    right: 15px;
-    top: 50%;
-    transform: translateY(-50%);
-    pointer-events: none;
-    font-size: 14px;
-    color: #fff;
-}
-
-/* Tendina multipla (generi) */
-#genreSelect[multiple] {
-    height: auto;
-    max-height: 150px;
-    overflow-y: auto;
-    padding-right: 10px;
-}
-
-/* Scrollbar personalizzata per Webkit */
-#genreSelect[multiple]::-webkit-scrollbar {
-    width: 6px;
-}
-#genreSelect[multiple]::-webkit-scrollbar-thumb {
-    background-color: #e50914;
-    border-radius: 3px;
-}
 </style>
 </head>
+
 <body>
 
-<h1>Prova Tendine Personalizzate</h1>
+<input id="search" placeholder="Cerca film o serie...">
 
-<div class="select-wrapper">
-  <select id="typeSelect">
-    <option value="movie">Film</option>
-    <option value="tv">Serie TV</option>
-    <option value="favorites">★ Preferiti</option>
-    <option value="recent">👁 Visti di recente</option>
-  </select>
-</div>
+<div class="grid" id="grid"></div>
 
-<div class="select-wrapper">
-  <select id="genreSelect" multiple size="5">
-    <option>Avventura</option>
-    <option>Commedia</option>
-    <option>Azione</option>
-    <option>Fantascienza</option>
-    <option>Horror</option>
-    <option>Documentario</option>
-  </select>
+<script>
+
+let allData=[];
+
+fetch("data.json")
+.then(r=>r.json())
+.then(data=>{
+    allData=data;
+    render(data.slice(0,30)); // primi 30 titoli
+});
+
+function render(list){
+
+const grid=document.getElementById("grid");
+grid.innerHTML="";
+
+list.forEach(item=>{
+
+grid.innerHTML+=`
+<div class="card">
+<img loading="lazy" src="${item.poster}">
 </div>
+`;
+
+});
+
+}
+
+document.getElementById("search").addEventListener("input",function(){
+
+let q=this.value.toLowerCase();
+
+if(q.length<2){
+render(allData.slice(0,30));
+return;
+}
+
+let results=allData.filter(m=>m.title.toLowerCase().includes(q)).slice(0,50);
+
+render(results);
+
+});
+
+</script>
 
 </body>
 </html>

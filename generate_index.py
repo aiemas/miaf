@@ -375,13 +375,8 @@ closeCardBtn.onclick = () => {{
 }};
 
 function showLatest(){{
-    let scrollPos = 0;
-    function scroll() {{
-        scrollPos += 1;
-        if(scrollPos > latestDiv.scrollWidth - latestDiv.clientWidth) scrollPos = 0;
-        latestDiv.scrollTo({{ left: scrollPos, behavior: 'smooth' }});
-    }}
-    setInterval(scroll, 30);
+    // Autoscroll disabilitato
+    // Le locandine restano scrollabili manualmente
 }}
 
 function openInfo(item, push=true) {{
@@ -665,7 +660,7 @@ function render(reset=false) {{
     // Lista da mostrare: se c'è ricerca, cerca in tutto; altrimenti usa currentList
     let listToShow = s ? allData : currentList;
 
-    while(shown<listToShow.length && count<40) {{
+    while(shown<listToShow.length && count<20) {{
         let m = listToShow[shown++];
         let isFav = favorites.includes(m.id);
         let genreMatch = gSel.length===0 || gSel.includes('all') || gSel.every(g => m.genres.includes(g));
