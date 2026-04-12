@@ -85,8 +85,7 @@ def tmdb_get(api_key, type_, tmdb_id, language="it-IT"):
     return r.json()
 
 
-def build_html(entries, latest_entries):
-    entries_json = json.dumps(entries, ensure_ascii=False)
+def build_html(latest_entries):
     html = f"""<!doctype html>
 <html lang='it'>
 <head>
@@ -107,13 +106,97 @@ def build_html(entries, latest_entries):
   outline: 3px solid gold;
   outline-offset: 2px;
 }}
-body{{font-family:Arial,sans-serif;background:#141414;color:#fff;margin:0;padding:20px;}}
-h1{{color:#fff;text-align:center;margin-bottom:20px;}}
-.controls{{display:flex;gap:10px;justify-content:center;margin-bottom:20px;flex-wrap:wrap;}}
-input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
+body{{
+    font-family:Arial,sans-serif;
+    background:
+        radial-gradient(circle at top, #2b0f14 0%, #141414 35%, #0b0b0b 100%);
+    color:#fff;
+    margin:0;
+    padding:20px;
+    min-height:100vh;
+}}
+h1{{
+    color:#fff;
+    text-align:left;
+    margin-bottom:18px;
+    font-size:28px;
+    font-weight:700;
+    padding-left:8px;
+}}
+.controls{{
+    display:flex;
+    gap:12px;
+    justify-content:flex-start;
+    margin-bottom:25px;
+    flex-wrap:wrap;
+    padding-left:8px;
+}}
+
+.top-controls{{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    flex-wrap:wrap;
+    width:100%;
+}}
+
+.genre-buttons{{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:10px;
+    width:100%;
+}}
+
+.genre-btn{{
+    padding:8px 14px;
+    border:none;
+    border-radius:20px;
+    background:#2a2a2a;
+    color:#ccc;
+    cursor:pointer;
+    font-size:13px;
+    transition:all 0.25s ease;
+    box-shadow:0 2px 6px rgba(0,0,0,0.3);
+}}
+
+.genre-btn:hover{{
+    background:#3a3a3a;
+    color:#fff;
+}}
+
+.genre-btn.active{{
+    background:#e50914;
+    color:#fff;
+    box-shadow:0 0 10px rgba(229,9,20,0.6);
+}}
+
+
+input,select{{
+    padding:10px 14px;
+    font-size:14px;
+    border-radius:6px;
+    border:none;
+    background:#222;
+    color:#fff;
+}}
 .grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:12px;}}
-.card{{position:relative;cursor:pointer;transition: transform 0.2s;border-radius:12px;overflow:hidden;border:2px solid #444;background:#1f1f1f;}}
-.card:hover{{transform:scale(1.05);border-color:#e50914;background:#2a2a2a;}}
+.card{{
+    position:relative;
+    cursor:pointer;
+    transition:all 0.25s ease;
+    border-radius:10px;
+    overflow:hidden;
+    border:none;
+    background:#181818;
+    box-shadow:0 4px 10px rgba(0,0,0,0.35);
+}}
+.card:hover{{
+    transform:scale(1.08);
+    z-index:10;
+    box-shadow:0 12px 30px rgba(0,0,0,0.6);
+    background:#222;
+}}
 .poster{{width:100%;border-radius:0;display:block;}}
 .badge{{position:absolute;top:8px;right:8px;background:#e50914;color:#fff;padding:4px 6px;font-size:14px;font-weight:bold;border-radius:8px;text-align:center;}}
 .playing-badge{{
@@ -289,14 +372,18 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 
 <h1>Movies & Series</h1>
 <div class='controls'>
-<select id='typeSelect'>
-  <option value='movie'>Film</option>
-  <option value='tv'>Serie TV</option>
-  <option value='favorites'>★ Preferiti</option>
-  <option value='recent'>👁 Visti di recente</option>
-</select>
-<select id='genreSelect' multiple size=1></select>
-<input type='text' id='searchBox' placeholder='Cerca...'>
+  <div class="top-controls">
+    <select id='typeSelect'>
+      <option value='movie'>Film</option>
+      <option value='tv'>Serie TV</option>
+      <option value='favorites'>★ Preferiti</option>
+      <option value='recent'>👁 Visti di recente</option>
+    </select>
+
+    <input type='text' id='searchBox' placeholder='Cerca...'>
+  </div>
+
+  <div id='genreButtons' class='genre-buttons'></div>
 </div>
 <div id='moviesGrid' class='grid'></div>
 <div id="bottomControls">
@@ -343,7 +430,7 @@ input,select{{padding:8px;font-size:14px;border-radius:4px;border:none;}}
 </div>
 
 <script>
-const allData = {entries_json};
+let allData = [];
 let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
 let recentList = JSON.parse(localStorage.getItem("recent") || "[]");
 let lastEpisodes = JSON.parse(localStorage.getItem("lastEpisodes") || "{{}}");
@@ -367,7 +454,8 @@ const infoYear=document.getElementById('infoYear');
 const infoDuration=document.getElementById('infoDuration');
 const infoCast=document.getElementById('infoCast');
 const infoPegi=document.getElementById('infoPegi');
-const genreSelect=document.getElementById('genreSelect');
+const genreButtons=document.getElementById('genreButtons');
+let selectedGenres = [];
 
 closeCardBtn.onclick = () => {{
   infoCard.style.display='none';
@@ -655,7 +743,7 @@ function render(reset=false) {{
     if(reset){{ grid.innerHTML=''; shown=0; }}
     let count=0;
     let s = document.getElementById('searchBox').value.toLowerCase();
-    let gSel = Array.from(document.getElementById('genreSelect').selectedOptions).map(o=>o.value);
+    let gSel = selectedGenres;
 
     // Lista da mostrare: se c'è ricerca, cerca in tutto; altrimenti usa currentList
     let listToShow = s ? allData : currentList;
@@ -705,18 +793,38 @@ function render(reset=false) {{
 }}
 
 function populateGenres(){{
-    const set=new Set();
+    const set = new Set();
+
     currentList.forEach(m=>{{
-      if(Array.isArray(m.genres)){{
-        m.genres.forEach(g=>set.add(g));
-      }}
+        if(Array.isArray(m.genres)){{
+            m.genres.forEach(g=>set.add(g));
+        }}
     }});
-    const sel=document.getElementById('genreSelect');
-    sel.innerHTML='<option value="all">Tutti i generi</option>';
+
+    genreButtons.innerHTML = "";
+
     [...set].sort().forEach(g=>{{
-        const o=document.createElement('option');
-        o.value=o.textContent=g;
-        sel.appendChild(o);
+        const btn = document.createElement("button");
+        btn.className = "genre-btn";
+        btn.textContent = g;
+
+        if(selectedGenres.includes(g)){{
+            btn.classList.add("active");
+        }}
+
+        btn.onclick = () => {{
+            if(selectedGenres.includes(g)){{
+                selectedGenres = selectedGenres.filter(x=>x!==g);
+                btn.classList.remove("active");
+            }} else {{
+                selectedGenres.push(g);
+                btn.classList.add("active");
+            }}
+
+            render(true);
+        }};
+
+        genreButtons.appendChild(btn);
     }});
 }}
 
@@ -724,21 +832,23 @@ function updateType(t){{
     currentType=t;
     if(t==="movie" || t==="tv"){{
         currentList=allData.filter(x=>x.type===t);
-        genreSelect.style.display='inline';
+        genreButtons.style.display='flex';
+        selectedGenres = [];
         populateGenres();
     }} else if(t==="favorites"){{
         currentList=allData.filter(x=>favorites.includes(x.id));
-        genreSelect.style.display='none';
+        genreButtons.style.display='none';
+        selectedGenres = [];
     }} else if(t==="recent"){{
         currentList=allData.filter(x=>recentList.includes(x.id));
-        genreSelect.style.display='none';
+        genreButtons.style.display='none';
+        selectedGenres = [];
     }}
     render(true);
 }}
 
 /* Eventi UI */
 document.getElementById('typeSelect').onchange=e=>updateType(e.target.value);
-document.getElementById('genreSelect').onchange=()=>render(true);
 document.getElementById('searchBox').oninput=()=>render(true);
 document.getElementById('loadMore').onclick=()=>render(false);
 document.getElementById('randomPick').onclick = () => {{
@@ -750,8 +860,16 @@ document.getElementById('randomPick').onclick = () => {{
 /* stato iniziale nella history */
 history.replaceState({{page:"grid"}}, "", "#grid");
 
-updateType('movie');
-showLatest();
+fetch("data.json")
+  .then(res => res.json())
+  .then(data => {{
+      allData = data;
+      updateType('movie');
+      showLatest();
+  }})
+  .catch(err => {{
+      console.error("Errore caricamento JSON:", err);
+  }});
 </script>
 </body>
 </html>
@@ -867,12 +985,16 @@ def main():
     save_archive(all_entries)
     print(f"Archivio salvato su {ARCHIVE_FILE}")
 
+        # Salva database JSON separato
+    with open("data.json", "w", encoding="utf-8") as f:
+        json.dump(all_entries, f, ensure_ascii=False)
+
     # Genera HTML finale
-    html = build_html(all_entries, latest_entries)
+    html = build_html(latest_entries)
     with open(OUTPUT_HTML, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"Generato {OUTPUT_HTML} con {len(all_entries)} elementi e ultime novità scrollabili")
 
+    print(f"Generato {OUTPUT_HTML} con {len(all_entries)} elementi e ultime novità scrollabili")
 
 if __name__ == "__main__":
     main()
