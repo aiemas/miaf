@@ -662,7 +662,7 @@ function openPlayer(item, push=true) {{
     }} else {{
         link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
     }}
-    window.location.href = link;
+    window.open(link, "_blank");
     
 
     addToRecent(item.id);
