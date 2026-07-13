@@ -284,6 +284,7 @@ input,select{
 <body>
 <h1>Aggiunti di recente</h1>
 <div id='latest'>
+<img class='poster' src='https://image.tmdb.org/t/p/w780/unTYv1muZv9rEWQdWdpj320BkZz.jpg' alt='Non si sevizia un paperino' title='Non si sevizia un paperino'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/bskH8CKf3f926IrZC6tvUmyt57O.jpg' alt='Hercules nell'inferno degli dei' title='Hercules nell'inferno degli dei'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/2RGgtKbSzhuUvQQmWpEdOfHsAu2.jpg' alt='Biutiful' title='Biutiful'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/lCj4IZ9l8NfOEiM4zHq3BRF2LzX.jpg' alt='Super Fly' title='Super Fly'>
@@ -293,7 +294,6 @@ input,select{
 <img class='poster' src='https://image.tmdb.org/t/p/w780/tS1W7tgPWvy6CKMhP6Go3D1Mnew.jpg' alt='Un re a New York' title='Un re a New York'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/yWFhDw90QQrEGWVf1exkkAKlkhm.jpg' alt='La spina del diavolo' title='La spina del diavolo'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/vxgtTEUIoJigELMiaP04tRkVPKC.jpg' alt='Una top model nel mio letto' title='Una top model nel mio letto'>
-<img class='poster' src='https://image.tmdb.org/t/p/w780/vti6EGNxWvPpFX2d1m2UCVoWpPQ.jpg' alt='Scandalosa Gilda' title='Scandalosa Gilda'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/6nNxw6SsbEtSpktVEGdoYDqPH7C.jpg' alt='I Westies' title='I Westies'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/oWUGSadxC9vQPOCeHDDVfDezmQC.jpg' alt='La casa nella prateria' title='La casa nella prateria'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/dWrjukQp60iY60VyJjahA801LMO.jpg' alt='Got to Get Out' title='Got to Get Out'>
@@ -594,7 +594,7 @@ function openPlayer(item, push=true) {
     } else {
         link = `https://vixsrc.to/movie/${item.id}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
     }
-    window.location.href = link;
+    window.open(link, "_blank");
     
 
     addToRecent(item.id);
