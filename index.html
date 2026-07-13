@@ -284,6 +284,8 @@ input,select{
 <body>
 <h1>Aggiunti di recente</h1>
 <div id='latest'>
+<img class='poster' src='https://image.tmdb.org/t/p/w780/bskH8CKf3f926IrZC6tvUmyt57O.jpg' alt='Hercules nell'inferno degli dei' title='Hercules nell'inferno degli dei'>
+<img class='poster' src='https://image.tmdb.org/t/p/w780/2RGgtKbSzhuUvQQmWpEdOfHsAu2.jpg' alt='Biutiful' title='Biutiful'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/lCj4IZ9l8NfOEiM4zHq3BRF2LzX.jpg' alt='Super Fly' title='Super Fly'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/10zG5sx5SP4gxNqphPySlSEghv6.jpg' alt='Articolo 99' title='Articolo 99'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/tJlWSDxfqFIviCsB9NF2RmpSsKl.jpg' alt='Summer Snow' title='Summer Snow'>
@@ -292,13 +294,11 @@ input,select{
 <img class='poster' src='https://image.tmdb.org/t/p/w780/yWFhDw90QQrEGWVf1exkkAKlkhm.jpg' alt='La spina del diavolo' title='La spina del diavolo'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/vxgtTEUIoJigELMiaP04tRkVPKC.jpg' alt='Una top model nel mio letto' title='Una top model nel mio letto'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/vti6EGNxWvPpFX2d1m2UCVoWpPQ.jpg' alt='Scandalosa Gilda' title='Scandalosa Gilda'>
-<img class='poster' src='https://image.tmdb.org/t/p/w780/8A1e5UYU9V4WieFJ2fqg9VCQUYY.jpg' alt='Il gioco del destino e della fantasia' title='Il gioco del destino e della fantasia'>
-<img class='poster' src='https://image.tmdb.org/t/p/w780/6kAcNnXbYZFSbO8c3ep1DBaX9JX.jpg' alt='Costa Concordia: Incubo in mare' title='Costa Concordia: Incubo in mare'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/6nNxw6SsbEtSpktVEGdoYDqPH7C.jpg' alt='I Westies' title='I Westies'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/oWUGSadxC9vQPOCeHDDVfDezmQC.jpg' alt='La casa nella prateria' title='La casa nella prateria'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/dWrjukQp60iY60VyJjahA801LMO.jpg' alt='Got to Get Out' title='Got to Get Out'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/12sbIsT9pJ03L5MwX8yowIMG0Un.jpg' alt='Les Revenants - The Returned' title='Les Revenants - The Returned'>
-<img class='poster' src='https://image.tmdb.org/t/p/w780/ctDqarHjLlrKhKx1j7N4rF746qQ.jpg' alt='No tengo miedo' title='No tengo miedo'>
+<img class='poster' src='https://image.tmdb.org/t/p/w780/ctDqarHjLlrKhKx1j7N4rF746qQ.jpg' alt='Io non ho paura' title='Io non ho paura'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/vjGk5aJLsatgY55Dwh6zJEpVUFp.jpg' alt='The 2000s' title='The 2000s'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/M4T0ColVoLCGnxdyNsSEBOuMji.jpg' alt='Big Girls Wanted: Escaping Pearadise' title='Big Girls Wanted: Escaping Pearadise'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/vmiUG2FLxhYlIyiGlc56ydjesZo.jpg' alt='Human Vapor' title='Human Vapor'>
@@ -330,7 +330,12 @@ input,select{
 
 
 <div id='playerOverlay'>
-  <iframe tabindex="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+  <iframe 
+    tabindex="0"
+    referrerpolicy="no-referrer"
+    allow="autoplay; fullscreen; encrypted-media"
+    allowfullscreen>
+</iframe>
 </div>
 
 <div id='infoCard' style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(20,20,20,0.85); display:none; z-index:1001; backdrop-filter:blur(8px); align-items:center; justify-content:center;">
@@ -589,7 +594,7 @@ function openPlayer(item, push=true) {
     } else {
         link = `https://vixsrc.to/movie/${item.id}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
     }
-    iframe.src = link;
+    window.location.href = link;
     
 
     addToRecent(item.id);
