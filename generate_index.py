@@ -398,7 +398,12 @@ input,select{{
 
 
 <div id='playerOverlay'>
-  <iframe tabindex="0" allow="autoplay; fullscreen; encrypted-media" allowfullscreen></iframe>
+  <iframe 
+    tabindex="0"
+    referrerpolicy="no-referrer"
+    allow="autoplay; fullscreen; encrypted-media"
+    allowfullscreen>
+</iframe>
 </div>
 
 <div id='infoCard' style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(20,20,20,0.85); display:none; z-index:1001; backdrop-filter:blur(8px); align-items:center; justify-content:center;">
@@ -657,7 +662,7 @@ function openPlayer(item, push=true) {{
     }} else {{
         link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
     }}
-    iframe.src = link;
+    window.location.href = link;
     
 
     addToRecent(item.id);
