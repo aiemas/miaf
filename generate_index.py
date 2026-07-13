@@ -655,12 +655,12 @@ function openPlayer(item, push=true) {{
     if(item.type==='tv') {{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}/`;
         lastEpisodes[item.id] = {{ season, episode }};
         localStorage.setItem("lastEpisodes", JSON.stringify(lastEpisodes));
 
     }} else {{
-        link = `https://vixsrc.to/movie/${item.id}/`;
+        link = `https://vixsrc.to/movie/${{item.id}}/`;
     }}
     window.open(link, "_blank");
     
