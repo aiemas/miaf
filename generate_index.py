@@ -660,7 +660,7 @@ function openPlayer(item, push=true) {{
         localStorage.setItem("lastEpisodes", JSON.stringify(lastEpisodes));
 
     }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
+        link = `https://vixsrc.to/movie/${item.id}/`;
     }}
     window.open(link, "_blank");
     
