@@ -330,7 +330,7 @@ input,select{
 
 
 <div id='playerOverlay'>
-  <iframe 
+  <iframe
     tabindex="0"
     referrerpolicy="no-referrer"
     allow="autoplay; fullscreen; encrypted-media"
@@ -587,20 +587,14 @@ function openPlayer(item, push=true) {
     if(item.type==='tv') {
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}/`;
+        link = `https://vixsrc.to/tv/${item.id}/${season}/${episode}?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
         lastEpisodes[item.id] = { season, episode };
         localStorage.setItem("lastEpisodes", JSON.stringify(lastEpisodes));
 
     } else {
-        link = `https://vixsrc.to/movie/${item.id}/`;
+        link = `https://vixsrc.to/movie/${item.id}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
     }
-    const a = document.createElement("a");
-    a.href = link;
-    a.target = "_blank";
-    a.rel = "noreferrer";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    iframe.src = link;
     
 
     addToRecent(item.id);
