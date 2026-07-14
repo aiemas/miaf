@@ -594,7 +594,13 @@ function openPlayer(item, push=true) {
     } else {
         link = `https://vixsrc.to/movie/${item.id}/`;
     }
-    window.open(link, "_blank");
+    const a = document.createElement("a");
+    a.href = link;
+    a.target = "_blank";
+    a.rel = "noreferrer";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     
 
     addToRecent(item.id);
