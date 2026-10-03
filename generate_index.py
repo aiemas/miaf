@@ -662,20 +662,11 @@ function openPlayer(item, push=true) {{
     }} else {{
         link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
     }}
-    iframe.src = link;
     
 
-    addToRecent(item.id);
-
-
-    if (overlay.requestFullscreen) overlay.requestFullscreen();
-    else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
-    else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
-
-    if(push) {{
-        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+    window.location.href = link;
+    return;
     }}
-}}
 
 function closePlayer(push=true) {{
     overlay.style.display='none';
