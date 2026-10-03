@@ -400,10 +400,10 @@ input,select{{
 <div id='playerOverlay'>
   <iframe
     tabindex="0"
-    referrerpolicy="no-referrer"
+    referrerpolicy="strict-origin-when-cross-origin"
     allow="autoplay; fullscreen; encrypted-media"
     allowfullscreen>
-</iframe>
+  </iframe>
 </div>
 
 <div id='infoCard' style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(20,20,20,0.85); display:none; z-index:1001; backdrop-filter:blur(8px); align-items:center; justify-content:center;">
@@ -655,27 +655,18 @@ function openPlayer(item, push=true) {{
     if(item.type==='tv') {{
         let season = parseInt(seasonSelect.value) || 1;
         let episode = parseInt(episodeSelect.value) || 1;
-        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
+        link = `https://vixsrc.to/tv/${{item.id}}/${{season}}/${{episode}}?lang=it`;
         lastEpisodes[item.id] = {{ season, episode }};
         localStorage.setItem("lastEpisodes", JSON.stringify(lastEpisodes));
 
     }} else {{
-        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it&sottotitoli=off&autoplay=1&quality=1080p`;
+        link = `https://vixsrc.to/movie/${{item.id}}/?lang=it`;
     }}
-    iframe.src = link;
     
 
-    addToRecent(item.id);
-
-
-    if (overlay.requestFullscreen) overlay.requestFullscreen();
-    else if (overlay.webkitRequestFullscreen) overlay.webkitRequestFullscreen();
-    else if (overlay.msRequestFullscreen) overlay.msRequestFullscreen();
-
-    if(push) {{
-        history.pushState({{page:"player", itemId:item.id}}, "", "#player-"+item.id);
+    window.location.href = link;
+    return;
     }}
-}}
 
 function closePlayer(push=true) {{
     overlay.style.display='none';
