@@ -400,7 +400,7 @@ input,select{{
 <div id='playerOverlay'>
   <iframe
     tabindex="0"
-    referrerpolicy="origin"
+    referrerpolicy="strict-origin-when-cross-origin"
     allow="autoplay; fullscreen; encrypted-media"
     allowfullscreen>
   </iframe>
