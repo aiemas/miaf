@@ -664,8 +664,13 @@ function openPlayer(item, push=true) {{
     }}
     
 
-    window.location.href = link;
-    return;
+    const a = document.createElement("a");
+    a.href = link;
+    a.target = "_self";
+    a.rel = "noreferrer";
+    a.referrerPolicy = "no-referrer";
+    document.body.appendChild(a);
+    a.click();
     }}
 
 function closePlayer(push=true) {{

@@ -284,6 +284,7 @@ input,select{
 <body>
 <h1>Aggiunti di recente</h1>
 <div id='latest'>
+<img class='poster' src='https://image.tmdb.org/t/p/w780/ymyrJJ4mRBYLcBXXOkm7qe3fnee.jpg' alt='Tra amore e inganni' title='Tra amore e inganni'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/5nZVjsCk5tWyyhLGt5U2TxsR85w.jpg' alt='Doing Life' title='Doing Life'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/o09Z2TPQLkLg2zE6U9PUF17RmGf.jpg' alt='Schumacher '94 - Die Geburt einer Legende' title='Schumacher '94 - Die Geburt einer Legende'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/rbqYjuu5pVIrN0Rd0S1GHzdRX5d.jpg' alt='Verità sepolte' title='Verità sepolte'>
@@ -293,7 +294,8 @@ input,select{
 <img class='poster' src='https://image.tmdb.org/t/p/w780/nF5Hpr6q5nFCST7CUXmfiqfBi0N.jpg' alt='Giggi il bullo' title='Giggi il bullo'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/1eysShwFUghfepBwajhJMX4ln5j.jpg' alt='Il bacio della donna ragno' title='Il bacio della donna ragno'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/mmAqvmgeRmOuKEgSvynaJmk2mkf.jpg' alt='Cornetti alla crema' title='Cornetti alla crema'>
-<img class='poster' src='https://image.tmdb.org/t/p/w780/fpFsj2IQekSi9cjOlRyBiIoLBY4.jpg' alt='Kevin Hart: Irresponsible' title='Kevin Hart: Irresponsible'>
+<img class='poster' src='https://image.tmdb.org/t/p/w780/li3TH09EF6JyHPVoTvub4nPOfwU.jpg' alt='Get Jiro' title='Get Jiro'>
+<img class='poster' src='https://image.tmdb.org/t/p/w780/scXiHnUEOHjFEudDdyRJOQYSDw3.jpg' alt='Preferisco la morte' title='Preferisco la morte'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/fRY6P6lWpwyI97WpKIf8mfaWFkZ.jpg' alt='Coven Academy - L'accademia delle streghe' title='Coven Academy - L'accademia delle streghe'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/32NMmkX5G8vmDXgxJRxKpRmZLVP.jpg' alt='The Torment' title='The Torment'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/kgpbj2EQOVHYa18TN4oNW6N4crk.jpg' alt='Peccato' title='Peccato'>
@@ -302,8 +304,6 @@ input,select{
 <img class='poster' src='https://image.tmdb.org/t/p/w780/rO739swp9hyYmtouNi9kNGhWtiu.jpg' alt='Outside' title='Outside'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/9cYgLzhMzQdRTfCbfER1LKLj4GL.jpg' alt='Sacrifice' title='Sacrifice'>
 <img class='poster' src='https://image.tmdb.org/t/p/w780/AuhrT2YLjhcsVUhLg6SS2Ig3EBC.jpg' alt='LEGO ONE PIECE' title='LEGO ONE PIECE'>
-<img class='poster' src='https://image.tmdb.org/t/p/w780/uzkstcWWomEN4QFrOQIuU6KwZYo.jpg' alt='Gino il Pollo perso nella rete' title='Gino il Pollo perso nella rete'>
-<img class='poster' src='https://image.tmdb.org/t/p/w780/esU4D2XSA7hNHC8G2bmMkvX5g5H.jpg' alt='The Other Bennet Sister' title='The Other Bennet Sister'>
 
 </div>
 
@@ -596,8 +596,13 @@ function openPlayer(item, push=true) {
     }
     
 
-    window.location.href = link;
-    return;
+    const a = document.createElement("a");
+    a.href = link;
+    a.target = "_self";
+    a.rel = "noreferrer";
+    a.referrerPolicy = "no-referrer";
+    document.body.appendChild(a);
+    a.click();
     }
 
 function closePlayer(push=true) {
