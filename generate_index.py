@@ -664,7 +664,7 @@ function openPlayer(item, push=true) {{
     }}
     
 
-    window.location.href = link;
+    window.location.replace(link);
     return;
     }}
 
